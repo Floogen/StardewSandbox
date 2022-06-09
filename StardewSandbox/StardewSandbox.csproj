@@ -31,13 +31,13 @@
 		<PostBuildEvent>
 			powershell -Command "(ls *manifest.json -rec | foreach-object { $f=$_.FullName; (gc -LiteralPath \"$f\") -replace 'REPLACE_ME_WITH_VERSION',  '$(Version)' | sc -LiteralPath \"$f\" })"
 
-			powershell Remove-Item -Path 'C:\Users\Floogen\Documents\GitHub Repos\Sandbox\Sandbox\releases\latest\Sandbox"' -Recurse -Force
-			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\Sandbox\Sandbox\bin\Debug\net5.0" "C:\Users\Floogen\Documents\GitHub Repos\Sandbox\Sandbox\releases\latest\Sandbox"
-			7z a -tzip "C:\Users\Floogen\Documents\GitHub Repos\Sandbox\Sandbox\releases\Sandbox-$(Version).zip" "C:\Users\Floogen\Documents\GitHub Repos\Sandbox\Sandbox\releases\latest\Sandbox"
+			powershell Remove-Item -Path 'C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox"' -Recurse -Force
+			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\bin\Debug\net5.0" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox"
+			7z a -tzip "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\StardewSandbox-$(Version).zip" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox"
 
-			powershell Remove-Item -Path '$(GameModsPath)\Sandbox' -Recurse -Force
+			powershell Remove-Item -Path '$(GameModsPath)\StardewSandbox' -Recurse -Force
 
-			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\Sandbox\Sandbox\releases\latest\Sandbox" "$(GameModsPath)\Sandbox"
+			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox" "$(GameModsPath)\StardewSandbox"
 		</PostBuildEvent>
 	</PropertyGroup>
 </Project>
