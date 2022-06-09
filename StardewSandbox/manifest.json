@@ -1,0 +1,11 @@
+﻿{
+  "Name": "REPLACE_ME_WITH_NAME",
+  "Author": "PeacefulEnd",
+  "Version": "REPLACE_ME_WITH_VERSION",
+  "Description": "REPLACE_ME_WITH_DESCRIPTION",
+  "UniqueID": "PeacefulEnd.REPLACE_ME_WITH_VERSION",
+  "EntryDll": "REPLACE_ME_WITH_NAME.dll",
+  "MinimumApiVersion": "3.14.4",
+  "UpdateKeys": [ "Nexus:????" ],
+  "Dependencies": []
+}
