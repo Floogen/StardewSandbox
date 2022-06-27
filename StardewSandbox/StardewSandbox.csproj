@@ -8,9 +8,10 @@
 		<EnableModDeploy>false</EnableModDeploy>
 		<GameModsPath>E:\SteamLibrary\steamapps\common\Stardew Valley\Mods</GameModsPath>
 	</PropertyGroup>
-
 	<ItemGroup>
-		<Folder Include="Framework\" />
+	  <Compile Remove="releases\**" />
+	  <EmbeddedResource Remove="releases\**" />
+	  <None Remove="releases\**" />
 	</ItemGroup>
 
 	<ItemGroup>
