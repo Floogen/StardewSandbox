@@ -25,6 +25,7 @@ namespace StardewSandbox
                 var harmony = new Harmony(this.ModManifest.UniqueID);
 
                 // Apply patches
+                new GameLocationPatch(monitor, modHelper).Apply(harmony);
                 new ForestPatch(monitor, modHelper).Apply(harmony);
             }
             catch (Exception e)
