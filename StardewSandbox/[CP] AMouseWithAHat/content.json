@@ -28,11 +28,11 @@
       }
     },
 
-    // Spring building replacement
+    // Building replacement
     {
       "Action": "EditImage",
-      "Target": "Maps/spring_outdoorsTileSheet",
-      "FromFile": "assets/HatMouseShop_Spring.png",
+      "Target": "Maps/{{season}}_outdoorsTileSheet",
+      "FromFile": "assets/HatMouseShop_{{season}}.png",
       "FromArea": {
         "X": 32,
         "Y": 16,
@@ -48,8 +48,8 @@
     },
     {
       "Action": "EditImage",
-      "Target": "Maps/spring_outdoorsTileSheet",
-      "FromFile": "assets/HatMouseShop_Spring.png",
+      "Target": "Maps/{{season}}_outdoorsTileSheet",
+      "FromFile": "assets/HatMouseShop_{{season}}.png",
       "FromArea": {
         "X": 48,
         "Y": 0,
@@ -65,8 +65,8 @@
     },
     {
       "Action": "EditImage",
-      "Target": "Maps/spring_outdoorsTileSheet",
-      "FromFile": "assets/HatMouseShop_Spring.png",
+      "Target": "Maps/{{season}}_outdoorsTileSheet",
+      "FromFile": "assets/HatMouseShop_{{season}}.png",
       "FromArea": {
         "X": 32,
         "Y": 32,
@@ -82,8 +82,8 @@
     },
     {
       "Action": "EditImage",
-      "Target": "Maps/spring_outdoorsTileSheet",
-      "FromFile": "assets/HatMouseShop_Spring.png",
+      "Target": "Maps/{{season}}_outdoorsTileSheet",
+      "FromFile": "assets/HatMouseShop_{{season}}.png",
       "FromArea": {
         "X": 0,
         "Y": 64,

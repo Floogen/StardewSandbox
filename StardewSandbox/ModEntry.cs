@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
 using StardewSandbox.Framework.Patches.Locations;
+using StardewSandbox.Framework.Patches.xTiles;
 using StardewValley;
 using System;
 
@@ -27,6 +28,7 @@ namespace StardewSandbox
                 // Apply patches
                 new GameLocationPatch(monitor, modHelper).Apply(harmony);
                 new ForestPatch(monitor, modHelper).Apply(harmony);
+                new LayerPatch(monitor, modHelper).Apply(harmony);
             }
             catch (Exception e)
             {

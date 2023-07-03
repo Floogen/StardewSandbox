@@ -30,7 +30,7 @@ namespace StardewSandbox.Framework.Patches.Locations
             {
                 __result = true;
 
-                Game1.warpFarmer("Custom_PeacefulEnd_MouseShop", 5, 5, false);
+                Game1.warpFarmer("Custom_PeacefulEnd_MouseShop", 3, 11, false);
 
                 return false;
             }
