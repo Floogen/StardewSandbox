@@ -1,9 +1,9 @@
 ﻿{
-  "Name": "REPLACE_ME_WITH_NAME",
+  "Name": "A Mouse With A Hat",
   "Author": "PeacefulEnd",
   "Version": "REPLACE_ME_WITH_VERSION",
-  "Description": "REPLACE_ME_WITH_DESCRIPTION",
-  "UniqueID": "PeacefulEnd.REPLACE_ME_WITH_NAME",
+  "Description": "...",
+  "UniqueID": "PeacefulEnd.AMouseWithAHat.Core",
   "EntryDll": "StardewSandbox.dll",
   "MinimumApiVersion": "3.14.4",
   "UpdateKeys": [ "Nexus:????" ],
