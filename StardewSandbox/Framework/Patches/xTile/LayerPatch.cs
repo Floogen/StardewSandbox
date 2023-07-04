@@ -39,6 +39,11 @@ namespace StardewSandbox.Framework.Patches.xTiles
             {
                 Game1.currentLocation.Map.GetLayer("Accessories").Draw(displayDevice, mapViewport, displayOffset, wrapAround, pixelZoom);
             }
+
+            if (__instance.Id.Equals("Buildings", StringComparison.OrdinalIgnoreCase) is true)
+            {
+                Game1.currentLocation.Map.GetLayer("Secondary").Draw(displayDevice, mapViewport, displayOffset, wrapAround, pixelZoom);
+            }
         }
     }
 }

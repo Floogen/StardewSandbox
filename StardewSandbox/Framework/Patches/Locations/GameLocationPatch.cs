@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using xTile.Dimensions;
+using xTile.Tiles;
 
 namespace StardewSandbox.Framework.Patches.Locations
 {
@@ -24,8 +25,44 @@ namespace StardewSandbox.Framework.Patches.Locations
 
         internal override void Apply(Harmony harmony)
         {
+            harmony.Patch(AccessTools.Method(_object, nameof(GameLocation.checkAction), new[] { typeof(xTile.Dimensions.Location), typeof(xTile.Dimensions.Rectangle), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(CheckActionPatchPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(GameLocation.answerDialogueAction), new[] { typeof(string), typeof(string[]) }), postfix: new HarmonyMethod(GetType(), nameof(AnswerDialogueActionPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(GameLocation.carpenters), new[] { typeof(Location) }), transpiler: new HarmonyMethod(GetType(), nameof(CarpentersTranspiler)));
+        }
+
+        private static void CheckActionPatchPostfix(GameLocation __instance, ref bool __result, xTile.Dimensions.Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
+        {
+            if (__result)
+            {
+                return;
+            }
+
+            // Check for custom actions
+            Tile tile = __instance.map.GetLayer("Buildings").PickTile(new xTile.Dimensions.Location(tileLocation.X * 64, tileLocation.Y * 64), viewport.Size);
+            if (tile is null || !tile.Properties.ContainsKey("Action"))
+            {
+                return;
+            }
+
+            switch (tile.Properties["Action"].ToString())
+            {
+                case "MouseHome":
+                    __result = true;
+                    Game1.drawObjectDialogue("You are a tad too tall to fit inside this small door. From what you can see, there seems to be a tiny bedroom of sorts.");
+                    break;
+                case "MouseShop":
+                    __result = true;
+                    Game1.activeClickableMenu = new ShopMenu(Utility.getHatStock(), 0, "HatMouse");
+                    break;
+                case "MouseFashionSense":
+                    __result = true;
+                    var shopMenu = new ShopMenu(new Dictionary<ISalable, int[]>());
+                    // TODO: Implement menu to purchase FS unlocks
+                    Game1.activeClickableMenu = shopMenu;
+                    break;
+                default:
+                    break;
+            }
         }
 
         private static List<Response> GetSpecialProjects()
