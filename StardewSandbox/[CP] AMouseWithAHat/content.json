@@ -9,6 +9,127 @@
   ],
 
   "Changes": [
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Custom_PeacefulEnd_MouseShop",
+      "MapTiles": [
+        {
+          "Position": {
+            "X": 1,
+            "Y": 6
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219}}"
+        },
+        {
+          "Position": {
+            "X": 2,
+            "Y": 6
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:60, 76, 92, 108, 124, 140, 156, 172, 188, 204, 220}}"
+        },
+        {
+          "Position": {
+            "X": 3,
+            "Y": 6
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:61, 77, 93, 109, 125, 141, 157, 173, 189, 205, 221}}"
+        }
+      ]
+    },
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Custom_PeacefulEnd_MouseShop",
+      "MapTiles": [
+        {
+          "Position": {
+            "X": 4,
+            "Y": 6
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219}}"
+        },
+        {
+          "Position": {
+            "X": 5,
+            "Y": 6
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:60, 76, 92, 108, 124, 140, 156, 172, 188, 204, 220}}"
+        },
+        {
+          "Position": {
+            "X": 6,
+            "Y": 6
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:61, 77, 93, 109, 125, 141, 157, 173, 189, 205, 221}}"
+        }
+      ]
+    },
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Custom_PeacefulEnd_MouseShop",
+      "MapTiles": [
+        {
+          "Position": {
+            "X": 7,
+            "Y": 5
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219}}"
+        },
+        {
+          "Position": {
+            "X": 8,
+            "Y": 5
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:60, 76, 92, 108, 124, 140, 156, 172, 188, 204, 220}}"
+        },
+        {
+          "Position": {
+            "X": 9,
+            "Y": 5
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:61, 77, 93, 109, 125, 141, 157, 173, 189, 205, 221}}"
+        }
+      ]
+    },
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Custom_PeacefulEnd_MouseShop",
+      "MapTiles": [
+        {
+          "Position": {
+            "X": 8,
+            "Y": 3
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219}}"
+        },
+        {
+          "Position": {
+            "X": 9,
+            "Y": 3
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:60, 76, 92, 108, 124, 140, 156, 172, 188, 204, 220}}"
+        },
+        {
+          "Position": {
+            "X": 10,
+            "Y": 3
+          },
+          "Layer": "Front",
+          "SetIndex": "{{Random:61, 77, 93, 109, 125, 141, 157, 173, 189, 205, 221}}"
+        }
+      ]
+    },
+
     // Hide the exterior mouse sprite
     {
       "Action": "EditImage",
@@ -20,6 +141,7 @@
         "Width": 78,
         "Height": 47
       },
+      "d": null,
       "ToArea": {
         "X": 592,
         "Y": 1952,
