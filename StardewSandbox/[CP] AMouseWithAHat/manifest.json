@@ -14,10 +14,6 @@
     {
       "UniqueID": "PeacefulEnd.AMouseWithAHat.Core",
       "IsRequired": true
-    },
-    {
-      "UniqueID": "FlashShifter.StardewValleyExpandedCP",
-      "IsRequired": false
     }
   ]
 }

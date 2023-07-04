@@ -7,5 +7,15 @@
   "EntryDll": "StardewSandbox.dll",
   "MinimumApiVersion": "3.14.4",
   "UpdateKeys": [ "Nexus:????" ],
-  "Dependencies": []
+  "Dependencies": [
+    {
+      "UniqueID": "PeacefulEnd.FashionSense",
+      "IsRequired": true,
+      "MinimumVersion": "5.8.0"
+    },
+    {
+      "UniqueID": "Pathoschild.ContentPatcher",
+      "IsRequired": true
+    }
+  ]
 }

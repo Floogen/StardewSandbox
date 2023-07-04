@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
 using StardewSandbox.Framework.Patches;
+using StardewSandbox.Framework.UI;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.Locations;
@@ -30,6 +31,28 @@ namespace StardewSandbox.Framework.Patches.Locations
             harmony.Patch(AccessTools.Method(_object, nameof(GameLocation.carpenters), new[] { typeof(Location) }), transpiler: new HarmonyMethod(GetType(), nameof(CarpentersTranspiler)));
         }
 
+        private static List<Response> GetSpecialProjects()
+        {
+            List<Response> options = new List<Response>();
+            if (Game1.MasterPlayer.mailReceived.Contains("mouseHouseUpgrade") is false)
+            {
+                options.Add(new Response("mouseHouseUpgrade", "Repair Hat Shop"));
+            }
+
+            return options;
+        }
+
+        private static List<Response> GetMouseOptions()
+        {
+            List<Response> options = new List<Response>()
+            {
+                new Response("mouseShop", "Purchase a hat"),
+                new Response("mouseFashionSense", "Unlock hat customization")
+            };
+
+            return options;
+        }
+
         private static void CheckActionPatchPostfix(GameLocation __instance, ref bool __result, xTile.Dimensions.Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
         {
             if (__result)
@@ -50,9 +73,9 @@ namespace StardewSandbox.Framework.Patches.Locations
                     __result = true;
                     Game1.drawObjectDialogue("You are a tad too tall to fit inside this small door. From what you can see, there seems to be a tiny bedroom of sorts.");
                     break;
-                case "MouseShop":
+                case "MouseDialogue":
                     __result = true;
-                    Game1.activeClickableMenu = new ShopMenu(Utility.getHatStock(), 0, "HatMouse");
+                    __instance.createQuestionDialogue("Hiyo, poke! Come for hats?", GetMouseOptions().ToArray(), "mouseDialogue");
                     break;
                 case "MouseFashionSense":
                     __result = true;
@@ -63,17 +86,6 @@ namespace StardewSandbox.Framework.Patches.Locations
                 default:
                     break;
             }
-        }
-
-        private static List<Response> GetSpecialProjects()
-        {
-            List<Response> options = new List<Response>();
-            if (Game1.MasterPlayer.mailReceived.Contains("mouseHouseUpgrade") is false)
-            {
-                options.Add(new Response("mouseHouseUpgrade", "Repair Hat Shop"));
-            }
-
-            return options;
         }
 
         private static void AnswerDialogueActionPostfix(GameLocation __instance, ref bool __result, string questionAndAnswer, string[] questionParams)
@@ -91,6 +103,16 @@ namespace StardewSandbox.Framework.Patches.Locations
                 }
 
                 __result = true;
+            }
+            else if (questionAndAnswer == "mouseDialogue_mouseShop")
+            {
+                __result = true;
+                Game1.activeClickableMenu = new ShopMenu(Utility.getHatStock(), 0, "HatMouse");
+            }
+            else if (questionAndAnswer == "mouseDialogue_mouseFashionSense")
+            {
+                __result = true;
+                Game1.activeClickableMenu = new MouseShopMenu(Utility.getHatStock());
             }
         }
 

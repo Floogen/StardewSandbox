@@ -1,0 +1,18 @@
+{
+  "Name": "[FS] A Mouse With A Hat",
+  "Author": "PeacefulEnd",
+  "Version": "1.0.0",
+  "Description": "...",
+  "UniqueID": "PeacefulEnd.AMouseWithAHat.FS",
+  "UpdateKeys": [],
+  "Dependencies": [
+    {
+      "UniqueID": "PeacefulEnd.AMouseWithAHat.Core",
+      "IsRequired": true
+    }
+  ],
+  "ContentPackFor": {
+    "UniqueID": "PeacefulEnd.FashionSense",
+    "MinimumVersion": "5.8.0"
+  }
+}
