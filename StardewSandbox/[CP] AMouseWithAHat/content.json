@@ -37,7 +37,10 @@
           "Layer": "Front",
           "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=first_mannequin}} + 2}}"
         }
-      ]
+      ],
+      "When": {
+        "HasFlag": "HatShopRepaired"
+      }
     },
     {
       "Action": "EditMap",
@@ -67,7 +70,10 @@
           "Layer": "Front",
           "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=second_mannequin}} + 2}}"
         }
-      ]
+      ],
+      "When": {
+        "HasFlag": "HatShopRepaired"
+      }
     },
     {
       "Action": "EditMap",
@@ -81,7 +87,10 @@
           "Layer": "Front",
           "SetIndex": "{{Query: {{Random:59, 75, 107, 123, 139, 187, 203, 219 |key=third_mannequin}} + 1}}"
         }
-      ]
+      ],
+      "When": {
+        "HasFlag": "HatShopRepaired"
+      }
     },
     {
       "Action": "EditMap",
@@ -111,7 +120,10 @@
           "Layer": "Front",
           "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=fourth_mannequin}} + 2}}"
         }
-      ]
+      ],
+      "When": {
+        "HasFlag": "HatShopRepaired"
+      }
     },
 
     // Hide the exterior mouse sprite
@@ -125,12 +137,14 @@
         "Width": 78,
         "Height": 47
       },
-      "d": null,
       "ToArea": {
         "X": 592,
         "Y": 1952,
         "Width": 78,
         "Height": 47
+      },
+      "When": {
+        "HasFlag": "HatShopRepaired"
       }
     },
 
@@ -150,6 +164,9 @@
         "Y": 1120,
         "Width": 16,
         "Height": 16
+      },
+      "When": {
+        "HasFlag": "HatShopRepaired"
       }
     },
     {
@@ -167,6 +184,9 @@
         "Y": 1136,
         "Width": 64,
         "Height": 128
+      },
+      "When": {
+        "HasFlag": "HatShopRepaired"
       }
     },
     {
@@ -184,6 +204,9 @@
         "Y": 1168,
         "Width": 16,
         "Height": 96
+      },
+      "When": {
+        "HasFlag": "HatShopRepaired"
       }
     },
     {
@@ -201,6 +224,9 @@
         "Y": 1200,
         "Width": 32,
         "Height": 64
+      },
+      "When": {
+        "HasFlag": "HatShopRepaired"
       }
     }
   ]

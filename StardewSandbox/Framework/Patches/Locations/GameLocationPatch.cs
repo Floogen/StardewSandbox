@@ -3,6 +3,7 @@ using StardewModdingAPI;
 using StardewSandbox.Framework.Patches;
 using StardewSandbox.Framework.UI;
 using StardewValley;
+using StardewValley.BellsAndWhistles;
 using StardewValley.Characters;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -34,9 +35,10 @@ namespace StardewSandbox.Framework.Patches.Locations
         private static List<Response> GetSpecialProjects()
         {
             List<Response> options = new List<Response>();
-            if (Game1.MasterPlayer.mailReceived.Contains("mouseHouseUpgrade") is false)
+            if (Game1.MasterPlayer.mailReceived.Contains("HatShopRepaired") is false)
             {
-                options.Add(new Response("mouseHouseUpgrade", "Repair Hat Shop"));
+                options.Add(new Response("RepairHatShop", "Repair Hat Shop"));
+                options.Add(new Response("Exit", "Leave"));
             }
 
             return options;
@@ -51,6 +53,11 @@ namespace StardewSandbox.Framework.Patches.Locations
             };
 
             return options;
+        }
+
+        private static void HandleCarpenterOptions(List<Response> options)
+        {
+            options.Add(new Response("SpecialProjects", "Special Projects"));
         }
 
         private static void CheckActionPatchPostfix(GameLocation __instance, ref bool __result, xTile.Dimensions.Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
@@ -77,12 +84,6 @@ namespace StardewSandbox.Framework.Patches.Locations
                     __result = true;
                     __instance.createQuestionDialogue("Hiyo, poke! Come for hats?", GetMouseOptions().ToArray(), "mouseDialogue");
                     break;
-                case "MouseFashionSense":
-                    __result = true;
-                    var shopMenu = new ShopMenu(new Dictionary<ISalable, int[]>());
-                    // TODO: Implement menu to purchase FS unlocks
-                    Game1.activeClickableMenu = shopMenu;
-                    break;
                 default:
                     break;
             }
@@ -99,10 +100,41 @@ namespace StardewSandbox.Framework.Patches.Locations
                 }
                 else
                 {
-                    __instance.createQuestionDialogue("What project would you like to start?", GetSpecialProjects().ToArray(), "specialProjectStart");
+                    __instance.createQuestionDialogue("What project would you like to start?", GetSpecialProjects().ToArray(), "carpenter");
                 }
 
                 __result = true;
+            }
+            else if (questionAndAnswer == "carpenter_RepairHatShop")
+            {
+                __instance.createQuestionDialogue("You would like to convert that old abandoned house into a hat shop? It will cost 10,000g and you'll also need to provide me with 250 pieces of wood and 10 cloths.", __instance.createYesNoResponses(), "carpenter_RepairHatShop_Answer");
+            }
+            else if (questionAndAnswer == "carpenter_RepairHatShop_Answer_Yes")
+            {
+                if (Game1.player.Money >= 10000 && Game1.player.hasItemInInventory(388, 250) && Game1.player.hasItemInInventory(428, 10))
+                {
+                    ModEntry.SetActiveSpecialProjectId("RepairHatShop");
+
+                    (Game1.getLocationFromName("Town") as Town).daysUntilCommunityUpgrade.Value = 2;
+                    Game1.player.Money -= 10000;
+                    Game1.player.removeItemsFromInventory(388, 250);
+                    Game1.player.removeItemsFromInventory(428, 10);
+                    Game1.getCharacterFromName("Robin").setNewDialogue(Game1.content.LoadString("Data\\ExtraDialogue:Robin_HouseUpgrade_Accepted"));
+                    Game1.drawDialogue(Game1.getCharacterFromName("Robin"));
+                    ModEntry.multiplayer.globalChatInfoMessage("RepairHatShop", Game1.player.Name, Lexicon.getPossessivePronoun(Game1.player.IsMale));
+                }
+                else if (Game1.player.Money < 10000)
+                {
+                    Game1.drawObjectDialogue(Game1.content.LoadString("Strings\\UI:NotEnoughMoney3"));
+                }
+                else if (Game1.player.hasItemInInventory(388, 250) is false)
+                {
+                    Game1.drawObjectDialogue("Sorry... You have the money, but I also need the 250 pieces of wood.");
+                }
+                else if (Game1.player.hasItemInInventory(428, 10) is false)
+                {
+                    Game1.drawObjectDialogue("Sorry... You have the money and wood, but I also need the 10 bolts of cloth.");
+                }
             }
             else if (questionAndAnswer == "mouseDialogue_mouseShop")
             {
@@ -133,12 +165,6 @@ namespace StardewSandbox.Framework.Patches.Locations
                     }
                 }
 
-
-                for (int i = 0; i < list.Count; i++)
-                {
-                    _monitor.Log($"{list[i].opcode} -> {list[i].operand}");
-                }
-
                 return list;
             }
             catch (Exception e)
@@ -146,11 +172,6 @@ namespace StardewSandbox.Framework.Patches.Locations
                 _monitor.Log($"There was an issue modifying the instructions for StardewValley.GameLocation.carpenters: {e}", LogLevel.Error);
                 return instructions;
             }
-        }
-
-        private static void HandleCarpenterOptions(List<Response> options)
-        {
-            options.Add(new Response("SpecialProjects", "Special Projects"));
         }
     }
 }

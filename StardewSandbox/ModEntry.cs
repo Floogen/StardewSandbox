@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
 using StardewSandbox.Framework.Interfaces;
+using StardewSandbox.Framework.Patches.Entities;
 using StardewSandbox.Framework.Patches.Locations;
 using StardewSandbox.Framework.Patches.xTiles;
 using StardewValley;
@@ -25,6 +26,7 @@ namespace StardewSandbox
 
         private static Queue<string> _queuedMessages = new Queue<string>();
 
+        private const string SPECIAL_PROJECT_KEY = "PeacefulEnd.SpecialProjects.Active";
         private const string FASHIONABLE_HAT_KEY = "PeacefulEnd.MouseHouse.FashionableHats";
         private const string FASHION_SENSE_PACK_ID = "PeacefulEnd.AMouseWithAHat.FS";
 
@@ -43,7 +45,11 @@ namespace StardewSandbox
                 // Apply patches
                 new GameLocationPatch(monitor, modHelper).Apply(harmony);
                 new ForestPatch(monitor, modHelper).Apply(harmony);
+                new TownPatch(monitor, modHelper).Apply(harmony);
+
                 new LayerPatch(monitor, modHelper).Apply(harmony);
+
+                new NPCPatch(monitor, modHelper).Apply(harmony);
             }
             catch (Exception e)
             {
@@ -59,6 +65,7 @@ namespace StardewSandbox
 
         private void OnDayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
         {
+            ModEntry.SetActiveSpecialProjectId("RepairHatShop");
             if (fashionSenseApi is null)
             {
                 return;
@@ -131,6 +138,21 @@ namespace StardewSandbox
 
             // Preserve the changes
             who.modData[FASHIONABLE_HAT_KEY] = JsonSerializer.Serialize(unlockedHatIds);
+        }
+
+        internal static string GetActiveSpecialProjectId()
+        {
+            if (Game1.MasterPlayer.modData.ContainsKey(SPECIAL_PROJECT_KEY))
+            {
+                return Game1.MasterPlayer.modData[SPECIAL_PROJECT_KEY];
+            }
+
+            return string.Empty;
+        }
+
+        internal static void SetActiveSpecialProjectId(string project)
+        {
+            Game1.MasterPlayer.modData[SPECIAL_PROJECT_KEY] = project;
         }
     }
 }

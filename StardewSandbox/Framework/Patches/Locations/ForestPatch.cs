@@ -26,7 +26,7 @@ namespace StardewSandbox.Framework.Patches.Locations
         private static bool CheckActionPatchPrefix(Forest __instance, ref bool __result, xTile.Dimensions.Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
         {
             int tileIndexOfCheckLocation = ((__instance.map.GetLayer("Buildings").Tiles[tileLocation] != null) ? __instance.map.GetLayer("Buildings").Tiles[tileLocation].TileIndex : (-1));
-            if (tileIndexOfCheckLocation == 1972)
+            if (tileIndexOfCheckLocation == 1972 && Game1.MasterPlayer.mailReceived.Contains("HatShopRepaired"))
             {
                 __result = true;
 
