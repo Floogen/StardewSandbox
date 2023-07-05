@@ -58,9 +58,18 @@ namespace StardewSandbox
             }
 
             // Hook into the required events
+            helper.Events.Player.Warped += OnWarped;
             helper.Events.GameLoop.DayStarted += OnDayStarted;
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+        }
+
+        private void OnWarped(object sender, StardewModdingAPI.Events.WarpedEventArgs e)
+        {
+            if (e.OldLocation is not null && e.OldLocation.Name == "Custom_PeacefulEnd_MouseShop")
+            {
+                Game1.stopMusicTrack(Game1.MusicContext.Default);
+            }
         }
 
         private void OnDayStarted(object sender, StardewModdingAPI.Events.DayStartedEventArgs e)
