@@ -99,7 +99,7 @@ namespace StardewSandbox.Framework.UI
                     Game1.player.removeItemsFromInventory(CHEESE_ID, 1);
 
                     // Unlock the hat
-                    ModEntry.UnlockFashionableHat(Game1.player, GetFashionableName(item.DisplayName));
+                    ModEntry.UnlockFashionableHat(Game1.player, GetFashionableName(item.Name));
 
                     if (extraTradeItem2 != -1)
                     {
