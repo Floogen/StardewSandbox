@@ -10,6 +10,30 @@
 
   "Changes": [
     {
+      "Action": "Load",
+      "Target": "Data/Events/Custom_PeacefulEnd_MouseShop",
+      "FromFile": "assets/Event.json"
+    },
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Forest",
+      "MapTiles": [
+        {
+          "Position": {
+            "X": 34,
+            "Y": 95
+          },
+          "Layer": "Buildings",
+          "SetProperties": {
+            "Action": "LockedDoorWarp 3 10 Custom_PeacefulEnd_MouseShop 600 2000"
+          }
+        }
+      ],
+      "When": {
+        "HasFlag": "HatShopRepaired"
+      }
+    },
+    {
       "Action": "EditMap",
       "Target": "Maps/Custom_PeacefulEnd_MouseShop",
       "MapTiles": [

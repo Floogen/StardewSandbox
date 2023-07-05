@@ -155,10 +155,6 @@ namespace StardewSandbox.Framework.UI
                 }
                 else
                 {
-                    if (price2 > 0)
-                    {
-                        Game1.dayTimeMoneyBox.moneyShakeTimer = 1000;
-                    }
                     Game1.playSound("cancel");
                 }
             }
@@ -232,10 +228,6 @@ namespace StardewSandbox.Framework.UI
                     }
                     else
                     {
-                        if (price > 0)
-                        {
-                            Game1.dayTimeMoneyBox.moneyShakeTimer = 1000;
-                        }
                         Game1.playSound("cancel");
                     }
                 }
@@ -285,10 +277,6 @@ namespace StardewSandbox.Framework.UI
                     }
                     else if (toBuy <= 0)
                     {
-                        if (this.itemPriceAndStock[this.forSale[index]].Length != 0 && this.itemPriceAndStock[this.forSale[index]][0] > 0)
-                        {
-                            Game1.dayTimeMoneyBox.moneyShakeTimer = 1000;
-                        }
                         Game1.playSound("cancel");
                     }
                     if (this.heldItem != null && (this._isStorageShop || Game1.options.SnappyMenus || (Game1.oldKBState.IsKeyDown(Keys.LeftShift) && this.heldItem.maximumStackSize() == 1)) && Game1.activeClickableMenu != null && Game1.activeClickableMenu is ShopMenu && Game1.player.addItemToInventoryBool(this.heldItem as Item))

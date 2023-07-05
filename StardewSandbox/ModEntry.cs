@@ -44,7 +44,6 @@ namespace StardewSandbox
 
                 // Apply patches
                 new GameLocationPatch(monitor, modHelper).Apply(harmony);
-                new ForestPatch(monitor, modHelper).Apply(harmony);
                 new TownPatch(monitor, modHelper).Apply(harmony);
 
                 new LayerPatch(monitor, modHelper).Apply(harmony);

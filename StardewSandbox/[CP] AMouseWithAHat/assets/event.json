@@ -1,0 +1,3 @@
+{
+  "17291001/n HatShopRepaired": "playful/5 6/farmer -100 -100 0/addTemporaryActor Abigail 0 0 3 3 2 false Character/broadcastEvent/skippable/pause 1500/playSound doorClose/warp farmer 3 10/pause 750/textAboveHead Abigail \"Hiyo, poke!\"/pause 1500/move farmer 0 -4 0 false/pause 750/textAboveHead Abigail \"Old haus now new haus.\"/pause 3000/textAboveHead Abigail \"Thank you, poke!\"/pause 2750/emote farmer 32/pause 1250/end position 3 6"
+}
