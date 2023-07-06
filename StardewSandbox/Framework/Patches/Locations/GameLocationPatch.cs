@@ -35,7 +35,7 @@ namespace StardewSandbox.Framework.Patches.Locations
         private static List<Response> GetSpecialProjects()
         {
             List<Response> options = new List<Response>();
-            if (Game1.MasterPlayer.mailReceived.Contains("HatShopRepaired") is false)
+            if (Game1.MasterPlayer.mailReceived.Contains("hatter") is true && Game1.MasterPlayer.mailReceived.Contains("HatShopRepaired") is false)
             {
                 options.Add(new Response("RepairHatShop", "Repair Hat Shop"));
                 options.Add(new Response("Exit", "Leave"));
