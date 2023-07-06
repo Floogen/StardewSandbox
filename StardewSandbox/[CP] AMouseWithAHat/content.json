@@ -39,6 +39,32 @@
       "MapTiles": [
         {
           "Position": {
+            "X": 8,
+            "Y": 4
+          },
+          "Layer": "Accessories",
+          "SetIndex": "65"
+        },
+        {
+          "Position": {
+            "X": 8,
+            "Y": 5
+          },
+          "Layer": "Accessories",
+          "SetIndex": "81"
+        }
+      ],
+      "When": {
+        "HasFlag": "HatShopRepaired",
+        "Weather": "Rain, Storm"
+      }
+    },
+    {
+      "Action": "EditMap",
+      "Target": "Maps/Custom_PeacefulEnd_MouseShop",
+      "MapTiles": [
+        {
+          "Position": {
             "X": 1,
             "Y": 6
           },
