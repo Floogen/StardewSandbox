@@ -58,7 +58,10 @@ namespace StardewSandbox.Framework.Patches.Locations
 
         private static void HandleCarpenterOptions(List<Response> options)
         {
-            options.Add(new Response("SpecialProjects", "Special Projects"));
+            if (GetSpecialProjects().Count > 0)
+            {
+                options.Add(new Response("SpecialProjects", "Special Projects"));
+            }
         }
 
         private static void CheckActionPatchPostfix(GameLocation __instance, ref bool __result, xTile.Dimensions.Location tileLocation, xTile.Dimensions.Rectangle viewport, Farmer who)
@@ -94,6 +97,7 @@ namespace StardewSandbox.Framework.Patches.Locations
         {
             if (questionAndAnswer == "carpenter_SpecialProjects")
             {
+                // This line currently won't show, as we are preventing "Special Projects" dialogue option from showing when there are none available
                 if (GetSpecialProjects().Count == 0)
                 {
                     Game1.getCharacterFromName("Robin").setNewDialogue("$sThere are no projects available right now.");
