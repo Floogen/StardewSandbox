@@ -79,7 +79,7 @@ namespace StardewSandbox.Framework.Patches.Locations
             {
                 case "MouseHome":
                     __result = true;
-                    Game1.drawObjectDialogue("You are a tad too tall to fit inside this small door. From what you can see, there seems to be a tiny bedroom of sorts.");
+                    Game1.drawObjectDialogue("You are a tad too tall to fit through this small door. It seems to be a tiny bedroom of sorts.");
                     break;
                 case "MouseDialogue":
                     __result = true;
@@ -116,7 +116,7 @@ namespace StardewSandbox.Framework.Patches.Locations
                 {
                     ModEntry.SetActiveSpecialProjectId("RepairHatShop");
 
-                    (Game1.getLocationFromName("Town") as Town).daysUntilCommunityUpgrade.Value = 2;
+                    (Game1.getLocationFromName("Town") as Town).daysUntilCommunityUpgrade.Value = 3;
                     Game1.player.Money -= 10000;
                     Game1.player.removeItemsFromInventory(388, 250);
                     Game1.player.removeItemsFromInventory(428, 10);
