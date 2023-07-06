@@ -2,6 +2,7 @@
   "Name": "Fashionable Sombrero",
   "IsLocked": true,
   "FrontHat": {
+    "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],
       [ 49, 49, 49 ],
@@ -25,6 +26,7 @@
     }
   },
   "RightHat": {
+    "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],
       [ 49, 49, 49 ],
@@ -48,6 +50,7 @@
     }
   },
   "LeftHat": {
+    "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],
       [ 49, 49, 49 ],
@@ -71,6 +74,7 @@
     }
   },
   "BackHat": {
+    "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],
       [ 49, 49, 49 ],
