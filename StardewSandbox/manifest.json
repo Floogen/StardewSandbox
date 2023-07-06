@@ -6,7 +6,7 @@
   "UniqueID": "PeacefulEnd.AMouseWithAHat.Core",
   "EntryDll": "StardewSandbox.dll",
   "MinimumApiVersion": "3.14.4",
-  "UpdateKeys": [ "Nexus:????" ],
+  "UpdateKeys": [ "Nexus:17291" ],
   "Dependencies": [
     {
       "UniqueID": "PeacefulEnd.FashionSense",
