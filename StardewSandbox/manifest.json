@@ -1,10 +1,10 @@
 ﻿{
-  "Name": "A Mouse With A Hat",
+  "Name": "Hat Shop Restoration",
   "Author": "PeacefulEnd",
   "Version": "REPLACE_ME_WITH_VERSION",
   "Description": "...",
   "UniqueID": "PeacefulEnd.AMouseWithAHat.Core",
-  "EntryDll": "StardewSandbox.dll",
+  "EntryDll": "HatShopRestoration.dll",
   "MinimumApiVersion": "3.14.4",
   "UpdateKeys": [ "Nexus:17291" ],
   "Dependencies": [

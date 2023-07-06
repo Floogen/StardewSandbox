@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
-using StardewSandbox.Framework.Patches;
-using StardewSandbox.Framework.Patches.Entities;
+using HatShopRestoration.Framework.Patches;
+using HatShopRestoration.Framework.Patches.Entities;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 
-namespace StardewSandbox.Framework.Patches.Locations
+namespace HatShopRestoration.Framework.Patches.Locations
 {
     internal class TownPatch : PatchTemplate
     {

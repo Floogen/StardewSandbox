@@ -1,17 +1,15 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
-using StardewSandbox.Framework.Interfaces;
-using StardewSandbox.Framework.Patches.Entities;
-using StardewSandbox.Framework.Patches.Locations;
-using StardewSandbox.Framework.Patches.xTiles;
+using HatShopRestoration.Framework.Interfaces;
+using HatShopRestoration.Framework.Patches.Entities;
+using HatShopRestoration.Framework.Patches.Locations;
+using HatShopRestoration.Framework.Patches.xTiles;
 using StardewValley;
-using StardewValley.Monsters;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Threading;
 
-namespace StardewSandbox
+namespace HatShopRestoration
 {
     public class ModEntry : Mod
     {

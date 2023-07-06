@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
-using StardewSandbox.Framework.Patches;
-using StardewSandbox.Framework.Patches.Locations;
+using HatShopRestoration.Framework.Patches;
+using HatShopRestoration.Framework.Patches.Locations;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.Menus;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 
-namespace StardewSandbox.Framework.Patches.Entities
+namespace HatShopRestoration.Framework.Patches.Entities
 {
     internal class NPCPatch : PatchTemplate
     {

@@ -1,13 +1,13 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
-using StardewSandbox.Framework.Patches;
+using HatShopRestoration.Framework.Patches;
 using StardewValley;
 using System;
 using xTile.Dimensions;
 using xTile.Display;
 using xTile.Layers;
 
-namespace StardewSandbox.Framework.Patches.xTiles
+namespace HatShopRestoration.Framework.Patches.xTiles
 {
     internal class LayerPatch : PatchTemplate
     {

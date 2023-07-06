@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Object = StardewValley.Object;
 
-namespace StardewSandbox.Framework.UI
+namespace HatShopRestoration.Framework.UI
 {
     internal class MouseShopMenu : ShopMenu
     {

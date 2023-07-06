@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using static StardewValley.FarmerSprite;
 
-namespace StardewSandbox.Framework.Interfaces
+namespace HatShopRestoration.Framework.Interfaces
 {
     public interface IFashionSenseApi
     {

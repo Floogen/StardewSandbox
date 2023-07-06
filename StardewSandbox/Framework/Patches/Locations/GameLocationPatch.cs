@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
-using StardewSandbox.Framework.Patches;
-using StardewSandbox.Framework.UI;
+using HatShopRestoration.Framework.Patches;
+using HatShopRestoration.Framework.UI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Characters;
@@ -14,7 +14,7 @@ using System.Reflection.Emit;
 using xTile.Dimensions;
 using xTile.Tiles;
 
-namespace StardewSandbox.Framework.Patches.Locations
+namespace HatShopRestoration.Framework.Patches.Locations
 {
     internal class GameLocationPatch : PatchTemplate
     {
