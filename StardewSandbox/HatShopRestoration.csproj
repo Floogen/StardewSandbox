@@ -25,6 +25,9 @@
 		<None Update="manifest.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="[CP] AMouseWithAHat\i18n\default.json">
+		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
 	</ItemGroup>
 
 	<PropertyGroup>

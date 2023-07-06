@@ -15,6 +15,13 @@
       "FromFile": "assets/Event.json"
     },
     {
+      "Action": "EditData",
+      "Target": "Data/Events/Custom_PeacefulEnd_MouseShop",
+      "Entries": {
+        "17291001/n HatShopRepaired": "playful/5 6/farmer -100 -100 0/addTemporaryActor Abigail 0 0 3 3 2 false Character/broadcastEvent/skippable/pause 1500/playSound doorClose/warp farmer 3 10/pause 750/textAboveHead Abigail \"{{i18n: hiyo}}\"/pause 1500/move farmer 0 -4 0 false/pause 750/textAboveHead Abigail \"{{i18n: statement}}\"/pause 3000/textAboveHead Abigail \"{{i18n: thank_you}}\"/pause 2750/emote farmer 32/pause 1250/end position 3 6"
+      }
+    },
+    {
       "Action": "EditMap",
       "Target": "Maps/Forest",
       "MapTiles": [
