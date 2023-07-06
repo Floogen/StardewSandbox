@@ -1,7 +1,7 @@
 {
   "Name": "Fashionable Cowboy Hat",
   "IsLocked": true,
-  "FrontHat": {    
+  "FrontHat": {
     "HideHair": true,
     "StartingPosition": {
       "X": 0,

@@ -43,7 +43,7 @@
             "Y": 6
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=first_mannequin}}}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=first_mannequin}}}}"
         },
         {
           "Position": {
@@ -51,7 +51,7 @@
             "Y": 6
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=first_mannequin}} + 1}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=first_mannequin}} + 1}}"
         },
         {
           "Position": {
@@ -59,7 +59,7 @@
             "Y": 6
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=first_mannequin}} + 2}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=first_mannequin}} + 2}}"
         }
       ],
       "When": {
@@ -76,7 +76,7 @@
             "Y": 6
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=second_mannequin}}}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=second_mannequin}}}}"
         },
         {
           "Position": {
@@ -84,7 +84,7 @@
             "Y": 6
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=second_mannequin}} + 1}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=second_mannequin}} + 1}}"
         },
         {
           "Position": {
@@ -92,7 +92,7 @@
             "Y": 6
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=second_mannequin}} + 2}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=second_mannequin}} + 2}}"
         }
       ],
       "When": {
@@ -126,7 +126,7 @@
             "Y": 3
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=fourth_mannequin}}}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=fourth_mannequin}}}}"
         },
         {
           "Position": {
@@ -134,7 +134,7 @@
             "Y": 3
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=fourth_mannequin}} + 1}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=fourth_mannequin}} + 1}}"
         },
         {
           "Position": {
@@ -142,7 +142,7 @@
             "Y": 3
           },
           "Layer": "Front",
-          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219 |key=fourth_mannequin}} + 2}}"
+          "SetIndex": "{{Query: {{Random:59, 75, 91, 107, 123, 139, 155, 171, 187, 203, 219, 235, 251, 267, 283, 299, 315, 331, 347, 363, 379, 395, 411, 427, 443 |key=fourth_mannequin}} + 2}}"
         }
       ],
       "When": {
