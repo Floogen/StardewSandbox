@@ -49,7 +49,8 @@ namespace StardewSandbox.Framework.Patches.Locations
             List<Response> options = new List<Response>()
             {
                 new Response("mouseShop", "Purchase a hat"),
-                new Response("mouseFashionSense", "Unlock hat customization")
+                new Response("mouseFashionSense", "Unlock hat customization"),
+                new Response("exit", "Leave")
             };
 
             return options;
@@ -145,6 +146,10 @@ namespace StardewSandbox.Framework.Patches.Locations
             {
                 __result = true;
                 Game1.activeClickableMenu = new MouseShopMenu(Utility.getHatStock());
+            }
+            else if (questionAndAnswer == "mouseDialogue_leave")
+            {
+                __result = true;
             }
         }
 
