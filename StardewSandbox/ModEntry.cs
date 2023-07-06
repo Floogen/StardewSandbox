@@ -18,6 +18,7 @@ namespace HatShopRestoration
         internal static IModHelper modHelper;
         internal static IManifest manifest;
         internal static Multiplayer multiplayer;
+        internal static ITranslationHelper i18n;
 
         // APIs
         internal static IFashionSenseApi fashionSenseApi;
@@ -35,6 +36,7 @@ namespace HatShopRestoration
             modHelper = helper;
             manifest = ModManifest;
             multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
+            i18n = helper.Translation;
 
             try
             {
@@ -136,7 +138,7 @@ namespace HatShopRestoration
             if (unlockedHatIds.Add(hatName))
             {
                 // Queue the message
-                _queuedMessages.Enqueue($"[Hand Mirror]\nUnlocked the {hatName} hat.");
+                _queuedMessages.Enqueue(String.Format(i18n.Get("ui.message.hand_mirror_unlock"), hatName));
 
                 // Set unlocked via Fashion Sense's API
                 fashionSenseApi.SetAppearanceLockState(IFashionSenseApi.Type.Hat, FASHION_SENSE_PACK_ID, hatName, false, manifest);

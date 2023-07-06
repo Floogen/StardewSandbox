@@ -37,8 +37,8 @@ namespace HatShopRestoration.Framework.Patches.Locations
             List<Response> options = new List<Response>();
             if (Game1.MasterPlayer.mailReceived.Contains("hatter") is true && Game1.MasterPlayer.mailReceived.Contains("HatShopRepaired") is false)
             {
-                options.Add(new Response("RepairHatShop", "Repair Hat Shop"));
-                options.Add(new Response("Exit", "Leave"));
+                options.Add(new Response("RepairHatShop", ModEntry.i18n.Get("dialogue.shop.repair_hat_shop")));
+                options.Add(new Response("Exit", ModEntry.i18n.Get("dialogue.shop.leave")));
             }
 
             return options;
@@ -48,9 +48,9 @@ namespace HatShopRestoration.Framework.Patches.Locations
         {
             List<Response> options = new List<Response>()
             {
-                new Response("mouseShop", "Purchase a hat"),
-                new Response("mouseFashionSense", "Unlock hat customization"),
-                new Response("exit", "Leave")
+                new Response("mouseShop", ModEntry.i18n.Get("dialogue.shop.purchase_hat")),
+                new Response("mouseFashionSense", ModEntry.i18n.Get("dialogue.shop.unlock_hat_customization")),
+                new Response("exit", ModEntry.i18n.Get("dialogue.shop.leave"))
             };
 
             return options;
@@ -60,7 +60,7 @@ namespace HatShopRestoration.Framework.Patches.Locations
         {
             if (GetSpecialProjects().Count > 0)
             {
-                options.Add(new Response("SpecialProjects", "Special Projects"));
+                options.Add(new Response("SpecialProjects", ModEntry.i18n.Get("dialogue.shop.special_projects")));
             }
         }
 
@@ -82,11 +82,11 @@ namespace HatShopRestoration.Framework.Patches.Locations
             {
                 case "MouseHome":
                     __result = true;
-                    Game1.drawObjectDialogue("You are a tad too tall to fit through this small door. It seems to be a tiny bedroom of sorts.");
+                    Game1.drawObjectDialogue(ModEntry.i18n.Get("dialogue.examine.small_door"));
                     break;
                 case "MouseDialogue":
                     __result = true;
-                    __instance.createQuestionDialogue("Hiyo, poke! Come for hats?", GetMouseOptions().ToArray(), "mouseDialogue");
+                    __instance.createQuestionDialogue(ModEntry.i18n.Get("dialogue.chat.greeting"), GetMouseOptions().ToArray(), "mouseDialogue");
                     break;
                 default:
                     break;
@@ -105,14 +105,14 @@ namespace HatShopRestoration.Framework.Patches.Locations
                 }
                 else
                 {
-                    __instance.createQuestionDialogue("What project would you like to start?", GetSpecialProjects().ToArray(), "carpenter");
+                    __instance.createQuestionDialogue(ModEntry.i18n.Get("dialogue.chat.project_question"), GetSpecialProjects().ToArray(), "carpenter");
                 }
 
                 __result = true;
             }
             else if (questionAndAnswer == "carpenter_RepairHatShop")
             {
-                __instance.createQuestionDialogue("You would like to convert that old abandoned house into a hat shop? It will cost 10,000g and you'll also need to provide me with 250 pieces of wood and 10 cloths.", __instance.createYesNoResponses(), "carpenter_RepairHatShop_Answer");
+                __instance.createQuestionDialogue(ModEntry.i18n.Get("dialogue.chat.project_requirements"), __instance.createYesNoResponses(), "carpenter_RepairHatShop_Answer");
             }
             else if (questionAndAnswer == "carpenter_RepairHatShop_Answer_Yes")
             {
@@ -134,11 +134,11 @@ namespace HatShopRestoration.Framework.Patches.Locations
                 }
                 else if (Game1.player.hasItemInInventory(388, 250) is false)
                 {
-                    Game1.drawObjectDialogue("Sorry... You have the money, but I also need the 250 pieces of wood.");
+                    Game1.drawObjectDialogue(ModEntry.i18n.Get("dialogue.chat.missing_wood"));
                 }
                 else if (Game1.player.hasItemInInventory(428, 10) is false)
                 {
-                    Game1.drawObjectDialogue("Sorry... You have the money and wood, but I also need the 10 bolts of cloth.");
+                    Game1.drawObjectDialogue(ModEntry.i18n.Get("dialogue.chat.missing_cloth"));
                 }
             }
             else if (questionAndAnswer == "mouseDialogue_mouseShop")
