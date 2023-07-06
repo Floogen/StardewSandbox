@@ -2,6 +2,7 @@
   "Name": "Fashionable Chef Hat",
   "IsLocked": true,
   "FrontHat": {
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 0
@@ -16,6 +17,7 @@
     }
   },
   "RightHat": {
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 20
@@ -30,6 +32,7 @@
     }
   },
   "LeftHat": {
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 40
@@ -44,6 +47,7 @@
     }
   },
   "BackHat": {
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 60

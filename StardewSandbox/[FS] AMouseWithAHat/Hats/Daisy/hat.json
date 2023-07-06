@@ -2,6 +2,20 @@
   "Name": "Fashionable Daisy",
   "IsLocked": true,
   "FrontHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      },
+      {
+        "Name": "Stem",
+        "Values": [
+          [ 217, 217, 217 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 0
@@ -16,6 +30,20 @@
     }
   },
   "RightHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      },
+      {
+        "Name": "Stem",
+        "Values": [
+          [ 217, 217, 217 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 20
@@ -30,6 +58,20 @@
     }
   },
   "LeftHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      },
+      {
+        "Name": "Stem",
+        "Values": [
+          [ 217, 217, 217 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 40
@@ -44,6 +86,20 @@
     }
   },
   "BackHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      },
+      {
+        "Name": "Stem",
+        "Values": [
+          [ 217, 217, 217 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 60

@@ -2,6 +2,26 @@
   "Name": "Fashionable Elegant Turban",
   "IsLocked": true,
   "FrontHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 72, 72, 72 ],
+          [ 112, 112, 112 ],
+          [ 146, 146, 146 ],
+          [ 182, 182, 182 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 236, 236, 236 ],
+          [ 240, 240, 240 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,
@@ -17,6 +37,26 @@
     }
   },
   "RightHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 72, 72, 72 ],
+          [ 112, 112, 112 ],
+          [ 146, 146, 146 ],
+          [ 182, 182, 182 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 236, 236, 236 ],
+          [ 240, 240, 240 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,
@@ -32,6 +72,26 @@
     }
   },
   "LeftHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 72, 72, 72 ],
+          [ 112, 112, 112 ],
+          [ 146, 146, 146 ],
+          [ 182, 182, 182 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 236, 236, 236 ],
+          [ 240, 240, 240 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,
@@ -47,6 +107,26 @@
     }
   },
   "BackHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 72, 72, 72 ],
+          [ 112, 112, 112 ],
+          [ 146, 146, 146 ],
+          [ 182, 182, 182 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 236, 236, 236 ],
+          [ 240, 240, 240 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,

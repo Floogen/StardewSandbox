@@ -2,6 +2,30 @@
   "Name": "Fashionable Sombrero",
   "IsLocked": true,
   "FrontHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 30, 30, 30 ],
+          [ 71, 71, 71 ],
+          [ 99, 99, 99 ],
+          [ 119, 119, 119 ],
+          [ 155, 155, 155 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 94, 94, 94 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 160, 160, 160 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],
@@ -26,6 +50,30 @@
     }
   },
   "RightHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 30, 30, 30 ],
+          [ 71, 71, 71 ],
+          [ 99, 99, 99 ],
+          [ 119, 119, 119 ],
+          [ 155, 155, 155 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 94, 94, 94 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 160, 160, 160 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],
@@ -42,7 +90,7 @@
     },
     "HeadPosition": {
       "X": 5,
-      "Y": 0
+      "Y": -2
     },
     "HatSize": {
       "Width": 32,
@@ -50,6 +98,30 @@
     }
   },
   "LeftHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 30, 30, 30 ],
+          [ 71, 71, 71 ],
+          [ 99, 99, 99 ],
+          [ 119, 119, 119 ],
+          [ 155, 155, 155 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 94, 94, 94 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 160, 160, 160 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],
@@ -66,7 +138,7 @@
     },
     "HeadPosition": {
       "X": 7,
-      "Y": 0
+      "Y": -2
     },
     "HatSize": {
       "Width": 32,
@@ -74,6 +146,30 @@
     }
   },
   "BackHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 30, 30, 30 ],
+          [ 71, 71, 71 ],
+          [ 99, 99, 99 ],
+          [ 119, 119, 119 ],
+          [ 155, 155, 155 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 94, 94, 94 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 160, 160, 160 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "ColorMasks": [
       [ 21, 21, 21 ],

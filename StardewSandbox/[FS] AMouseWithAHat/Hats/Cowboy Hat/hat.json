@@ -1,16 +1,8 @@
 {
   "Name": "Fashionable Cowboy Hat",
   "IsLocked": true,
-  "FrontHat": {
-    "ColorMasks": [
-      [ 21, 21, 21 ],
-      [ 22, 22, 22 ],
-      [ 33, 33, 33 ],
-      [ 43, 43, 43 ],
-      [ 59, 59, 59 ],
-      [ 78, 78, 78 ],
-      [ 81, 81, 81 ]
-    ],
+  "FrontHat": {    
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 0
@@ -25,15 +17,7 @@
     }
   },
   "RightHat": {
-    "ColorMasks": [
-      [ 21, 21, 21 ],
-      [ 22, 22, 22 ],
-      [ 33, 33, 33 ],
-      [ 43, 43, 43 ],
-      [ 59, 59, 59 ],
-      [ 78, 78, 78 ],
-      [ 81, 81, 81 ]
-    ],
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 16
@@ -48,15 +32,7 @@
     }
   },
   "LeftHat": {
-    "ColorMasks": [
-      [ 21, 21, 21 ],
-      [ 22, 22, 22 ],
-      [ 33, 33, 33 ],
-      [ 43, 43, 43 ],
-      [ 59, 59, 59 ],
-      [ 78, 78, 78 ],
-      [ 81, 81, 81 ]
-    ],
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 32
@@ -71,15 +47,7 @@
     }
   },
   "BackHat": {
-    "ColorMasks": [
-      [ 21, 21, 21 ],
-      [ 22, 22, 22 ],
-      [ 33, 33, 33 ],
-      [ 43, 43, 43 ],
-      [ 59, 59, 59 ],
-      [ 78, 78, 78 ],
-      [ 81, 81, 81 ]
-    ],
+    "HideHair": true,
     "StartingPosition": {
       "X": 0,
       "Y": 48

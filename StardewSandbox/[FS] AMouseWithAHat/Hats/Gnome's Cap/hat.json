@@ -2,6 +2,25 @@
   "Name": "Fashionable Gnome's Cap",
   "IsLocked": true,
   "FrontHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 34, 34, 34 ],
+          [ 42, 42, 42 ],
+          [ 70, 70, 70 ],
+          [ 96, 96, 96 ],
+          [ 142, 142, 142 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 174, 174, 174 ],
+          [ 226, 226, 226 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,
@@ -17,6 +36,25 @@
     }
   },
   "RightHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 34, 34, 34 ],
+          [ 42, 42, 42 ],
+          [ 70, 70, 70 ],
+          [ 96, 96, 96 ],
+          [ 142, 142, 142 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 174, 174, 174 ],
+          [ 226, 226, 226 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,
@@ -32,6 +70,25 @@
     }
   },
   "LeftHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 34, 34, 34 ],
+          [ 42, 42, 42 ],
+          [ 70, 70, 70 ],
+          [ 96, 96, 96 ],
+          [ 142, 142, 142 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 174, 174, 174 ],
+          [ 226, 226, 226 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,
@@ -47,6 +104,25 @@
     }
   },
   "BackHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 34, 34, 34 ],
+          [ 42, 42, 42 ],
+          [ 70, 70, 70 ],
+          [ 96, 96, 96 ],
+          [ 142, 142, 142 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 174, 174, 174 ],
+          [ 226, 226, 226 ]
+        ]
+      }
+    ],
     "HideHair": true,
     "StartingPosition": {
       "X": 0,

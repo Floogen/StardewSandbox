@@ -2,6 +2,24 @@
   "Name": "Fashionable Watermelon Band",
   "IsLocked": true,
   "FrontHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 33, 33, 33 ],
+          [ 140, 140, 140 ],
+          [ 209, 209, 209 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 94, 94, 94 ],
+          [ 151, 151, 151 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 0
@@ -16,6 +34,24 @@
     }
   },
   "RightHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 33, 33, 33 ],
+          [ 140, 140, 140 ],
+          [ 209, 209, 209 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 94, 94, 94 ],
+          [ 151, 151, 151 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 20
@@ -30,6 +66,24 @@
     }
   },
   "LeftHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 33, 33, 33 ],
+          [ 140, 140, 140 ],
+          [ 209, 209, 209 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 94, 94, 94 ],
+          [ 151, 151, 151 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 40
@@ -44,6 +98,24 @@
     }
   },
   "BackHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 33, 33, 33 ],
+          [ 140, 140, 140 ],
+          [ 209, 209, 209 ]
+        ]
+      },
+      {
+        "Name": "Trim",
+        "Values": [
+          [ 94, 94, 94 ],
+          [ 151, 151, 151 ],
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 60

@@ -2,12 +2,6 @@
   "Name": "Fashionable Bowler Hat",
   "IsLocked": true,
   "FrontHat": {
-    "ColorMasks": [
-      [ 47, 47, 47 ],
-      [ 82, 82, 82 ],
-      [ 124, 124, 124 ],
-      [ 178, 178, 178 ]
-    ],
     "StartingPosition": {
       "X": 0,
       "Y": 0
@@ -22,12 +16,6 @@
     }
   },
   "RightHat": {
-    "ColorMasks": [
-      [ 47, 47, 47 ],
-      [ 82, 82, 82 ],
-      [ 124, 124, 124 ],
-      [ 178, 178, 178 ]
-    ],
     "StartingPosition": {
       "X": 0,
       "Y": 16
@@ -42,12 +30,6 @@
     }
   },
   "LeftHat": {
-    "ColorMasks": [
-      [ 47, 47, 47 ],
-      [ 82, 82, 82 ],
-      [ 124, 124, 124 ],
-      [ 178, 178, 178 ]
-    ],
     "StartingPosition": {
       "X": 0,
       "Y": 32
@@ -62,12 +44,6 @@
     }
   },
   "BackHat": {
-    "ColorMasks": [
-      [ 47, 47, 47 ],
-      [ 82, 82, 82 ],
-      [ 124, 124, 124 ],
-      [ 178, 178, 178 ]
-    ],
     "StartingPosition": {
       "X": 0,
       "Y": 48

@@ -2,6 +2,36 @@
   "Name": "Fashionable Polka Bow",
   "IsLocked": true,
   "FrontHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 46, 46, 46 ],
+          [ 128, 128, 128 ],
+          [ 188, 188, 188 ],
+          [ 226, 226, 226 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 253, 253, 253 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 254, 254, 254 ]
+        ]
+      },
+      {
+        "Name": "Trim #3",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 0
@@ -16,6 +46,36 @@
     }
   },
   "RightHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 46, 46, 46 ],
+          [ 128, 128, 128 ],
+          [ 188, 188, 188 ],
+          [ 226, 226, 226 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 253, 253, 253 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 254, 254, 254 ]
+        ]
+      },
+      {
+        "Name": "Trim #3",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 20
@@ -30,6 +90,36 @@
     }
   },
   "LeftHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 46, 46, 46 ],
+          [ 128, 128, 128 ],
+          [ 188, 188, 188 ],
+          [ 226, 226, 226 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 253, 253, 253 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 254, 254, 254 ]
+        ]
+      },
+      {
+        "Name": "Trim #3",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 40
@@ -44,6 +134,36 @@
     }
   },
   "BackHat": {
+    "ColorMaskLayers": [
+      {
+        "Name": "Base",
+        "Values": [
+          [ 42, 42, 42 ],
+          [ 46, 46, 46 ],
+          [ 128, 128, 128 ],
+          [ 188, 188, 188 ],
+          [ 226, 226, 226 ]
+        ]
+      },
+      {
+        "Name": "Trim #1",
+        "Values": [
+          [ 253, 253, 253 ]
+        ]
+      },
+      {
+        "Name": "Trim #2",
+        "Values": [
+          [ 254, 254, 254 ]
+        ]
+      },
+      {
+        "Name": "Trim #3",
+        "Values": [
+          [ 255, 255, 255 ]
+        ]
+      }
+    ],
     "StartingPosition": {
       "X": 0,
       "Y": 60
