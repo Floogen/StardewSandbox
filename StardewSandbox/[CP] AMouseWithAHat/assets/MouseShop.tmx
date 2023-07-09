@@ -16,8 +16,8 @@
  <tileset firstgid="2441" name="walls_and_floors" tilewidth="16" tileheight="16" tilecount="560" columns="16">
   <image source="walls_and_floors" width="256" height="560"/>
  </tileset>
- <tileset firstgid="3001" name="z_custom_tilesheet" tilewidth="16" tileheight="16" tilecount="512" columns="16">
-  <image source="z_custom_tilesheet.png" width="256" height="512"/>
+ <tileset firstgid="3001" name="z_MouseShop_Interior" tilewidth="16" tileheight="16" tilecount="512" columns="16">
+  <image source="z_MouseShop_Interior.png" width="256" height="512"/>
   <tile id="128">
    <animation>
     <frame tileid="128" duration="90"/>
