@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<Version>1.0.0</Version>
+		<Version>1.1.0</Version>
 		<TargetFramework>net5.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<EnableHarmony>true</EnableHarmony>
@@ -20,13 +20,13 @@
 
 	<ItemGroup>
 		<None Update="i18n\default.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="manifest.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 		<None Update="[CP] AMouseWithAHat\i18n\default.json">
-		  <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 
@@ -36,23 +36,23 @@
 			PostBuildMacros;
 		</PostBuildEventDependsOn>
 		<PostBuildEvent>
-   powershell -Command "(ls *manifest.json -rec | foreach-object { $f=$_.FullName; (gc -LiteralPath \"$f\") -replace 'REPLACE_ME_WITH_VERSION',  '$(Version)' | sc -LiteralPath \"$f\" })"
+			powershell -Command "(ls *manifest.json -rec | foreach-object { $f=$_.FullName; (gc -LiteralPath \"$f\") -replace 'REPLACE_ME_WITH_VERSION',  '$(Version)' | sc -LiteralPath \"$f\" })"
 
-   powershell Remove-Item -Path 'C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)"' -Recurse -Force
-   xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\bin\Debug\net5.0" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)"
+			powershell Remove-Item -Path 'C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)"' -Recurse -Force
+			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\bin\Debug\net5.0" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)"
 
-   :: Start of specific copy logic block
-   mkdir "$(SolutionDir)releases\latest\temp"
-   move "$(SolutionDir)releases\latest\$(SolutionName)" "$(SolutionDir)releases\latest\temp"
-   xcopy /s /y /i "$(SolutionDir)[CP] AMouseWithAHat" "$(SolutionDir)releases\latest\temp\[CP] AMouseWithAHat"
-   xcopy /s /y /i "$(SolutionDir)[FS] AMouseWithAHat" "$(SolutionDir)releases\latest\temp\[FS] AMouseWithAHat"
-   ren "$(SolutionDir)releases\latest\temp" "$(SolutionName)"
+			:: Start of specific copy logic block
+			mkdir "$(SolutionDir)releases\latest\temp"
+			move "$(SolutionDir)releases\latest\$(SolutionName)" "$(SolutionDir)releases\latest\temp"
+			xcopy /s /y /i "$(SolutionDir)[CP] AMouseWithAHat" "$(SolutionDir)releases\latest\temp\[CP] AMouseWithAHat"
+			xcopy /s /y /i "$(SolutionDir)[FS] AMouseWithAHat" "$(SolutionDir)releases\latest\temp\[FS] AMouseWithAHat"
+			ren "$(SolutionDir)releases\latest\temp" "$(SolutionName)"
 
-   7z a -tzip "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\$(SolutionName)-$(Version).zip" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)"
+			7z a -tzip "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\$(SolutionName)-$(Version).zip" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)"
 
-   powershell Remove-Item -Path '$(GameModsPath)\$(SolutionName)' -Recurse -Force
+			powershell Remove-Item -Path '$(GameModsPath)\$(SolutionName)' -Recurse -Force
 
-   xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)" "$(GameModsPath)\$(SolutionName)"
-  </PostBuildEvent>
+			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\$(SolutionName)" "$(GameModsPath)\$(SolutionName)"
+		</PostBuildEvent>
 	</PropertyGroup>
 </Project>
