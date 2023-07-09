@@ -15,6 +15,11 @@
       "FromFile": "assets/Event.json"
     },
     {
+      "Action": "Load",
+      "Target": "Maps/z_MouseShop_Interior",
+      "FromFile": "assets/z_MouseShop_Interior.png",
+    },
+    {
       "Action": "EditData",
       "Target": "Data/Events/Custom_PeacefulEnd_MouseShop",
       "Entries": {
