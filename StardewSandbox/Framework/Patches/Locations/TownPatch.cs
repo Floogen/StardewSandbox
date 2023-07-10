@@ -54,11 +54,6 @@ namespace HatShopRestoration.Framework.Patches.Locations
                     list.Insert(index.Value, new CodeInstruction(OpCodes.Ldarg_0));
                 }
 
-                for (int i = 0; i < list.Count; i++)
-                {
-                    _monitor.Log($"{list[i].opcode} -> {list[i].operand}");
-                }
-
                 return list;
             }
             catch (Exception e)
