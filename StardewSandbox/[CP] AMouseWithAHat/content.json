@@ -17,7 +17,7 @@
     {
       "Action": "Load",
       "Target": "Maps/z_MouseShop_Interior",
-      "FromFile": "assets/z_MouseShop_Interior.png",
+      "FromFile": "assets/tilesheets/z_MouseShop_Interior.png"
     },
     {
       "Action": "EditData",
