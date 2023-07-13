@@ -84,6 +84,11 @@ namespace HatShopRestoration
                 // Set unlocked via Fashion Sense's API
                 fashionSenseApi.SetAppearanceLockState(IFashionSenseApi.Type.Hat, FASHION_SENSE_PACK_ID, hatName, false, manifest);
             }
+
+            if (Game1.MasterPlayer != Game1.player && Game1.player is not null && Game1.player.mailReceived.Contains("HatShopRepaired") is false)
+            {
+                Game1.player.mailReceived.Add("HatShopRepaired");
+            }
         }
 
         private void OnGameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
