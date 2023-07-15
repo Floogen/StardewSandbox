@@ -103,6 +103,13 @@ namespace HatShopRestoration
                     monitor.Log("Failed to hook into PeacefulEnd.FashionSense.", LogLevel.Error);
                 }
             }
+
+            // Check to see if any of our critical Harmony patches interact with other mods
+            var carpenterPatches = Harmony.GetPatchInfo(typeof(GameLocation).GetMethod("carpenters"));
+            if (carpenterPatches is not null)
+            {
+                monitor.Log($"The following mods patch GameLocation.carpenters: " + String.Join(", ", carpenterPatches.Owners));
+            }
         }
 
         private void OnUpdateTicked(object sender, StardewModdingAPI.Events.UpdateTickedEventArgs e)

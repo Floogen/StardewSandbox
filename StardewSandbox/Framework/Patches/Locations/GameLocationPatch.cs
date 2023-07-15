@@ -35,6 +35,10 @@ namespace HatShopRestoration.Framework.Patches.Locations
         private static List<Response> GetSpecialProjects()
         {
             List<Response> options = new List<Response>();
+
+            _monitor.Log($"Does MasterPlay have 'hatter' letter [{Game1.MasterPlayer.mailReceived.Contains("hatter")}]");
+            _monitor.Log($"Does MasterPlay have 'HatShopRepaired' letter [{Game1.MasterPlayer.mailReceived.Contains("HatShopRepaired")}]");
+
             if (Game1.MasterPlayer.mailReceived.Contains("hatter") is true && Game1.MasterPlayer.mailReceived.Contains("HatShopRepaired") is false)
             {
                 options.Add(new Response("RepairHatShop", ModEntry.i18n.Get("dialogue.shop.repair_hat_shop")));
@@ -58,7 +62,10 @@ namespace HatShopRestoration.Framework.Patches.Locations
 
         private static void HandleCarpenterOptions(List<Response> options)
         {
-            if (GetSpecialProjects().Count > 0)
+            int specialProjectCount = GetSpecialProjects().Count;
+
+            _monitor.Log($"Attempting to display special projects [{specialProjectCount}]");
+            if (specialProjectCount > 0)
             {
                 options.Add(new Response("SpecialProjects", ModEntry.i18n.Get("dialogue.shop.special_projects")));
             }
