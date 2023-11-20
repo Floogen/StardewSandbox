@@ -67,7 +67,7 @@ namespace HatShopRestoration
         {
             if (e.OldLocation is not null && e.OldLocation.Name == "Custom_PeacefulEnd_MouseShop")
             {
-                Game1.stopMusicTrack(Game1.MusicContext.Default);
+                Game1.stopMusicTrack(StardewValley.GameData.MusicContext.Default);
             }
         }
 
@@ -122,7 +122,7 @@ namespace HatShopRestoration
             if (_queuedMessages.Count > 0 && _queuedMessages.TryDequeue(out var message))
             {
                 // Display unlock message
-                Game1.addHUDMessage(new HUDMessage(message, null));
+                Game1.addHUDMessage(new HUDMessage(message) { noIcon = true });
             }
         }
 
