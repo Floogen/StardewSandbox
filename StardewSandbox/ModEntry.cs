@@ -1,9 +1,9 @@
 ﻿using HarmonyLib;
-using StardewModdingAPI;
 using HatShopRestoration.Framework.Interfaces;
 using HatShopRestoration.Framework.Patches.Entities;
 using HatShopRestoration.Framework.Patches.Locations;
 using HatShopRestoration.Framework.Patches.xTiles;
+using StardewModdingAPI;
 using StardewValley;
 using System;
 using System.Collections.Generic;

@@ -8,10 +8,6 @@ using StardewValley.Menus;
 using StardewValley.Objects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Object = StardewValley.Object;
 
 namespace HatShopRestoration.Framework.UI
 {

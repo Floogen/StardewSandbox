@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
-using HatShopRestoration.Framework.Patches;
 using StardewValley;
 using System;
 using xTile.Dimensions;

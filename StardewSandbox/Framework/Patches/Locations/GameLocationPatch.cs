@@ -1,21 +1,17 @@
 ﻿using HarmonyLib;
-using StardewModdingAPI;
-using HatShopRestoration.Framework.Patches;
 using HatShopRestoration.Framework.UI;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
-using StardewValley.Characters;
+using StardewValley.GameData.Shops;
+using StardewValley.Internal;
 using StardewValley.Locations;
-using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using xTile.Dimensions;
 using xTile.Tiles;
-using StardewValley.GameData.Shops;
-using StardewValley.GameData.Crops;
-using StardewValley.Internal;
 
 namespace HatShopRestoration.Framework.Patches.Locations
 {

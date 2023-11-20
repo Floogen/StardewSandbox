@@ -1,10 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
-using HatShopRestoration.Framework.Patches;
-using HatShopRestoration.Framework.Patches.Entities;
 using StardewValley;
 using StardewValley.Locations;
-using StardewValley.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
