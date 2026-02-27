@@ -1,7 +1,7 @@
 ﻿{
   "Name": "REPLACE_ME_WITH_NAME",
   "Author": "PeacefulEnd",
-  "Version": "REPLACE_ME_WITH_VERSION",
+  "Version": "%ProjectVersion%",
   "Description": "REPLACE_ME_WITH_DESCRIPTION",
   "UniqueID": "PeacefulEnd.REPLACE_ME_WITH_NAME",
   "EntryDll": "StardewSandbox.dll",

@@ -4,9 +4,9 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<EnableHarmony>true</EnableHarmony>
-		<EnableModZip>false</EnableModZip>
-		<EnableModDeploy>false</EnableModDeploy>
-		<GameModsPath>E:\SteamLibrary\steamapps\common\Stardew Valley\Mods</GameModsPath>
+		<EnableModZip>true</EnableModZip>
+		<ModZipPath>$(ProjectDir)releases</ModZipPath>
+		<EnableModDeploy>true</EnableModDeploy>
 	</PropertyGroup>
 	<ItemGroup>
 	  <Compile Remove="releases\**" />
@@ -15,7 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.0.1" />
+		<PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="4.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -23,22 +23,4 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
-
-	<PropertyGroup>
-		<PostBuildEventDependsOn>
-			$(PostBuildEventDependsOn);
-			PostBuildMacros;
-		</PostBuildEventDependsOn>
-		<PostBuildEvent>
-			powershell -Command "(ls *manifest.json -rec | foreach-object { $f=$_.FullName; (gc -LiteralPath \"$f\") -replace 'REPLACE_ME_WITH_VERSION',  '$(Version)' | sc -LiteralPath \"$f\" })"
-
-			powershell Remove-Item -Path 'C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox"' -Recurse -Force
-			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\bin\Debug\$(TargetFramework)" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox"
-			7z a -tzip "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\StardewSandbox-$(Version).zip" "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox"
-
-			powershell Remove-Item -Path '$(GameModsPath)\StardewSandbox' -Recurse -Force
-
-			xcopy /s /y /i "C:\Users\Floogen\Documents\GitHub Repos\StardewSandbox\StardewSandbox\releases\latest\StardewSandbox" "$(GameModsPath)\StardewSandbox"
-		</PostBuildEvent>
-	</PropertyGroup>
 </Project>
