@@ -33,6 +33,14 @@ namespace StardewSandbox.Framework.Objects
             }
         }
 
+        public int SecondsRemainingForCharge
+        {
+            get
+            {
+                return (int)System.Math.Ceiling(_millisecondsBeforeNextChargeConsumed / 1000);
+            }
+        }
+
         public bool IsActive { get; private set; }
 
         private Tool _actualTool;

@@ -73,6 +73,12 @@ namespace StardewSandbox.Framework.Patches.Tools
                 {
                     Utility.drawTinyDigits(charges, spriteBatch, location + new Vector2((float)(64 - Utility.getWidthOfTinyDigitString(charges, 3f * originalScaleSize)) + 3f * originalScaleSize, 64f - 18f * originalScaleSize + 2f), 3f * originalScaleSize, 1f, Color.White);
                 }
+
+                var secondsRemainingForCharge = pocketWatch.SecondsRemainingForCharge;
+                if (secondsRemainingForCharge > 0)
+                {
+                    Utility.drawTinyDigits(secondsRemainingForCharge, spriteBatch, location + new Vector2(4f, 4f), 3f * originalScaleSize, 1f, Color.White);
+                }
             }
         }
 
