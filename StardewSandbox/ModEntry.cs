@@ -58,6 +58,18 @@ namespace StardewSandbox
             helper.Events.Content.AssetRequested += OnContentAssetRequested;
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.Display.RenderedWorld += OnDisplayRenderedWorld;
+            helper.Events.Input.ButtonPressed += OnButtonPressed;
+        }
+
+        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+        {
+            if (Game1.activeClickableMenu is null && e.Button is SButton.MouseRight && PocketWatch.IsToolPocketWatch(Game1.player.CurrentTool))
+            {
+                modConfig.AutoConsumeCharges = !modConfig.AutoConsumeCharges;
+
+                var autoConsumeChargeMessage = modConfig.AutoConsumeCharges ? modHelper.Translation.Get("messages.info.auto_consume_enabled") : modHelper.Translation.Get("messages.info.auto_consume_disabled");
+                Game1.addHUDMessage(new HUDMessage(autoConsumeChargeMessage, 2));
+            }
         }
 
         private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
