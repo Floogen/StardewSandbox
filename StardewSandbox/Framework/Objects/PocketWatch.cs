@@ -121,7 +121,7 @@ namespace StardewSandbox.Framework.Objects
                 _millisecondsBeforeNextChargeConsumed -= time.ElapsedGameTime.TotalMilliseconds;
                 if (_millisecondsBeforeNextChargeConsumed <= 0)
                 {
-                    if (Charges <= 0)
+                    if (Charges <= 0 || ModEntry.modConfig.AutoConsumeCharges is false)
                     {
                         ChangeTimeState(isTimeFrozen: false);
                         return;

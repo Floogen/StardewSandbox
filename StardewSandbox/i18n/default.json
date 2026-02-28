@@ -1,0 +1,30 @@
+{
+  // Config
+  "config.general.title": "Timeless Pocket Watch",
+  "config.general.show_glow_effect.name": "Show Glow Effect",
+  "config.general.show_glow_effect.description": "When enabled, shows the glow effect while using the pocket watch.",
+  "config.general.show_clock_effect.name": "Show Clock Effect",
+  "config.general.show_clock_effect.description": "When enabled, shows the clock effect when activating the pocket watch.",
+  "config.general.auto_consume_charges.name": "Auto Consume Charges",
+  "config.general.auto_consume_charges.description": "When enabled, automatically consumes the next charge for the pocket watch when needed. If false, the time-stop effect will automatically end once the timer finishes.",
+
+  // Tools
+  "tools.pocket_watch.name": "Timeless Pocket Watch",
+  "tools.pocket_watch.description": "An odd pocket watch that hums with power.",
+  "tools.pocket_watch_empty.description": "An odd pocket watch that seems to be missing some gears.",
+
+  // Items
+  "items.pocket_watch_artifact.name": "Timeworn Pocket Watch",
+  "items.pocket_watch_artifact.description": "A broken, rusty pocket watch.",
+
+  "items.clockwork_gear_gold.name": "Golden Clockwork Gear",
+  "items.clockwork_gear_gold.description": "A golden clockwork gear. Would fit into a pocket watch.",
+  "items.clockwork_gear_iridium.name": "Iridium Clockwork Gear",
+  "items.clockwork_gear_iridium.description": "A powerful clockwork gear. Would fit into a pocket watch.",
+  "items.clockwork_gear_radioactive.name": "Radioactive Clockwork Gear",
+  "items.clockwork_gear_radioactive.description": "A radioactive clockwork gear. Probably not safe to hold, but would fit into a pocket watch.",
+
+  // Messages
+  "messages.info.auto_consume_enabled": "Pocket watch will automatically consume charges while active",
+  "messages.info.auto_consume_disabled": "Pocket watch will no longer automatically consume charges while active"
+}

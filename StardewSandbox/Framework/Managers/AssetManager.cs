@@ -54,8 +54,8 @@ namespace StardewSandbox.Framework.Managers
                 ClassName = "GenericTool",
                 Name = fullId,
                 SalePrice = 750,
-                DisplayName = "Pocket Watch",
-                Description = "...",
+                DisplayName = _modHelper.Translation.Get("tools.pocket_watch.name"),
+                Description = _modHelper.Translation.Get("tools.pocket_watch.description"),
                 Texture = POCKET_WATCH_TOOL_TEXTURE_PATH,
                 AttachmentSlots = 1,
                 ModData = new()
@@ -75,8 +75,8 @@ namespace StardewSandbox.Framework.Managers
             ObjectData additionalObjectData = new()
             {
                 Name = fullId,
-                DisplayName = "Broken Pocket Watch",
-                Description = "...",
+                DisplayName = _modHelper.Translation.Get("items.pocket_watch_artifact.name"),
+                Description = _modHelper.Translation.Get("items.pocket_watch_artifact.description"),
                 Type = "Arch",
                 Category = 0,
                 Texture = POCKET_WATCH_ARTIFACT_TEXTURE_PATH,
@@ -103,8 +103,8 @@ namespace StardewSandbox.Framework.Managers
             objectData[goldClockworkGear] = new()
             {
                 Name = goldClockworkGear,
-                DisplayName = "Golden Clockwork Gear",
-                Description = "...",
+                DisplayName = _modHelper.Translation.Get("items.clockwork_gear_gold.name"),
+                Description = _modHelper.Translation.Get("items.clockwork_gear_gold.description"),
                 Type = "Crafting",
                 Category = -8,
                 Texture = CLOCKWORK_GEAR_GOLD_OBJECT_TEXTURE_PATH,
@@ -119,8 +119,8 @@ namespace StardewSandbox.Framework.Managers
             objectData[iridiumClockworkGear] = new()
             {
                 Name = iridiumClockworkGear,
-                DisplayName = "Iridium Clockwork Gear",
-                Description = "...",
+                DisplayName = _modHelper.Translation.Get("items.clockwork_gear_iridium.name"),
+                Description = _modHelper.Translation.Get("items.clockwork_gear_iridium.description"),
                 Type = "Crafting",
                 Category = -8,
                 Texture = CLOCKWORK_GEAR_IRIDIUM_OBJECT_TEXTURE_PATH,
@@ -135,8 +135,8 @@ namespace StardewSandbox.Framework.Managers
             objectData[radioactiveClockworkGear] = new()
             {
                 Name = radioactiveClockworkGear,
-                DisplayName = "Radioactive Clockwork Gear",
-                Description = "...",
+                DisplayName = _modHelper.Translation.Get("items.clockwork_gear_radioactive.name"),
+                Description = _modHelper.Translation.Get("items.clockwork_gear_radioactive.description"),
                 Type = "Crafting",
                 Category = -8,
                 Texture = CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_TEXTURE_PATH,
