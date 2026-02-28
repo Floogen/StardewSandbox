@@ -40,5 +40,10 @@ namespace StardewSandbox.Framework.Managers
                 return _pocketWatches.First(w => w.HasToolInstance(tool));
             }
         }
+
+        internal bool IsAnyPocketWatchActive()
+        {
+            return _pocketWatches.Any(w => w.IsActive);
+        }
     }
 }

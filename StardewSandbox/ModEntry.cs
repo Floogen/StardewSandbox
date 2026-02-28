@@ -1,10 +1,13 @@
 ﻿using HarmonyLib;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewSandbox.Framework.Managers;
 using StardewSandbox.Framework.Patches.Tools;
 using StardewValley;
+using StardewValley.Locations;
+using StardewValley.TerrainFeatures;
 using System;
 
 namespace StardewSandbox
@@ -18,6 +21,8 @@ namespace StardewSandbox
 
         internal static AssetManager assetManager;
         internal static ToolManager toolManager;
+
+        private float _pocketWatchEffectElapsedSeconds = 0;
 
         public override void Entry(IModHelper helper)
         {
@@ -45,6 +50,42 @@ namespace StardewSandbox
 
             // Hook into the required events
             helper.Events.Content.AssetRequested += OnContentAssetRequested;
+            helper.Events.Display.RenderedWorld += Display_RenderedWorld;
+        }
+
+        private void Display_RenderedWorld(object sender, RenderedWorldEventArgs e)
+        {
+            if (toolManager.IsAnyPocketWatchActive())
+            {
+                const float maxSize = 120f;
+                const float minSize = 40f;
+
+                float averageSize = (minSize + maxSize) / 2.0f;
+                float frequency = 12f;
+
+                float speed = 0.5f;
+                float oscillation = (float)System.Math.Sin(Game1.currentGameTime.TotalGameTime.TotalSeconds * speed * System.Math.PI);
+                //monitor.Log((averageSize + (frequency * oscillation)).ToString(), LogLevel.Debug);
+                e.SpriteBatch.Draw(Game1.staminaRect, Vector2.Zero, Game1.lightmap.Bounds, new Color(50, 25, 25, (int)(averageSize + (frequency * oscillation))), 0f, Vector2.Zero, 4f, SpriteEffects.None, 1f);
+                
+                _pocketWatchEffectElapsedSeconds += (float)Game1.currentGameTime.ElapsedGameTime.TotalSeconds;
+                var scale = Utility.Lerp(4f, 8f, _pocketWatchEffectElapsedSeconds * 2f);
+                if (scale < 8f)
+                {
+                    var offset = new Vector2(32f, -16f);
+                    var color = new Color(100, 100, 100, 100);
+
+                    e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, Game1.player.Position) + offset, new Rectangle(224, 464, 41, 38), color, 0f, new Vector2(22.5f, 20f), scale, SpriteEffects.None, 0.98f);
+                    e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, Game1.player.Position) + offset, Town.hourHandSource, color, (float)(Math.PI * 2.0 * (double)((float)(Game1.timeOfDay % 1200) / 1200f) + (double)((float)Game1.gameTimeInterval / (float)Game1.realMilliSecondsPerGameTenMinutes / 23f)), new Vector2(2.5f, 8f), scale, SpriteEffects.None, 0.98f);
+                    e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, Game1.player.Position) + offset, Town.minuteHandSource, color, (float)(Math.PI * 2.0 * (double)((float)(Game1.timeOfDay % 1000 % 100 % 60) / 60f) + (double)((float)Game1.gameTimeInterval / (float)Game1.realMilliSecondsPerGameTenMinutes * 1.02f)), new Vector2(2.5f, 12f), scale, SpriteEffects.None, 0.99f);
+                    e.SpriteBatch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(Game1.viewport, Game1.player.Position) + offset, Town.clockNub, color, 0f, new Vector2(2f, 2f), scale, SpriteEffects.None, 1f);
+                }
+
+            }
+            else
+            {
+                _pocketWatchEffectElapsedSeconds = 0f;
+            }
         }
 
         private void OnContentAssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
