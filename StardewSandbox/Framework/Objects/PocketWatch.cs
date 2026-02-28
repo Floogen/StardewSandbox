@@ -12,6 +12,13 @@ namespace StardewSandbox.Framework.Objects
 {
     internal class PocketWatch
     {
+        private static Dictionary<string, int> _fuels = new Dictionary<string, int>()
+        {
+            { AssetManager.CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID, 1 },
+            { AssetManager.CLOCKWORK_GEAR_IRIDIUM_OBJECT_DATA_ID, 4 },
+            { AssetManager.CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_DATA_ID, 6 },
+        };
+
         public int Charges
         {
             get
@@ -56,6 +63,7 @@ namespace StardewSandbox.Framework.Objects
 
         internal void Deactivate()
         {
+            _millisecondsBeforeNextChargeConsumed = 0;
             ChangeTimeState(isTimeFrozen: false);
         }
 
@@ -74,9 +82,17 @@ namespace StardewSandbox.Framework.Objects
             var clockworkCharges = GetClockworkCharges();
             if (clockworkCharges is not null)
             {
-                clockworkCharges.ConsumeStack(1);
+                if (clockworkCharges.Stack > 1)
+                {
+                    clockworkCharges.ConsumeStack(1);
+                }
+                else
+                {
+                    _actualTool.attachments[0] = null;
+                }
 
-                _millisecondsBeforeNextChargeConsumed = REQUIRED_SECONDS_FOR_TIME_CHANGE * 1000;
+
+                _millisecondsBeforeNextChargeConsumed = _fuels[clockworkCharges.ItemId] * REQUIRED_SECONDS_FOR_TIME_CHANGE * 1000;
             }
         }
 
@@ -94,15 +110,15 @@ namespace StardewSandbox.Framework.Objects
                 }
                 Game1.isTimePaused = true;
 
-                if (Charges <= 0)
-                {
-                    ChangeTimeState(isTimeFrozen: false);
-                    return;
-                }
-
                 _millisecondsBeforeNextChargeConsumed -= time.ElapsedGameTime.TotalMilliseconds;
                 if (_millisecondsBeforeNextChargeConsumed <= 0)
                 {
+                    if (Charges <= 0)
+                    {
+                        ChangeTimeState(isTimeFrozen: false);
+                        return;
+                    }
+
                     ConsumeCharge();
                 }
             }
@@ -157,7 +173,7 @@ namespace StardewSandbox.Framework.Objects
 
         internal static bool IsFuel(Object item)
         {
-            if (item is null || item.ItemId != AssetManager.CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID)
+            if (item is null || _fuels.ContainsKey(item.ItemId) is false)
             {
                 return false;
             }

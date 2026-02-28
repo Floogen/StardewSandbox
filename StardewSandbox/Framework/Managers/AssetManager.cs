@@ -17,11 +17,17 @@ namespace StardewSandbox.Framework.Managers
     {
         public const string POCKET_WATCH_TOOL_TEXTURE_PATH = "PocketWatch/Textures/Tools/PocketWatch";
         public const string POCKET_WATCH_ARTIFACT_TEXTURE_PATH = "PocketWatch/Textures/Artifacts/PocketWatch";
+
         public const string CLOCKWORK_GEAR_GOLD_OBJECT_TEXTURE_PATH = "PocketWatch/Textures/Objects/ClockworkGearGold";
+        public const string CLOCKWORK_GEAR_IRIDIUM_OBJECT_TEXTURE_PATH = "PocketWatch/Textures/Objects/ClockworkGearIridium";
+        public const string CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_TEXTURE_PATH = "PocketWatch/Textures/Objects/ClockworkGearRadioactive";
 
         public const string POCKET_WATCH_TOOL_DATA_ID = "PeacefulEnd.PocketWatch_Tools_PocketWatch";
         public const string POCKET_WATCH_ARTIFACT_DATA_ID = "PeacefulEnd.PocketWatch_Artifact_PocketWatch";
+
         public const string CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID = "PeacefulEnd.PocketWatch_Objects_Clockwork_Gear_Gold";
+        public const string CLOCKWORK_GEAR_IRIDIUM_OBJECT_DATA_ID = "PeacefulEnd.PocketWatch_Objects_Clockwork_Gear_Iridium";
+        public const string CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_DATA_ID = "PeacefulEnd.PocketWatch_Objects_Clockwork_Gear_Radioactive";
 
         private Dictionary<string, string> _assetNameToPath;
 
@@ -33,6 +39,8 @@ namespace StardewSandbox.Framework.Managers
                 { POCKET_WATCH_TOOL_TEXTURE_PATH, Path.Combine(assetFolderPath, "PocketWatch.png") },
                 { POCKET_WATCH_ARTIFACT_TEXTURE_PATH, Path.Combine(assetFolderPath, "PocketWatchArtifact.png") },
                 { CLOCKWORK_GEAR_GOLD_OBJECT_TEXTURE_PATH, Path.Combine(assetFolderPath, "ClockworkGearGold.png") },
+                { CLOCKWORK_GEAR_IRIDIUM_OBJECT_TEXTURE_PATH, Path.Combine(assetFolderPath, "ClockworkGearIridium.png") },
+                { CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_TEXTURE_PATH, Path.Combine(assetFolderPath, "ClockworkGearRadioactive.png") },
             };
         }
 
@@ -91,10 +99,10 @@ namespace StardewSandbox.Framework.Managers
         {
             IDictionary<string, ObjectData> objectData = gameObjectData.AsDictionary<string, ObjectData>().Data;
 
-            string fullId = CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID;
-            ObjectData additionalObjectData = new()
+            string goldClockworkGear = CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID;
+            objectData[goldClockworkGear] = new()
             {
-                Name = fullId,
+                Name = goldClockworkGear,
                 DisplayName = "Golden Clockwork Gear",
                 Description = "...",
                 Type = "Crafting",
@@ -107,24 +115,56 @@ namespace StardewSandbox.Framework.Managers
                 GeodeDrops = null
             };
 
-            objectData[fullId] = additionalObjectData;
+            string iridiumClockworkGear = CLOCKWORK_GEAR_IRIDIUM_OBJECT_DATA_ID;
+            objectData[iridiumClockworkGear] = new()
+            {
+                Name = iridiumClockworkGear,
+                DisplayName = "Iridium Clockwork Gear",
+                Description = "...",
+                Type = "Crafting",
+                Category = -8,
+                Texture = CLOCKWORK_GEAR_IRIDIUM_OBJECT_TEXTURE_PATH,
+                Price = 1,
+                Edibility = -300,
+                IsDrink = false,
+                GeodeDropsDefaultItems = false,
+                GeodeDrops = null
+            };
+
+            string radioactiveClockworkGear = CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_DATA_ID;
+            objectData[radioactiveClockworkGear] = new()
+            {
+                Name = radioactiveClockworkGear,
+                DisplayName = "Radioactive Clockwork Gear",
+                Description = "...",
+                Type = "Crafting",
+                Category = -8,
+                Texture = CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_TEXTURE_PATH,
+                Price = 1,
+                Edibility = -300,
+                IsDrink = false,
+                GeodeDropsDefaultItems = false,
+                GeodeDrops = null
+            };
         }
 
         internal void AddMuseumRewardsData(IAssetData gameMuseumData)
         {
             IDictionary<string, MuseumRewards> museumRewardsData = gameMuseumData.AsDictionary<string, MuseumRewards>().Data;
 
+            var museumDonationRequirements = new List<MuseumDonationRequirement>()
+            {
+                new MuseumDonationRequirement()
+                {
+                    Tag = $"id_o_{POCKET_WATCH_ARTIFACT_DATA_ID}",
+                    Count = 1
+                }
+            };
+
             string pocketWatchToolReward = $"PeacefulEnd.PocketWatch_MuseumRewards_PocketWatch";
             museumRewardsData[pocketWatchToolReward] = new()
             {
-                TargetContextTags = new List<MuseumDonationRequirement>()
-                {
-                    new MuseumDonationRequirement()
-                    {
-                        Tag = $"id_o_{POCKET_WATCH_ARTIFACT_DATA_ID}",
-                        Count = 1
-                    }
-                },
+                TargetContextTags = museumDonationRequirements,
                 RewardItemId = POCKET_WATCH_TOOL_DATA_ID,
                 RewardItemCount = 1,
                 RewardItemIsSpecial = true,
@@ -134,14 +174,7 @@ namespace StardewSandbox.Framework.Managers
             string pocketWatchRecipeReward = $"PeacefulEnd.PocketWatch_MuseumRewards_PocketWatch_Recipe";
             museumRewardsData[pocketWatchRecipeReward] = new()
             {
-                TargetContextTags = new List<MuseumDonationRequirement>()
-                {
-                    new MuseumDonationRequirement()
-                    {
-                        Tag = $"id_o_{POCKET_WATCH_ARTIFACT_DATA_ID}",
-                        Count = 1
-                    }
-                },
+                TargetContextTags = museumDonationRequirements,
                 RewardItemId = POCKET_WATCH_TOOL_DATA_ID,
                 RewardItemCount = 1,
                 RewardItemIsSpecial = true,
@@ -151,15 +184,28 @@ namespace StardewSandbox.Framework.Managers
             string clockworkGearGoldRecipeReward = $"PeacefulEnd.PocketWatch_MuseumRewards_ClockworkGear_Gold_Recipe";
             museumRewardsData[clockworkGearGoldRecipeReward] = new()
             {
-                TargetContextTags = new List<MuseumDonationRequirement>()
-                {
-                    new MuseumDonationRequirement()
-                    {
-                        Tag = $"id_o_{POCKET_WATCH_ARTIFACT_DATA_ID}",
-                        Count = 1
-                    }
-                },
+                TargetContextTags = museumDonationRequirements,
                 RewardItemId = CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID,
+                RewardItemCount = 1,
+                RewardItemIsSpecial = true,
+                RewardItemIsRecipe = true
+            };
+
+            string clockworkGearIridiumRecipeReward = $"PeacefulEnd.PocketWatch_MuseumRewards_ClockworkGear_Iridium_Recipe";
+            museumRewardsData[clockworkGearIridiumRecipeReward] = new()
+            {
+                TargetContextTags = museumDonationRequirements,
+                RewardItemId = CLOCKWORK_GEAR_IRIDIUM_OBJECT_DATA_ID,
+                RewardItemCount = 1,
+                RewardItemIsSpecial = true,
+                RewardItemIsRecipe = true
+            };
+
+            string clockworkGearRadioactiveRecipeReward = $"PeacefulEnd.PocketWatch_MuseumRewards_ClockworkGear_Radioactive_Recipe";
+            museumRewardsData[clockworkGearRadioactiveRecipeReward] = new()
+            {
+                TargetContextTags = museumDonationRequirements,
+                RewardItemId = CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_DATA_ID,
                 RewardItemCount = 1,
                 RewardItemIsSpecial = true,
                 RewardItemIsRecipe = true
@@ -171,7 +217,9 @@ namespace StardewSandbox.Framework.Managers
             IDictionary<string, string> craftingRecipesData = gameMuseumData.AsDictionary<string, string>().Data;
 
             craftingRecipesData[POCKET_WATCH_TOOL_DATA_ID] = $"{POCKET_WATCH_ARTIFACT_DATA_ID} 1/Home/{POCKET_WATCH_TOOL_DATA_ID}/false/null/";
-            craftingRecipesData[CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID] = $"(O)336 1/Home/{CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID} 2/false/null/";
+            craftingRecipesData[CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID] = $"(O)336 1/Home/{CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID} 1/false/null/";
+            craftingRecipesData[CLOCKWORK_GEAR_IRIDIUM_OBJECT_DATA_ID] = $"(O)337 1/Home/{CLOCKWORK_GEAR_IRIDIUM_OBJECT_DATA_ID} 2/false/null/";
+            craftingRecipesData[CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_DATA_ID] = $"(O)910 1/Home/{CLOCKWORK_GEAR_RADIOACTIVE_OBJECT_DATA_ID} 2/false/null/";
         }
 
         internal bool HasCustomAsset(IAssetName assetName, out string assetPath)

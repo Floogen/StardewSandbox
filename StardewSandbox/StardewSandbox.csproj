@@ -22,6 +22,12 @@
 		<None Update="Framework\Assets\ClockworkGearGold.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+		<None Update="Framework\Assets\ClockworkGearIridium.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Update="Framework\Assets\ClockworkGearRadioactive.png">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Framework\Assets\PocketWatch.png">
 		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
