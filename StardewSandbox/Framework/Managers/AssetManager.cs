@@ -1,5 +1,8 @@
 ﻿using StardewModdingAPI;
 using StardewSandbox.Framework.Utilities;
+using StardewValley;
+using StardewValley.GameData.Museum;
+using StardewValley.GameData.Objects;
 using StardewValley.GameData.Tools;
 using System;
 using System.Collections.Generic;
@@ -12,26 +15,32 @@ namespace StardewSandbox.Framework.Managers
 {
     public class AssetManager : BaseManager
     {
-        public const string POCKET_WATCH_TEXTURE_PATH = "PocketWatch/Textures/PocketWatch";
+        public const string POCKET_WATCH_TOOL_TEXTURE_PATH = "PocketWatch/Textures/Tools/PocketWatch";
+        public const string POCKET_WATCH_ARTIFACT_TEXTURE_PATH = "PocketWatch/Textures/Artifacts/PocketWatch";
+
+        private const string POCKET_WATCH_TOOL_DATA_ID = "PeacefulEnd.PocketWatch_Tools_PocketWatch";
+        private const string POCKET_WATCH_ARTIFACT_DATA_ID = "PeacefulEnd.PocketWatch_Artifact_PocketWatch";
+
+        private string _assetFolderPath;
 
         public AssetManager(IModHelper helper) : base(helper)
         {
-
+            _assetFolderPath = _modHelper.ModContent.GetInternalAssetName(Path.Combine("Framework", "Assets")).Name;
         }
 
         internal void AddToolData(IAssetData gameToolData)
         {
             IDictionary<string, ToolData> toolData = gameToolData.AsDictionary<string, ToolData>().Data;
 
-            string fullId = $"PeacefulEnd.PocketWatch_PocketWatchTool";
-            ToolData newToolData = new()
+            string fullId = POCKET_WATCH_TOOL_DATA_ID;
+            ToolData additionalToolData = new()
             {
                 ClassName = "GenericTool",
                 Name = fullId,
                 SalePrice = 750,
                 DisplayName = "Pocket Watch",
                 Description = "...",
-                Texture = POCKET_WATCH_TEXTURE_PATH,
+                Texture = POCKET_WATCH_TOOL_TEXTURE_PATH,
                 AttachmentSlots = 1,
                 ModData = new()
                 {
@@ -39,12 +48,101 @@ namespace StardewSandbox.Framework.Managers
                 }
             };
 
-            toolData[fullId] = newToolData;
+            toolData[fullId] = additionalToolData;
         }
 
-        internal string GetPocketWatchAssetPath()
+        internal void AddArtifactData(IAssetData gameObjectData)
         {
-            return Path.Combine(_modHelper.ModContent.GetInternalAssetName(Path.Combine("Framework", "Assets")).Name, "PocketWatch.png");
+            IDictionary<string, ObjectData> objectData = gameObjectData.AsDictionary<string, ObjectData>().Data;
+
+            string fullId = POCKET_WATCH_ARTIFACT_DATA_ID;
+            ObjectData additionalObjectData = new()
+            {
+                Name = fullId,
+                DisplayName = "Broken Pocket Watch",
+                Description = "...",
+                Type = "Arch",
+                Category = 0,
+                Texture = POCKET_WATCH_ARTIFACT_TEXTURE_PATH,
+                Price = 1,
+                Edibility = -300,
+                IsDrink = false,
+                GeodeDropsDefaultItems = false,
+                GeodeDrops = null,
+                ArtifactSpotChances = new Dictionary<string, float>()
+                {
+                    { "Mountain", 0.01f },
+                    { "UndergroundMine", 0.02f },
+                }
+            };
+
+            objectData[fullId] = additionalObjectData;
+        }
+
+        internal void AddMuseumRewardsData(IAssetData gameMuseumData)
+        {
+            IDictionary<string, MuseumRewards> museumRewardsData = gameMuseumData.AsDictionary<string, MuseumRewards>().Data;
+
+            string pocketWatchToolReward = $"PeacefulEnd.PocketWatch_MuseumRewards_PocketWatch";
+            museumRewardsData[pocketWatchToolReward] = new()
+            {
+                TargetContextTags = new List<MuseumDonationRequirement>()
+                {
+                    new MuseumDonationRequirement()
+                    {
+                        Tag = $"id_o_{POCKET_WATCH_ARTIFACT_DATA_ID}",
+                        Count = 1
+                    }
+                },
+                RewardItemId = POCKET_WATCH_TOOL_DATA_ID,
+                RewardItemCount = 1,
+                RewardItemIsSpecial = true,
+                RewardItemIsRecipe = false
+            };
+
+            string pocketWatchRecipeReward = $"PeacefulEnd.PocketWatch_MuseumRewards_PocketWatch_Recipe";
+            museumRewardsData[pocketWatchRecipeReward] = new()
+            {
+                TargetContextTags = new List<MuseumDonationRequirement>()
+                {
+                    new MuseumDonationRequirement()
+                    {
+                        Tag = $"id_o_{POCKET_WATCH_ARTIFACT_DATA_ID}",
+                        Count = 1
+                    }
+                },
+                RewardItemId = POCKET_WATCH_TOOL_DATA_ID,
+                RewardItemCount = 1,
+                RewardItemIsSpecial = true,
+                RewardItemIsRecipe = true
+            };
+        }
+
+        internal void AddCraftingRecipesData(IAssetData gameMuseumData)
+        {
+            IDictionary<string, string> craftingRecipesData = gameMuseumData.AsDictionary<string, string>().Data;
+
+            craftingRecipesData[POCKET_WATCH_TOOL_DATA_ID] = $"{POCKET_WATCH_ARTIFACT_DATA_ID} 1/Home/{POCKET_WATCH_TOOL_DATA_ID}/false/null/";
+        }
+
+        internal bool HasCustomAsset(IAssetName assetName, out string assetPath)
+        {
+            assetPath = null;
+            if (assetName.IsEquivalentTo(POCKET_WATCH_TOOL_TEXTURE_PATH))
+            {
+                assetPath = Path.Combine(_assetFolderPath, "PocketWatch.png");
+            }
+            else if (assetName.IsEquivalentTo(POCKET_WATCH_ARTIFACT_TEXTURE_PATH))
+            {
+                assetPath = Path.Combine(_assetFolderPath, "PocketWatchArtifact.png");
+            }
+
+            if (string.IsNullOrEmpty(assetPath))
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

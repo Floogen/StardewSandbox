@@ -94,9 +94,21 @@ namespace StardewSandbox
             {
                 e.Edit(assetManager.AddToolData, AssetEditPriority.Early);
             }
-            else if (e.NameWithoutLocale.IsEquivalentTo(AssetManager.POCKET_WATCH_TEXTURE_PATH))
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
             {
-                e.LoadFromModFile<Texture2D>(assetManager.GetPocketWatchAssetPath(), AssetLoadPriority.Exclusive);
+                e.Edit(assetManager.AddArtifactData, AssetEditPriority.Early);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/MuseumRewards"))
+            {
+                e.Edit(assetManager.AddMuseumRewardsData, AssetEditPriority.Early);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/CraftingRecipes"))
+            {
+                e.Edit(assetManager.AddCraftingRecipesData, AssetEditPriority.Early);
+            }
+            else if (assetManager.HasCustomAsset(e.NameWithoutLocale, out string assetPath))
+            {
+                e.LoadFromModFile<Texture2D>(assetPath, AssetLoadPriority.Exclusive);
             }
         }
     }
