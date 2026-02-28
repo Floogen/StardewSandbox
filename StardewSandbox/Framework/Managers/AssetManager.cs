@@ -17,9 +17,11 @@ namespace StardewSandbox.Framework.Managers
     {
         public const string POCKET_WATCH_TOOL_TEXTURE_PATH = "PocketWatch/Textures/Tools/PocketWatch";
         public const string POCKET_WATCH_ARTIFACT_TEXTURE_PATH = "PocketWatch/Textures/Artifacts/PocketWatch";
+        public const string CLOCKWORK_GEAR_GOLD_OBJECT_TEXTURE_PATH = "PocketWatch/Textures/Objects/ClockworkGearGold";
 
-        private const string POCKET_WATCH_TOOL_DATA_ID = "PeacefulEnd.PocketWatch_Tools_PocketWatch";
-        private const string POCKET_WATCH_ARTIFACT_DATA_ID = "PeacefulEnd.PocketWatch_Artifact_PocketWatch";
+        public const string POCKET_WATCH_TOOL_DATA_ID = "PeacefulEnd.PocketWatch_Tools_PocketWatch";
+        public const string POCKET_WATCH_ARTIFACT_DATA_ID = "PeacefulEnd.PocketWatch_Artifact_PocketWatch";
+        public const string CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID = "PeacefulEnd.PocketWatch_Objects_Clockwork_Gear_Gold";
 
         private Dictionary<string, string> _assetNameToPath;
 
@@ -30,6 +32,7 @@ namespace StardewSandbox.Framework.Managers
             {
                 { POCKET_WATCH_TOOL_TEXTURE_PATH, Path.Combine(assetFolderPath, "PocketWatch.png") },
                 { POCKET_WATCH_ARTIFACT_TEXTURE_PATH, Path.Combine(assetFolderPath, "PocketWatchArtifact.png") },
+                { CLOCKWORK_GEAR_GOLD_OBJECT_TEXTURE_PATH, Path.Combine(assetFolderPath, "ClockworkGearGold.png") },
             };
         }
 
@@ -84,6 +87,29 @@ namespace StardewSandbox.Framework.Managers
             objectData[fullId] = additionalObjectData;
         }
 
+        internal void AddObjectData(IAssetData gameObjectData)
+        {
+            IDictionary<string, ObjectData> objectData = gameObjectData.AsDictionary<string, ObjectData>().Data;
+
+            string fullId = CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID;
+            ObjectData additionalObjectData = new()
+            {
+                Name = fullId,
+                DisplayName = "Golden Clockwork Gear",
+                Description = "...",
+                Type = "Crafting",
+                Category = -8,
+                Texture = CLOCKWORK_GEAR_GOLD_OBJECT_TEXTURE_PATH,
+                Price = 1,
+                Edibility = -300,
+                IsDrink = false,
+                GeodeDropsDefaultItems = false,
+                GeodeDrops = null
+            };
+
+            objectData[fullId] = additionalObjectData;
+        }
+
         internal void AddMuseumRewardsData(IAssetData gameMuseumData)
         {
             IDictionary<string, MuseumRewards> museumRewardsData = gameMuseumData.AsDictionary<string, MuseumRewards>().Data;
@@ -121,6 +147,23 @@ namespace StardewSandbox.Framework.Managers
                 RewardItemIsSpecial = true,
                 RewardItemIsRecipe = true
             };
+
+            string clockworkGearGoldRecipeReward = $"PeacefulEnd.PocketWatch_MuseumRewards_ClockworkGear_Gold_Recipe";
+            museumRewardsData[clockworkGearGoldRecipeReward] = new()
+            {
+                TargetContextTags = new List<MuseumDonationRequirement>()
+                {
+                    new MuseumDonationRequirement()
+                    {
+                        Tag = $"id_o_{POCKET_WATCH_ARTIFACT_DATA_ID}",
+                        Count = 1
+                    }
+                },
+                RewardItemId = CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID,
+                RewardItemCount = 1,
+                RewardItemIsSpecial = true,
+                RewardItemIsRecipe = true
+            };
         }
 
         internal void AddCraftingRecipesData(IAssetData gameMuseumData)
@@ -128,6 +171,7 @@ namespace StardewSandbox.Framework.Managers
             IDictionary<string, string> craftingRecipesData = gameMuseumData.AsDictionary<string, string>().Data;
 
             craftingRecipesData[POCKET_WATCH_TOOL_DATA_ID] = $"{POCKET_WATCH_ARTIFACT_DATA_ID} 1/Home/{POCKET_WATCH_TOOL_DATA_ID}/false/null/";
+            craftingRecipesData[CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID] = $"(O)336 1/Home/{CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID} 2/false/null/";
         }
 
         internal bool HasCustomAsset(IAssetName assetName, out string assetPath)

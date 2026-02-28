@@ -97,6 +97,7 @@ namespace StardewSandbox
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
             {
                 e.Edit(assetManager.AddArtifactData, AssetEditPriority.Early);
+                e.Edit(assetManager.AddObjectData, AssetEditPriority.Early);
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/MuseumRewards"))
             {

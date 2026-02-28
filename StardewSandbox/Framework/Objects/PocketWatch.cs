@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using StardewSandbox.Framework.Managers;
 using StardewSandbox.Framework.Utilities;
 using StardewValley;
 using System.Collections.Generic;
@@ -156,7 +157,7 @@ namespace StardewSandbox.Framework.Objects
 
         internal static bool IsFuel(Object item)
         {
-            if (item is null || item.QualifiedItemId != "(O)336")
+            if (item is null || item.ItemId != AssetManager.CLOCKWORK_GEAR_GOLD_OBJECT_DATA_ID)
             {
                 return false;
             }
