@@ -21,11 +21,16 @@ namespace StardewSandbox.Framework.Managers
         private const string POCKET_WATCH_TOOL_DATA_ID = "PeacefulEnd.PocketWatch_Tools_PocketWatch";
         private const string POCKET_WATCH_ARTIFACT_DATA_ID = "PeacefulEnd.PocketWatch_Artifact_PocketWatch";
 
-        private string _assetFolderPath;
+        private Dictionary<string, string> _assetNameToPath;
 
         public AssetManager(IModHelper helper) : base(helper)
         {
-            _assetFolderPath = _modHelper.ModContent.GetInternalAssetName(Path.Combine("Framework", "Assets")).Name;
+            var assetFolderPath = _modHelper.ModContent.GetInternalAssetName(Path.Combine("Framework", "Assets")).Name;
+            _assetNameToPath = new Dictionary<string, string>()
+            {
+                { POCKET_WATCH_TOOL_TEXTURE_PATH, Path.Combine(assetFolderPath, "PocketWatch.png") },
+                { POCKET_WATCH_ARTIFACT_TEXTURE_PATH, Path.Combine(assetFolderPath, "PocketWatchArtifact.png") },
+            };
         }
 
         internal void AddToolData(IAssetData gameToolData)
@@ -128,13 +133,12 @@ namespace StardewSandbox.Framework.Managers
         internal bool HasCustomAsset(IAssetName assetName, out string assetPath)
         {
             assetPath = null;
-            if (assetName.IsEquivalentTo(POCKET_WATCH_TOOL_TEXTURE_PATH))
+            foreach (var key in _assetNameToPath.Keys)
             {
-                assetPath = Path.Combine(_assetFolderPath, "PocketWatch.png");
-            }
-            else if (assetName.IsEquivalentTo(POCKET_WATCH_ARTIFACT_TEXTURE_PATH))
-            {
-                assetPath = Path.Combine(_assetFolderPath, "PocketWatchArtifact.png");
+                if (assetName.IsEquivalentTo(key))
+                {
+                    assetPath = _assetNameToPath[key];
+                }
             }
 
             if (string.IsNullOrEmpty(assetPath))
