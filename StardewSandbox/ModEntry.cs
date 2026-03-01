@@ -100,7 +100,7 @@ namespace TimelessPocketWatch
                 if (modConfig.ShowClockEffect && _pocketWatchEffectElapsedSeconds <= 10)
                 {
                     _pocketWatchEffectElapsedSeconds += (float)Game1.currentGameTime.ElapsedGameTime.TotalSeconds;
-                    var scale = Utility.Lerp(4f, 8f, _pocketWatchEffectElapsedSeconds * 2f);
+                    var scale = Utility.Lerp(4f, 8f, _pocketWatchEffectElapsedSeconds * 1.25f);
                     if (scale < 8f)
                     {
                         var offset = new Vector2(32f, -16f);
