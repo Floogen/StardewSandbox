@@ -32,6 +32,7 @@ namespace StardewSandbox.Framework.Managers
 
             _genericModConfigMenuApi.AddBoolOption(modManifest, () => ModEntry.modConfig.ShowGlowEffect, value => ModEntry.modConfig.ShowGlowEffect = value, () => helper.Translation.Get("config.general.show_glow_effect.name"), () => helper.Translation.Get("config.general.show_glow_effect.description"));
             _genericModConfigMenuApi.AddBoolOption(modManifest, () => ModEntry.modConfig.ShowClockEffect, value => ModEntry.modConfig.ShowClockEffect = value, () => helper.Translation.Get("config.general.show_clock_effect.name"), () => helper.Translation.Get("config.general.show_clock_effect.description"));
+            _genericModConfigMenuApi.AddBoolOption(modManifest, () => ModEntry.modConfig.MuffleSoundsWhileActive, value => ModEntry.modConfig.MuffleSoundsWhileActive = value, () => helper.Translation.Get("config.general.muffle_sounds_while_active.name"), () => helper.Translation.Get("config.general.muffle_sounds_while_active.description"));
             _genericModConfigMenuApi.AddBoolOption(modManifest, () => ModEntry.modConfig.AutoConsumeCharges, value => ModEntry.modConfig.AutoConsumeCharges = value, () => helper.Translation.Get("config.general.auto_consume_charges.name"), () => helper.Translation.Get("config.general.auto_consume_charges.description"));
         }
 

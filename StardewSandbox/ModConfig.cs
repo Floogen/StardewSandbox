@@ -10,6 +10,7 @@ namespace StardewSandbox
     {
         public bool ShowGlowEffect { get; set; } = true;
         public bool ShowClockEffect { get; set; } = true;
+        public bool MuffleSoundsWhileActive { get; set; } = true;
         public bool AutoConsumeCharges { get; set; } = true;
     }
 }

@@ -64,14 +64,27 @@ namespace StardewSandbox.Framework.Objects
                 // TODO: Display message about lack of charges
                 return;
             }
+
+            // Consume charge
             ConsumeCharge();
+
+            // Play sound
+            Game1.playSound("secret1");
 
             ChangeTimeState(isTimeFrozen: true);
         }
 
         internal void Deactivate()
         {
+            // Reset charge timer
             _millisecondsBeforeNextChargeConsumed = 0;
+
+            // Restore various sound volumes
+            if (ModEntry.modConfig.MuffleSoundsWhileActive)
+            {
+                SoundHelper.RestoreSoundVolumeCache();
+            }
+
             ChangeTimeState(isTimeFrozen: false);
         }
 
@@ -99,7 +112,6 @@ namespace StardewSandbox.Framework.Objects
                     _actualTool.attachments[0] = null;
                 }
 
-
                 _millisecondsBeforeNextChargeConsumed = _fuels[clockworkCharges.ItemId] * REQUIRED_SECONDS_FOR_TIME_CHANGE * 1000;
             }
         }
@@ -117,6 +129,12 @@ namespace StardewSandbox.Framework.Objects
                     return;
                 }
                 Game1.isTimePaused = true;
+
+                // Cache various sound volume
+                if (ModEntry.modConfig.MuffleSoundsWhileActive)
+                {
+                    SoundHelper.SetAndCacheSoundVolumes(musicVolume: 0.3f, soundVolume: 0.4f, ambientVolume: 0.3f, footstepVolume: 0.4f);
+                }
 
                 _millisecondsBeforeNextChargeConsumed -= time.ElapsedGameTime.TotalMilliseconds;
                 if (_millisecondsBeforeNextChargeConsumed <= 0)
