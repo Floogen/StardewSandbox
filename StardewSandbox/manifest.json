@@ -6,6 +6,6 @@
   "UniqueID": "PeacefulEnd.TimelessPocketWatch",
   "EntryDll": "TimelessPocketWatch.dll",
   "MinimumApiVersion": "4.5.0",
-  "UpdateKeys": [ "Nexus:????" ],
+  "UpdateKeys": [ "Nexus:43007" ],
   "Dependencies": []
 }
