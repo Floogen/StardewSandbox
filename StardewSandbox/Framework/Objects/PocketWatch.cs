@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using StardewSandbox.Framework.Managers;
-using StardewSandbox.Framework.Utilities;
+using TimelessPocketWatch.Framework.Managers;
+using TimelessPocketWatch.Framework.Utilities;
 using StardewValley;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StardewSandbox.Framework.Objects
+namespace TimelessPocketWatch.Framework.Objects
 {
     internal class PocketWatch
     {

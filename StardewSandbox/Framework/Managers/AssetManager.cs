@@ -1,5 +1,5 @@
 ﻿using StardewModdingAPI;
-using StardewSandbox.Framework.Utilities;
+using TimelessPocketWatch.Framework.Utilities;
 using StardewValley;
 using StardewValley.GameData.Museum;
 using StardewValley.GameData.Objects;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StardewSandbox.Framework.Managers
+namespace TimelessPocketWatch.Framework.Managers
 {
     public class AssetManager : BaseManager
     {

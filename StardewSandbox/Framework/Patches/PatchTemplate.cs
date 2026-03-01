@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using StardewModdingAPI;
 
-namespace StardewSandbox.Framework.Patches
+namespace TimelessPocketWatch.Framework.Patches
 {
     internal abstract class PatchTemplate
     {

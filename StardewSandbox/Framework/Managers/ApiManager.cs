@@ -1,7 +1,7 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Integrations.GenericModConfigMenu;
-using StardewSandbox.Framework.Objects;
-using StardewSandbox.Framework.Utilities;
+using TimelessPocketWatch.Framework.Objects;
+using TimelessPocketWatch.Framework.Utilities;
 using StardewValley;
 using StardewValley.GameData.Tools;
 using System;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StardewSandbox.Framework.Managers
+namespace TimelessPocketWatch.Framework.Managers
 {
     public class ApiManager : BaseManager
     {

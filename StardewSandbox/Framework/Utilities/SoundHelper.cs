@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StardewSandbox.Framework.Utilities
+namespace TimelessPocketWatch.Framework.Utilities
 {
     public class SoundHelper
     {

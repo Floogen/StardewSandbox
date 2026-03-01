@@ -2,14 +2,14 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
-using StardewSandbox.Framework.Objects;
+using TimelessPocketWatch.Framework.Objects;
 using StardewValley;
 using StardewValley.Menus;
 using StardewValley.Tools;
 using System;
 using System.Text;
 
-namespace StardewSandbox.Framework.Patches.Tools
+namespace TimelessPocketWatch.Framework.Patches.Tools
 {
     internal class ToolPatch : PatchTemplate
     {

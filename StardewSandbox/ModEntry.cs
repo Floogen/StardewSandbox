@@ -3,16 +3,16 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
-using StardewSandbox.Framework.Managers;
-using StardewSandbox.Framework.Objects;
-using StardewSandbox.Framework.Patches.Tools;
+using TimelessPocketWatch.Framework.Managers;
+using TimelessPocketWatch.Framework.Objects;
+using TimelessPocketWatch.Framework.Patches.Tools;
 using StardewValley;
 using StardewValley.Locations;
 using StardewValley.TerrainFeatures;
 using StardewValley.Tools;
 using System;
 
-namespace StardewSandbox
+namespace TimelessPocketWatch
 {
     public class ModEntry : Mod
     {

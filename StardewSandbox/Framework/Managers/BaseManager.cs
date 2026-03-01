@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StardewSandbox.Framework.Managers
+namespace TimelessPocketWatch.Framework.Managers
 {
     public abstract class BaseManager
     {
