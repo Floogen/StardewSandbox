@@ -22,6 +22,8 @@ namespace StardewSandbox.Framework.Patches.Tools
 
         internal override void Apply(Harmony harmony)
         {
+            harmony.Patch(AccessTools.Method(_object, "get_description", null), postfix: new HarmonyMethod(GetType(), nameof(GetDescriptionPostfix)));
+
             harmony.Patch(AccessTools.Method(_object, nameof(Tool.attachmentSlots)), postfix: new HarmonyMethod(GetType(), nameof(AttachmentSlotsPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Tool.canThisBeAttached), new[] { typeof(StardewValley.Object), typeof(int) }), postfix: new HarmonyMethod(GetType(), nameof(CanThisBeAttachedPostfix)));
 
@@ -32,6 +34,14 @@ namespace StardewSandbox.Framework.Patches.Tools
             harmony.Patch(AccessTools.Method(_object, nameof(Tool.beginUsing), new[] { typeof(GameLocation), typeof(int), typeof(int), typeof(Farmer) }), prefix: new HarmonyMethod(GetType(), nameof(BeginUsingPrefix)));
 
             harmony.Patch(AccessTools.Method(_object, nameof(Tool.tickUpdate), new[] { typeof(GameTime), typeof(Farmer) }), postfix: new HarmonyMethod(GetType(), nameof(TickUpdatePostfix)));
+        }
+
+        private static void GetDescriptionPostfix(Tool __instance, ref string __result)
+        {
+            if (ModEntry.toolManager.GetPocketWatch(__instance) is PocketWatch pocketWatch && pocketWatch is not null)
+            {
+                __result = pocketWatch.Charges > 0 ? _helper.Translation.Get("tools.pocket_watch.description") : _helper.Translation.Get("tools.pocket_watch_empty.description");
+            }
         }
 
         private static void AttachmentSlotsPostfix(Tool __instance, ref int __result)
