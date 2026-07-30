@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+﻿using AnglersLogbook.Framework.Models.Fish;
+using AnglersLogbook.Framework.Utilities;
+using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Parchment.Framework.API;
@@ -97,6 +99,14 @@ namespace AnglersLogbook
             book.Set("StartOnCover", true);
             book.Set("ExitToCover", true);
 
+            book.AddOverlay("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(0, 128, 32, 32).Scale(4).Position(-68, 125)
+                .AddHoverFrame(0, 96)
+                .Action("PeacefulEnd.Parchment_GoToStart")
+                .Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Ready\" \"PeacefulEnd.Parchment_CurrentBookState Turning\"");
+
+            book.Set("Layout.MarginTop", "20");
+            book.Set("Layout.MarginSpine", "8");
+
             book.Set("Appearance.TintColor", "200 200 100 255");
             book.Set("Appearance.TexturePath", "Assets/PeacefulEnd.Parchment/notebook");
             book.Set("Appearance.GrayscaleTexturePath", "Assets/PeacefulEnd.Parchment/notebookGrayscale");
@@ -144,13 +154,13 @@ namespace AnglersLogbook
             var contentsPage = book.AddPage("contents", "front");
 
             var statsPage = book.AddPage("stats", "front");
-            statsPage.AddBackground("Title").Text("Stats").Alignment("Center").Position(0, -25);
+            statsPage.AddTitle("Stats").Alignment("Center");
 
             GetUniqueFishStats(Game1.player, out int uniqueFishCaught, out int uniqueFishTotal);
-            AddPanelWithTitle(statsPage, new Point(50, 75), "Unique\nFish Caught", $"{uniqueFishCaught} / {uniqueFishTotal}");
-            AddPanelWithTitle(statsPage, new Point(-50, 75), "Total\nFish Caught", $"{Game1.player.stats.Get("PreciseFishCaught")}", alignment: "Right");
-            AddPanelWithTitle(statsPage, new Point(50, 275), "Treasures Found", $"{Game1.player.stats.Get("FishingTreasures")}");
-            AddPanelWithTitle(statsPage, new Point(-50, 275), "Fishing\nAttempts", $"{Game1.player.stats.Get("TimesFished")}", alignment: "Right");
+            AddPanelWithTitle(statsPage, new Point(40, 100), "Unique\nFish Caught", $"{uniqueFishCaught} / {uniqueFishTotal}");
+            AddPanelWithTitle(statsPage, new Point(-40, 100), "Total\nFish Caught", $"{Game1.player.stats.Get("PreciseFishCaught")}", alignment: "Right");
+            AddPanelWithTitle(statsPage, new Point(40, 300), "Treasures Found", $"{Game1.player.stats.Get("FishingTreasures")}");
+            AddPanelWithTitle(statsPage, new Point(-40, 300), "Fishing\nAttempts", $"{Game1.player.stats.Get("TimesFished")}", alignment: "Right");
 
             int gridColumns = 5;
             int gridRows = 5;
@@ -163,11 +173,44 @@ namespace AnglersLogbook
                 var fishPreviewPage = book.AddPage($"fishPreview{fishPreviewPageCounter}", "front");
                 if (fishPreviewPageCounter is 0)
                 {
-                    fishPreviewPage.AddBackground("Title").Text("Fish").Alignment("Center").Position(0, -25);
+                    fishPreviewPage.AddTitle("Fish").Alignment("Center");
                 }
 
-                BuildFishPreviewGrid(fishPreviewPage, pageFishes, gridColumns);
+                BuildFishPreviewGrid(book, fishPreviewPage, pageFishes, gridColumns);
                 fishPreviewPageCounter += 1;
+            }
+
+            // Create fish specific pages
+            List<FishEntry> allFish = FishDataHelper.GetAllFish();
+            foreach (var fishData in allFish)
+            {
+                bool itemUnlocked = Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId);
+
+                FishCatchInfo info = FishCatchHelper.GetCatchInfo(fishData.QualifiedItemId);
+                int amountCaught = info.TimesCaught;
+                string size = FishCatchHelper.FormatBiggestCatch(info);
+
+
+                itemUnlocked = true;
+
+                var fishPageId = $"fishChapter{fishData.ItemData.ItemId}";
+                var fishPageSummary = book.AddPage(fishPageId, fishPageId);
+
+                fishPageSummary.AddTitle(itemUnlocked ? fishData.ItemData.DisplayName : "???").Alignment("Center").Spacing(36);
+                var fishPanel =  fishPageSummary.AddPanel().Spacing(32);
+                fishPanel.AddBackground("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(48, 0, 16, 16).Scale(8).Alignment("Center").Position(0, -24);
+                fishPanel.AddChild("Image").Item(fishData.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", "").Set("Description", "")
+                    .Scale(5).Alignment("Center")
+                    .Spacing(8);
+                fishPageSummary.AddParagraph(fishData.ItemData.Description).Alignment("Left").Margin(24, 0).Spacing(12);
+                fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
+                fishPageSummary.AddHeading($"Stats").Alignment("Center").Margin(24, 0).Spacing(12);
+                fishPageSummary.AddParagraph($"Amount caught: {amountCaught}\nLargest size: {(string.IsNullOrEmpty(size) ? "None" : size)}\nMax size: {fishData.FishData.MaxSize} inches").Alignment("Left").Margin(24, 0).Spacing(12);
+                fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
+
+
+                var fishPageDetails = book.AddPage($"{fishPageId}_summary", fishPageId);
+                fishPageDetails.AddTitle("Details").Alignment("Center").Spacing(36);
             }
 
             if (book.TryRegister(out var error) is false)
@@ -196,10 +239,10 @@ namespace AnglersLogbook
         }
 
 
-        private void BuildFishPreviewGrid(IPageBuilder page, IReadOnlyList<ParsedItemData> fishes, int maxColumns)
+        private void BuildFishPreviewGrid(IBookBuilder book, IPageBuilder page, IReadOnlyList<ParsedItemData> fishes, int maxColumns)
         {
-            int startingColumnX = 50;
-            int startingRowY = 50;
+            int startingColumnX = 40;
+            int startingRowY = 100;
             int cellSize = 75;
 
             for (int index = 0; index < fishes.Count; index++)
@@ -207,14 +250,19 @@ namespace AnglersLogbook
                 var fishData = fishes[index];
                 var point = new Point(startingColumnX + index % maxColumns * cellSize, startingRowY + index / maxColumns * cellSize);
 
-                AddCollectableItemWithBackground(page, point, fishData, Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId), "Left");
+                AddCollectableItemWithBackground(book, page, point, fishData, Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId), "Left");
             }
         }
 
-        private void AddCollectableItemWithBackground(IPageBuilder page, Point point, ParsedItemData itemData, bool itemUnlocked, string alignment = "Left")
+        private void AddCollectableItemWithBackground(IBookBuilder book, IPageBuilder page, Point point, ParsedItemData itemData, bool itemUnlocked, string alignment = "Left")
         {
+            var fishPageId = $"fishChapter{itemData.ItemId}";
+
             page.AddBackground("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(48, 0, 16, 16).Scale(4).Alignment(alignment).Position(point.X, point.Y);
-            page.AddBackground("Image").Item(itemData.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", itemUnlocked ? itemData.DisplayName : "???").Set("Description", "").Scale(3).Alignment(alignment).Position(point.X + 8, point.Y + 8).Origin(8, 8).AddHoverFrameInPlace(100, 1f).AddHoverFrameInPlace(100, 1.1f).AddHoverFrameInPlace(100, 1.15f).AddHoverFrameInPlace(100, 1.1f);
+            page.AddBackground("Image").Item(itemData.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", itemUnlocked ? itemData.DisplayName : "???")
+                .Set("Description", "").Scale(3).Alignment(alignment).Position(point.X + 8, point.Y + 8).Origin(8, 8)
+                .AddHoverFrameInPlace(100, 1f).AddHoverFrameInPlace(100, 1.1f).AddHoverFrameInPlace(100, 1.15f).AddHoverFrameInPlace(100, 1.1f)
+                .Action($"PeacefulEnd.Parchment_JumpToChapter {fishPageId}");
         }
 
         private void AddPanelWithTitle(IPageBuilder page, Point point, string panelTitle, string panelText, int parentPanelWidth = 150, int childPanelWidth = 25, string alignment = "Left")
