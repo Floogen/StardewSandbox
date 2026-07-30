@@ -29,6 +29,8 @@ namespace AnglersLogbook
         public const string PARCHMENT_ID = "PeacefulEnd.Parchment.Core";
         public const string BOOK_DETAILS_ASSET = "Assets/PeacefulEnd.Parchment.AnglersLogbook/bookDetails";
 
+        private const int DETAIL_ROWS_PER_PAGE = 8;
+
         private IParchmentApi _parchmentApi;
 
         public override void Entry(IModHelper helper)
@@ -166,9 +168,9 @@ namespace AnglersLogbook
             int gridRows = 5;
             int maxFishPerPage = gridColumns * gridRows;
 
-            var collectableFishes = GetCollectableFishes();
+            var collectableFishes = FishDataHelper.GetAllFish();
             int fishPreviewPageCounter = 0;
-            foreach (var pageFishes in collectableFishes.Chunk(maxFishPerPage).DefaultIfEmpty(Array.Empty<ParsedItemData>()))
+            foreach (var pageFishes in collectableFishes.OrderBy(b => b.ItemData.ItemId).Chunk(maxFishPerPage).DefaultIfEmpty(Array.Empty<FishEntry>()))
             {
                 var fishPreviewPage = book.AddPage($"fishPreview{fishPreviewPageCounter}", "front");
                 if (fishPreviewPageCounter is 0)
@@ -181,17 +183,13 @@ namespace AnglersLogbook
             }
 
             // Create fish specific pages
-            List<FishEntry> allFish = FishDataHelper.GetAllFish();
-            foreach (var fishData in allFish)
+            foreach (var fishData in collectableFishes)
             {
                 bool itemUnlocked = Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId);
 
                 FishCatchInfo info = FishCatchHelper.GetCatchInfo(fishData.QualifiedItemId);
                 int amountCaught = info.TimesCaught;
                 string size = FishCatchHelper.FormatBiggestCatch(info);
-
-
-                itemUnlocked = true;
 
                 var fishPageId = $"fishChapter{fishData.ItemData.ItemId}";
                 var fishPageSummary = book.AddPage(fishPageId, fishPageId);
@@ -209,14 +207,173 @@ namespace AnglersLogbook
                 fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
 
 
-                var fishPageDetails = book.AddPage($"{fishPageId}_summary", fishPageId);
-                fishPageDetails.AddTitle("Details").Alignment("Center").Spacing(36);
+                BuildFishDetailPages(book, fishPageId, fishData);
             }
 
             if (book.TryRegister(out var error) is false)
             {
                 Monitor.Log($"Failed to register Parchment book: {error}", LogLevel.Warn);
             }
+        }
+
+        private void BuildFishDetailPages(IBookBuilder book, string fishPageId, FishEntry fish)
+        {
+            // Ordering is left position-independent so the page reads the same wherever the player opens the book
+            FishAvailability availability = FishAvailabilityHelper.Summarize(fish, preferCurrentLocation: false);
+
+            var detailsPage = book.AddPage($"{fishPageId}_details", fishPageId);
+            detailsPage.AddTitle("Details").Alignment("Center").Spacing(36);
+
+            // Only the genuinely fish wide gates go here, so an ordinary fish skips the heading entirely
+            if (availability.HasRequirements)
+            {
+                detailsPage.AddHeading("Requirements").Alignment("Center").Margin(0, 0).Spacing(12);
+                detailsPage.AddParagraph(BuildRequirementsText(availability)).Alignment("Left").Margin(24, 0).Spacing(24);
+            }
+
+            // Time and weather come from Data/Fish, so they hold everywhere and belong in one block rather than on every row
+            detailsPage.AddHeading("When").Alignment("Center").Margin(0, 0).Spacing(12);
+            detailsPage.AddParagraph(BuildWhenText(availability)).Alignment("Left").Margin(24, 0).Spacing(24);
+
+            // Go to next page if it has requirements and has locations
+            bool addedPageTurnHint = false;
+            if (availability.HasRequirements && availability.Rows.Count is not 0)
+            {
+                // Add page turn hint
+                addedPageTurnHint = true;
+                AddRightSidePageTurnHint(detailsPage);
+                detailsPage = book.AddPage($"{fishPageId}_detailsContinued", fishPageId);
+            }
+            detailsPage.AddHeading("Where").Alignment("Center").Spacing(12);
+
+            if (availability.Rows.Count is 0)
+            {
+                detailsPage.AddParagraph("Not catchable anywhere").Alignment("Left").Margin(24, 0).Spacing(12);
+                return;
+            }
+
+            // Handle overflow onto continuation pages
+            int detailPageIndex = 0;
+            var currentPage = detailsPage;
+            foreach (var pageRows in availability.Rows.Chunk(3))
+            {
+                if (detailPageIndex > 0)
+                {
+                    if (addedPageTurnHint is false)
+                    {
+                        addedPageTurnHint = true;
+                        AddRightSidePageTurnHint(detailsPage);
+                    }
+                    currentPage.AddParagraph("... continued on next page").Alignment("Left").Margin(24, 0).Spacing(8);
+
+                    currentPage = book.AddPage($"{fishPageId}_details{detailPageIndex}", fishPageId);
+                    currentPage.AddHeading("Where (continued)").Alignment("Center").Margin(24, 0).Spacing(12);
+                }
+
+                foreach (var row in pageRows)
+                {
+                    currentPage.AddParagraph(BuildLocationRowText(row, availability)).Alignment("Left").Margin(24, 0).Spacing(8);
+                }
+
+                detailPageIndex++;
+            }
+
+            AddDetailFootnotes(currentPage, availability);
+        }
+
+        private void AddRightSidePageTurnHint(IPageBuilder page)
+        {
+            page.AddBackground("Image").Texture("Assets/PeacefulEnd.Parchment/curlPage2").TextureSource(0, 0, 32, 32).Scale(5).Position(325, 425)
+                .AddFrame(32 * 0, 0, 3500f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 1, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 2, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 3, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 4, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 5, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 6, 0, 200f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 5, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 4, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 3, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 2, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 1, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .AddFrame(32 * 0, 0, 600000f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
+                .Condition($"PeacefulEnd.Parchment_CurrentBookState Ready");
+
+        }
+
+        private string BuildWhenText(FishAvailability availability)
+        {
+            List<string> lines = new List<string>() { $"Time: {availability.TimeSummary ?? "Any time"}" };
+
+            // these are only shown when they actually restrict the player, so an unrestricted fish gets a one line block
+            if (availability.WeatherSummary is not null)
+            {
+                lines.Add($"Weather: {availability.WeatherSummary}");
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        private string BuildRequirementsText(FishAvailability availability)
+        {
+            List<string> lines = new List<string>();
+
+            if (availability.MinFishingLevel > 0)
+            {
+                // the fish wide figure is a floor, so say so rather than letting it read as the requirement everywhere
+                string spread = availability.HasUniformFishingLevel ? string.Empty : " (higher in some spots)";
+                lines.Add($"- Fishing level: {availability.MinFishingLevel}+{spread}");
+            }
+            if (availability.RequiresMagicBaitEverywhere)
+            {
+                lines.Add("- Magic Bait required");
+            }
+            if (availability.CatchLimit > 0)
+            {
+                lines.Add(availability.CatchLimit is 1 ? "- Once per save" : $"- Limit of {availability.CatchLimit} per save");
+            }
+            if (availability.IsBossFish)
+            {
+                lines.Add("- Is a boss fish");
+            }
+
+            return string.Join("\n", lines);
+        }
+
+        private string BuildLocationRowText(FishAvailabilityRow row, FishAvailability availability)
+        {
+            string location = FishAvailabilityHelper.FormatLocation(row);
+            string seasons = FishAvailabilityHelper.FormatSeasons(row.Seasons) ?? "Never";
+            string gear = row.IsCrabPot ? " (crab pot)" : string.Empty;
+            // an everywhere requirement is stated up top instead, so only flag Magic Bait when it gates some routes and not others
+            bool flagMagicBait = row.RequiresMagicBait && availability.RequiresMagicBaitEverywhere is false;
+            string marker = flagMagicBait ? "*" : row.HasExtraConditions ? "^" : string.Empty;
+
+            // only worth repeating the level when this spot is gated higher than the fish as a whole
+            string level = row.MinFishingLevel > availability.MinFishingLevel ? $", level {row.MinFishingLevel}+" : string.Empty;
+
+            return $"{location}{gear}: {seasons}{level}{marker}";
+        }
+
+        private void AddDetailFootnotes(IPageBuilder page, FishAvailability availability)
+        {
+            List<string> footnotes = new List<string>();
+            if (availability.Rows.Any(row => row.RequiresMagicBait) && availability.RequiresMagicBaitEverywhere is false)
+            {
+                footnotes.Add("* Requires Magic Bait");
+            }
+            if (availability.NeedsConditionFootnote)
+            {
+                footnotes.Add("^ Has requirements beyond the season");
+            }
+
+            if (footnotes.Count is 0)
+            {
+                return;
+            }
+
+            page.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
+            page.AddParagraph(string.Join("\n", footnotes)).Alignment("Left").Margin(24, 0).Spacing(12);
         }
 
         private List<Rectangle> GetRandomFishStickers(Random random, Point sheetOrigin, int columns, int rows, Point stickerSize, int count)
@@ -239,7 +396,7 @@ namespace AnglersLogbook
         }
 
 
-        private void BuildFishPreviewGrid(IBookBuilder book, IPageBuilder page, IReadOnlyList<ParsedItemData> fishes, int maxColumns)
+        private void BuildFishPreviewGrid(IBookBuilder book, IPageBuilder page, IReadOnlyList<FishEntry> fishes, int maxColumns)
         {
             int startingColumnX = 40;
             int startingRowY = 100;
@@ -247,19 +404,19 @@ namespace AnglersLogbook
 
             for (int index = 0; index < fishes.Count; index++)
             {
-                var fishData = fishes[index];
+                var fishEntry = fishes[index];
                 var point = new Point(startingColumnX + index % maxColumns * cellSize, startingRowY + index / maxColumns * cellSize);
 
-                AddCollectableItemWithBackground(book, page, point, fishData, Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId), "Left");
+                AddCollectableItemWithBackground(book, page, point, fishEntry, Game1.player.fishCaught.ContainsKey(fishEntry.QualifiedItemId), "Left");
             }
         }
 
-        private void AddCollectableItemWithBackground(IBookBuilder book, IPageBuilder page, Point point, ParsedItemData itemData, bool itemUnlocked, string alignment = "Left")
+        private void AddCollectableItemWithBackground(IBookBuilder book, IPageBuilder page, Point point, FishEntry fishEntry, bool itemUnlocked, string alignment = "Left")
         {
-            var fishPageId = $"fishChapter{itemData.ItemId}";
+            var fishPageId = $"fishChapter{fishEntry.ItemData.ItemId}";
 
             page.AddBackground("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(48, 0, 16, 16).Scale(4).Alignment(alignment).Position(point.X, point.Y);
-            page.AddBackground("Image").Item(itemData.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", itemUnlocked ? itemData.DisplayName : "???")
+            page.AddBackground("Image").Item(fishEntry.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", itemUnlocked ? fishEntry.DisplayName : "???")
                 .Set("Description", "").Scale(3).Alignment(alignment).Position(point.X + 8, point.Y + 8).Origin(8, 8)
                 .AddHoverFrameInPlace(100, 1f).AddHoverFrameInPlace(100, 1.1f).AddHoverFrameInPlace(100, 1.15f).AddHoverFrameInPlace(100, 1.1f)
                 .Action($"PeacefulEnd.Parchment_JumpToChapter {fishPageId}");
