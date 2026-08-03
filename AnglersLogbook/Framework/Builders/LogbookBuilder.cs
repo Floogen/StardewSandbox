@@ -46,7 +46,7 @@ namespace AnglersLogbook.Framework.Builders
         {
             var collectableFishes = FishDataHelper.GetAllFish();
 
-            var stickers = ModEntry.stickerManager.GetRandomStickers(count: 64, skipCaughtRequirement: true);
+            var stickers = ModEntry.stickerManager.GetRandomStickers(Game1.player, count: 64, skipCaughtRequirement: false);
             var exclusions = new[] { new Rectangle(435, 250, 220, 80) };
             _stickerPlacements = StickerLayoutHelper.Arrange(stickers, new Rectangle(325, 260, 440, 375), exclusions, minScale: 4, maxScale: 5, largeScaleChance: 0.15f, gridStep: 4, spacing: 4, packingSamples: 20, preserveOrder: false);
 
@@ -171,7 +171,18 @@ namespace AnglersLogbook.Framework.Builders
             }
 
             // Build the intro pages (first two seen on book open)
-            var contentsPage = book.AddPage("contents", "front");
+            var contentsPage = book.AddPage("recent-catches", "front");
+            contentsPage.AddTitle("Recent Catches").Alignment("Center").Spacing(32);
+            foreach (var recentCatchInfo in RecentCatchHelper.GetRecentCatches(Game1.player).Reverse<RecentCatchInfo>())
+            {
+                var recentCatchPanel = contentsPage.AddPanel().Alignment("Center").Margin(64, 0);
+
+                recentCatchPanel.AddBackground("Paragraph").Font("Small").Text($"•").Scale(1).Alignment("Left").VerticalAlignment("Center").Position(-25, 8);
+                recentCatchPanel.AddChild("Image").Item(recentCatchInfo.Id).Scale(3);
+
+                var catchText = recentCatchInfo.SizeInInches > 0 ? $"[ItemName {recentCatchInfo.Id}] ({recentCatchInfo.SizeInInches} in.)" : $"[ItemName {recentCatchInfo.Id}]";
+                recentCatchPanel.AddBackground("Paragraph").Font("Small").Text(catchText).Scale(1).Alignment("Left").VerticalAlignment("Center").Position(75, 0);
+            }
 
             var statsPage = book.AddPage("stats", "front");
             statsPage.AddTitle("Stats").Alignment("Center");
@@ -204,7 +215,7 @@ namespace AnglersLogbook.Framework.Builders
             {
                 bool itemUnlocked = Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId);
 
-                FishCatchInfo info = FishCatchHelper.GetCatchInfo(fishData.QualifiedItemId);
+                FishCatchInfo info = FishCatchHelper.GetCatchInfo(fishData.QualifiedItemId, Game1.player);
                 int amountCaught = info.TimesCaught;
                 string size = FishCatchHelper.FormatBiggestCatch(info);
 
@@ -553,7 +564,7 @@ namespace AnglersLogbook.Framework.Builders
             page.AddBackground("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(48, 0, 16, 16).Scale(4).Alignment(alignment).Position(point.X, point.Y)
                 .Condition($"ANY \"!PeacefulEnd.Parchment_HasInputText search\" \"PeacefulEnd.Parchment_InputMatches search {fishEntry.DisplayName}\"");
             page.AddBackground("Image").Item(fishEntry.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", ShouldShowFishName(Game1.player, fishEntry.QualifiedItemId) ? fishEntry.DisplayName : "???")
-                .Set("Description", "").Scale(3).Alignment(alignment).Position(point.X + 8, point.Y + 8).Origin(8, 8)
+                .Set("Description", "").Scale(3).Alignment(alignment).Position(point.X + 7, point.Y + 8).Origin(8, 8)
                 .AddHoverFrameInPlace(100, 1f).AddHoverFrameInPlace(100, 1.1f).AddHoverFrameInPlace(100, 1.15f).AddHoverFrameInPlace(100, 1.1f)
                 .Action($"PeacefulEnd.Parchment_JumpToChapter {fishPageId}")
                 .Condition($"ANY \"!PeacefulEnd.Parchment_HasInputText search\" \"PeacefulEnd.Parchment_InputMatches search {fishEntry.DisplayName}\"");

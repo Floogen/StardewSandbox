@@ -7,6 +7,7 @@ using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Parchment.Framework.API;
+using Parchment.Framework.Patches.Objects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
@@ -63,6 +64,7 @@ namespace AnglersLogbook
                 var harmony = new Harmony(this.ModManifest.UniqueID);
 
                 // Apply patches
+                new FarmerPatch(monitor, modHelper).Apply(harmony);
             }
             catch (Exception e)
             {

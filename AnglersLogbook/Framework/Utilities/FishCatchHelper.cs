@@ -11,15 +11,20 @@ namespace AnglersLogbook.Framework.Utilities
     {
         /// <summary>Get a player's catch record for one fish.</summary>
         /// <param name="itemId">The qualified or unqualified item ID.</param>
-        /// <param name="player">The player to read, or <c>null</c> for the local player.</param>
-        public static FishCatchInfo GetCatchInfo(string itemId, Farmer player = null)
+        /// <param name="who">The player to read from.</param>
+        public static FishCatchInfo GetCatchInfo(string itemId, Farmer who)
         {
-            player ??= Game1.player;
-            if (player is null || string.IsNullOrWhiteSpace(itemId)) { return FishCatchInfo.None; }
+            if (who is null || string.IsNullOrWhiteSpace(itemId))
+            {
+                return FishCatchInfo.None;
+            }
 
-            // the dictionary is keyed by qualified ID since 1.6, so normalise whatever the caller passed
+            // The dictionary is keyed by qualified ID since 1.6, so normalise whatever the caller passed
             string qualifiedId = ItemRegistry.QualifyItemId(itemId);
-            if (qualifiedId is null || !player.fishCaught.TryGetValue(qualifiedId, out int[] record)) { return FishCatchInfo.None; }
+            if (qualifiedId is null || !who.fishCaught.TryGetValue(qualifiedId, out int[] record))
+            {
+                return FishCatchInfo.None;
+            }
 
             int timesCaught = record.Length > 0 ? record[0] : 0;
             int biggestCatch = record.Length > 1 ? record[1] : 0;
@@ -48,44 +53,53 @@ namespace AnglersLogbook.Framework.Utilities
         /// <param name="fishData">The parsed <c>Data/Fish</c> entry.</param>
         public static float? GetRecordSizeRatio(FishCatchInfo info, ParsedFishData fishData)
         {
-            if (!info.HasSize || fishData is null || fishData.MaxSize <= 0) { return null; }
+            if (!info.HasSize || fishData is null || fishData.MaxSize <= 0)
+            {
+                return null;
+            }
 
             return Math.Clamp((float)info.BiggestCatchInches / fishData.MaxSize, 0f, 1f);
         }
 
         /// <summary>Get how many distinct fish a player has caught, for a "42 of 78" style counter.</summary>
-        /// <param name="player">The player to read, or <c>null</c> for the local player.</param>
-        public static int GetDistinctCaughtCount(Farmer player = null)
+        /// <param name="who">The player to read from.</param>
+        public static int GetDistinctCaughtCount(Farmer who)
         {
-            player ??= Game1.player;
-            return player?.fishCaught?.Length ?? 0;
+            return who?.fishCaught?.Length ?? 0;
         }
 
         /// <summary>Count how many of the given fish a player has caught, for a progress counter scoped to your own list.</summary>
         /// <param name="fish">The fish entries to count against.</param>
-        /// <param name="player">The player to read, or <c>null</c> for the local player.</param>
-        public static int GetCaughtCount(IEnumerable<FishEntry> fish, Farmer player = null)
+        /// <param name="who">The player to read from.</param>
+        public static int GetCaughtCount(IEnumerable<FishEntry> fish, Farmer who)
         {
-            player ??= Game1.player;
-            if (player is null) { return 0; }
+            if (who is null)
+            {
+                return 0;
+            }
 
-            return fish.Count(entry => GetCatchInfo(entry.QualifiedItemId, player).HasCaught);
+            return fish.Count(entry => GetCatchInfo(entry.QualifiedItemId, who).HasCaught);
         }
 
         /// <summary>Get the player's lifetime fish caught stat, which counts every catch rather than distinct species.</summary>
-        /// <param name="player">The player to read, or <c>null</c> for the local player.</param>
-        public static uint GetLifetimeFishCaught(Farmer player = null)
+        /// <param name="who">The player to read from.</param>
+        public static uint GetLifetimeFishCaught(Farmer who)
         {
-            player ??= Game1.player;
-            return player?.stats?.FishCaught ?? 0u;
+            return who?.stats?.FishCaught ?? 0u;
         }
 
         /// <summary>Format a recorded catch size the way the game does, converting to centimetres outside English.</summary>
         /// <param name="info">The catch record.</param>
         public static string FormatBiggestCatch(FishCatchInfo info)
         {
-            if (!info.HasSize) { return null; }
-            if (LocalizedContentManager.CurrentLanguageCode is LocalizedContentManager.LanguageCode.en) { return $"{info.BiggestCatchInches} inches"; }
+            if (!info.HasSize)
+            {
+                return null;
+            }
+            if (LocalizedContentManager.CurrentLanguageCode is LocalizedContentManager.LanguageCode.en)
+            {
+                return $"{info.BiggestCatchInches} inches";
+            }
 
             return $"{Math.Round(info.BiggestCatchInches * 2.54)} cm";
         }

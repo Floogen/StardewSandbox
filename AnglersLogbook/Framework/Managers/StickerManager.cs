@@ -69,10 +69,8 @@ namespace AnglersLogbook.Framework.Managers
         /// </summary>
         /// <param name="who">The player whose catch record to filter against, or null for the local player</param>
         /// <param name="skipCaughtRequirement">Whether to include fish the player has not caught yet</param>
-        public List<StickerData> GetAvailableStickers(Farmer who = null, bool skipCaughtRequirement = false)
+        public List<StickerData> GetAvailableStickers(Farmer who, bool skipCaughtRequirement = false)
         {
-            who ??= Game1.player;
-
             return _stickersByItemId.Values.Where(s => skipCaughtRequirement is true || who.fishCaught.ContainsKey(s.Id)).OrderBy(s => s.Id, StringComparer.Ordinal).ToList();
         }
 
@@ -83,7 +81,7 @@ namespace AnglersLogbook.Framework.Managers
         /// <param name="salt">An extra value to vary the selection between separate pages</param>
         /// <param name="who">The player whose catch record to filter against, or null for the local player</param>
         /// <param name="skipCaughtRequirement">Whether to include fish the player has not caught yet</param>
-        public List<StickerData> GetRandomStickers(int? count = null, int salt = 0, Farmer who = null, bool skipCaughtRequirement = false)
+        public List<StickerData> GetRandomStickers(Farmer who, int? count = null, int salt = 0, bool skipCaughtRequirement = false)
         {
             // the filter runs before the take, otherwise the requested count is silently reduced by whatever it removes
             List<StickerData> available = GetAvailableStickers(who, skipCaughtRequirement);
