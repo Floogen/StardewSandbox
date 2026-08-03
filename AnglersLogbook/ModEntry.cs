@@ -1,4 +1,7 @@
-﻿using AnglersLogbook.Framework.Models.Fish;
+﻿using AnglersLogbook.Framework.Builders;
+using AnglersLogbook.Framework.Managers;
+using AnglersLogbook.Framework.Models.Fish;
+using AnglersLogbook.Framework.Models.Stickers;
 using AnglersLogbook.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
@@ -8,10 +11,13 @@ using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
 using StardewValley.Constants;
+using StardewValley.Delegates;
 using StardewValley.Extensions;
 using StardewValley.GameData.Objects;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
+using StardewValley.Minigames;
+using StardewValley.Triggers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,15 +27,24 @@ namespace AnglersLogbook
 {
     public class ModEntry : Mod
     {
+        // Constants
+        public const string PARCHMENT_ID = "PeacefulEnd.Parchment.Core";
+        public const string BOOK_ID = "PeacefulEnd.Parchment.AnglersLogbook";
+
+        public const string BOOK_DETAILS_ASSET = "Assets/PeacefulEnd.Parchment.AnglersLogbook/bookDetails";
+        public const string NOTEBOOK_ASSET = "Assets/PeacefulEnd.Parchment.AnglersLogbook/notebook";
+        public const string NOTEBOOK_GRAYSCALE_ASSET = "Assets/PeacefulEnd.Parchment.AnglersLogbook/notebookGrayscale";
+
         // Shared static helpers
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
         internal static Multiplayer multiplayer;
 
-        public const string PARCHMENT_ID = "PeacefulEnd.Parchment.Core";
-        public const string BOOK_DETAILS_ASSET = "Assets/PeacefulEnd.Parchment.AnglersLogbook/bookDetails";
+        // Builders
+        internal static LogbookBuilder logbookBuilder;
 
-        private const int DETAIL_ROWS_PER_PAGE = 8;
+        // Managers
+        internal static StickerManager stickerManager;
 
         private IParchmentApi _parchmentApi;
 
@@ -39,6 +54,9 @@ namespace AnglersLogbook
             monitor = Monitor;
             modHelper = helper;
             multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
+
+            // Create managers
+            stickerManager = new StickerManager(monitor, helper);
 
             try
             {
@@ -55,7 +73,10 @@ namespace AnglersLogbook
             // Hook into the required events
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.Content.AssetRequested += OnAssetRequested;
+
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
+            helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+            helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         }
 
         private void OnAssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
@@ -63,6 +84,14 @@ namespace AnglersLogbook
             if (e.NameWithoutLocale.IsEquivalentTo(BOOK_DETAILS_ASSET))
             {
                 e.LoadFrom(() => Helper.ModContent.Load<Texture2D>("Framework/Assets/bookDetails.png"), AssetLoadPriority.Low);
+            }
+            if (e.NameWithoutLocale.IsEquivalentTo(NOTEBOOK_ASSET))
+            {
+                e.LoadFrom(() => Helper.ModContent.Load<Texture2D>("Framework/Assets/notebook.png"), AssetLoadPriority.Low);
+            }
+            if (e.NameWithoutLocale.IsEquivalentTo(NOTEBOOK_GRAYSCALE_ASSET))
+            {
+                e.LoadFrom(() => Helper.ModContent.Load<Texture2D>("Framework/Assets/notebookGrayscale.png"), AssetLoadPriority.Low);
             }
         }
 
@@ -73,8 +102,7 @@ namespace AnglersLogbook
                 // Consume the button press
                 Helper.Input.Suppress(e.Button);
 
-                BuildBook();
-                _parchmentApi.TryOpenBook("PeacefulEnd.Parchment.AnglersLogbook");
+                logbookBuilder.OpenBook();
             }
         }
 
@@ -91,376 +119,32 @@ namespace AnglersLogbook
                 Monitor.Log("Parchment is installed but its API could not be loaded!", LogLevel.Warn);
                 return;
             }
+
+            // Create the book builder
+            logbookBuilder = new LogbookBuilder(_parchmentApi);
         }
 
-        private void BuildBook()
+        private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            var book = _parchmentApi.CreateBook("PeacefulEnd.Parchment.AnglersLogbook");
+            // Generate stickers
+            logbookBuilder.GenerateStickers();
 
-            // Setup the BookData
-            book.Set("StartOnCover", true);
-            book.Set("ExitToCover", true);
+            // Track new fish being caught
+            Game1.player.fishCaught.OnValueAdded += OnFishCaught;
+        }
 
-            book.AddOverlay("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(0, 128, 32, 32).Scale(4).Position(-68, 125)
-                .AddHoverFrame(0, 96)
-                .Action("PeacefulEnd.Parchment_GoToStart")
-                .Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Ready\" \"PeacefulEnd.Parchment_CurrentBookState Turning\"");
-
-            book.Set("Layout.MarginTop", "20");
-            book.Set("Layout.MarginSpine", "8");
-
-            book.Set("Appearance.TintColor", "200 200 100 255");
-            book.Set("Appearance.TexturePath", "Assets/PeacefulEnd.Parchment/notebook");
-            book.Set("Appearance.GrayscaleTexturePath", "Assets/PeacefulEnd.Parchment/notebookGrayscale");
-            book.Set("Appearance.OpenFrameCount", 6);
-
-            book.Set("PageCurl.TexturePath", "Assets/PeacefulEnd.Parchment/curlPage2");
-            book.Set("PageCurl.PreviousPageOffset", new Point(5, 105));
-            book.Set("PageCurl.NextPageOffset", new Point(182, 105));
-
-            // Build the cover
-            book.AddOverlay("Banner").Texture(BOOK_DETAILS_ASSET).TextureSource(0, 64, 64, 32).Position(375, 125).Scale(3).Set("CapWidth", 29).Text("Fishing Log").Font("Dialogue").Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Cover\" \"PeacefulEnd.Parchment_CurrentBookState Sliding\"");
-            //book.AddOverlay("Banner").Texture(BOOK_DETAILS_ASSET).TextureSource(0, 64, 96, 32).Position(325, 125).Scale(3).Set("CapWidth", 38).Text($"Fishing").Font("Dialogue").Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Cover\" \"PeacefulEnd.Parchment_CurrentBookState Sliding\"");
-            book.AddOverlay("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(0, 16, 14, 8).Position(350, 115).Scale(5).Origin(7, 4).Rotation(-45).Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Cover\" \"PeacefulEnd.Parchment_CurrentBookState Sliding\"");
-            book.AddOverlay("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(0, 16, 14, 8).Position(700, 200).Scale(5).Origin(7, 4).Rotation(-45).Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Cover\" \"PeacefulEnd.Parchment_CurrentBookState Sliding\"");
-
-            book.AddOverlay("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(96, 0, 48, 16).Position(400, 250).Origin(24, 8).Rotation(20).Scale(6).Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Cover\" \"PeacefulEnd.Parchment_CurrentBookState Sliding\"");
-
-            var random = new Random();
-            List<Point> stickerSpots = new List<Point>()
+        private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)
+        {
+            if (Game1.player is not null)
             {
-                new Point(420, 350),
-                new Point(320, 325),
-                new Point(595, 315),
-                new Point(625, 435),
-                new Point(500, 450),
-                new Point(320, 520),
-                new Point(625, 540)
-            };
-            stickerSpots = stickerSpots.OrderBy(p => random.Next()).ToList();
-
-            int stickerSpotIndex = 0;
-            foreach (var fishSticker in GetRandomFishStickers(random, new Point(144, 0), 3, 8, new Point(32, 32), 8))
-            {
-                if (stickerSpotIndex >= stickerSpots.Count)
-                {
-                    break;
-                }
-
-                var stickerSpot = stickerSpots[stickerSpotIndex];
-                book.AddOverlay("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(fishSticker.X, fishSticker.Y, fishSticker.Width, fishSticker.Height).Position(stickerSpot.X, stickerSpot.Y).Origin(16, 16).Rotation(random.Next(-1, 1) * 45).Scale(random.Next(4, 6)).Set("SpriteEffects", random.NextBool(0.25f) ? "FlipHorizontally" : "None").Condition("ANY \"PeacefulEnd.Parchment_CurrentBookState Cover\" \"PeacefulEnd.Parchment_CurrentBookState Sliding\"");
-
-                stickerSpotIndex++;
-            }
-            // Build the intro pages (first two seen on book open)
-            var contentsPage = book.AddPage("contents", "front");
-
-            var statsPage = book.AddPage("stats", "front");
-            statsPage.AddTitle("Stats").Alignment("Center");
-
-            GetUniqueFishStats(Game1.player, out int uniqueFishCaught, out int uniqueFishTotal);
-            AddPanelWithTitle(statsPage, new Point(40, 100), "Unique\nFish Caught", $"{uniqueFishCaught} / {uniqueFishTotal}");
-            AddPanelWithTitle(statsPage, new Point(-40, 100), "Total\nFish Caught", $"{Game1.player.stats.Get("PreciseFishCaught")}", alignment: "Right");
-            AddPanelWithTitle(statsPage, new Point(40, 300), "Treasures Found", $"{Game1.player.stats.Get("FishingTreasures")}");
-            AddPanelWithTitle(statsPage, new Point(-40, 300), "Fishing\nAttempts", $"{Game1.player.stats.Get("TimesFished")}", alignment: "Right");
-
-            int gridColumns = 5;
-            int gridRows = 5;
-            int maxFishPerPage = gridColumns * gridRows;
-
-            var collectableFishes = FishDataHelper.GetAllFish();
-            int fishPreviewPageCounter = 0;
-            foreach (var pageFishes in collectableFishes.OrderBy(b => b.ItemData.ItemId).Chunk(maxFishPerPage).DefaultIfEmpty(Array.Empty<FishEntry>()))
-            {
-                var fishPreviewPage = book.AddPage($"fishPreview{fishPreviewPageCounter}", "front");
-                if (fishPreviewPageCounter is 0)
-                {
-                    fishPreviewPage.AddTitle("Fish").Alignment("Center");
-                }
-
-                BuildFishPreviewGrid(book, fishPreviewPage, pageFishes, gridColumns);
-                fishPreviewPageCounter += 1;
-            }
-
-            // Create fish specific pages
-            foreach (var fishData in collectableFishes)
-            {
-                bool itemUnlocked = Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId);
-
-                FishCatchInfo info = FishCatchHelper.GetCatchInfo(fishData.QualifiedItemId);
-                int amountCaught = info.TimesCaught;
-                string size = FishCatchHelper.FormatBiggestCatch(info);
-
-                var fishPageId = $"fishChapter{fishData.ItemData.ItemId}";
-                var fishPageSummary = book.AddPage(fishPageId, fishPageId);
-
-                fishPageSummary.AddTitle(itemUnlocked ? fishData.ItemData.DisplayName : "???").Alignment("Center").Spacing(36);
-                var fishPanel =  fishPageSummary.AddPanel().Spacing(32);
-                fishPanel.AddBackground("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(48, 0, 16, 16).Scale(8).Alignment("Center").Position(0, -24);
-                fishPanel.AddChild("Image").Item(fishData.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", "").Set("Description", "")
-                    .Scale(5).Alignment("Center")
-                    .Spacing(8);
-                fishPageSummary.AddParagraph(fishData.ItemData.Description).Alignment("Left").Margin(24, 0).Spacing(12);
-                fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
-                fishPageSummary.AddHeading($"Stats").Alignment("Center").Margin(24, 0).Spacing(12);
-                fishPageSummary.AddParagraph($"Amount caught: {amountCaught}\nLargest size: {(string.IsNullOrEmpty(size) ? "None" : size)}\nMax size: {fishData.FishData.MaxSize} inches").Alignment("Left").Margin(24, 0).Spacing(12);
-                fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
-
-
-                BuildFishDetailPages(book, fishPageId, fishData);
-            }
-
-            if (book.TryRegister(out var error) is false)
-            {
-                Monitor.Log($"Failed to register Parchment book: {error}", LogLevel.Warn);
+                Game1.player.fishCaught.OnValueAdded -= OnFishCaught;
             }
         }
 
-        private void BuildFishDetailPages(IBookBuilder book, string fishPageId, FishEntry fish)
+        private void OnFishCaught(string key, int[] value)
         {
-            // Ordering is left position-independent so the page reads the same wherever the player opens the book
-            FishAvailability availability = FishAvailabilityHelper.Summarize(fish, preferCurrentLocation: false);
-
-            var detailsPage = book.AddPage($"{fishPageId}_details", fishPageId);
-            detailsPage.AddTitle("Details").Alignment("Center").Spacing(36);
-
-            // Only the genuinely fish wide gates go here, so an ordinary fish skips the heading entirely
-            if (availability.HasRequirements)
-            {
-                detailsPage.AddHeading("Requirements").Alignment("Center").Margin(0, 0).Spacing(12);
-                detailsPage.AddParagraph(BuildRequirementsText(availability)).Alignment("Left").Margin(24, 0).Spacing(24);
-            }
-
-            // Time and weather come from Data/Fish, so they hold everywhere and belong in one block rather than on every row
-            detailsPage.AddHeading("When").Alignment("Center").Margin(0, 0).Spacing(12);
-            detailsPage.AddParagraph(BuildWhenText(availability)).Alignment("Left").Margin(24, 0).Spacing(24);
-
-            // Go to next page if it has requirements and has locations
-            bool addedPageTurnHint = false;
-            if (availability.HasRequirements && availability.Rows.Count is not 0)
-            {
-                // Add page turn hint
-                addedPageTurnHint = true;
-                AddRightSidePageTurnHint(detailsPage);
-                detailsPage = book.AddPage($"{fishPageId}_detailsContinued", fishPageId);
-            }
-            detailsPage.AddHeading("Where").Alignment("Center").Spacing(12);
-
-            if (availability.Rows.Count is 0)
-            {
-                detailsPage.AddParagraph("Not catchable anywhere").Alignment("Left").Margin(24, 0).Spacing(12);
-                return;
-            }
-
-            // Handle overflow onto continuation pages
-            int detailPageIndex = 0;
-            var currentPage = detailsPage;
-            foreach (var pageRows in availability.Rows.Chunk(3))
-            {
-                if (detailPageIndex > 0)
-                {
-                    if (addedPageTurnHint is false)
-                    {
-                        addedPageTurnHint = true;
-                        AddRightSidePageTurnHint(detailsPage);
-                    }
-                    currentPage.AddParagraph("... continued on next page").Alignment("Left").Margin(24, 0).Spacing(8);
-
-                    currentPage = book.AddPage($"{fishPageId}_details{detailPageIndex}", fishPageId);
-                    currentPage.AddHeading("Where (continued)").Alignment("Center").Margin(24, 0).Spacing(12);
-                }
-
-                foreach (var row in pageRows)
-                {
-                    currentPage.AddParagraph(BuildLocationRowText(row, availability)).Alignment("Left").Margin(24, 0).Spacing(8);
-                }
-
-                detailPageIndex++;
-            }
-
-            AddDetailFootnotes(currentPage, availability);
-        }
-
-        private void AddRightSidePageTurnHint(IPageBuilder page)
-        {
-            page.AddBackground("Image").Texture("Assets/PeacefulEnd.Parchment/curlPage2").TextureSource(0, 0, 32, 32).Scale(5).Position(325, 425)
-                .AddFrame(32 * 0, 0, 3500f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 1, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 2, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 3, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 4, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 5, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 6, 0, 200f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 5, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 4, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 3, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 2, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 1, 0, 100f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .AddFrame(32 * 0, 0, 600000f, condition: $"PeacefulEnd.Parchment_CurrentBookState Ready, PeacefulEnd.Parchment_CurrentPageId {page.PageId}")
-                .Condition($"PeacefulEnd.Parchment_CurrentBookState Ready");
-
-        }
-
-        private string BuildWhenText(FishAvailability availability)
-        {
-            List<string> lines = new List<string>() { $"Time: {availability.TimeSummary ?? "Any time"}" };
-
-            // these are only shown when they actually restrict the player, so an unrestricted fish gets a one line block
-            if (availability.WeatherSummary is not null)
-            {
-                lines.Add($"Weather: {availability.WeatherSummary}");
-            }
-
-            return string.Join("\n", lines);
-        }
-
-        private string BuildRequirementsText(FishAvailability availability)
-        {
-            List<string> lines = new List<string>();
-
-            if (availability.MinFishingLevel > 0)
-            {
-                // the fish wide figure is a floor, so say so rather than letting it read as the requirement everywhere
-                string spread = availability.HasUniformFishingLevel ? string.Empty : " (higher in some spots)";
-                lines.Add($"- Fishing level: {availability.MinFishingLevel}+{spread}");
-            }
-            if (availability.RequiresMagicBaitEverywhere)
-            {
-                lines.Add("- Magic Bait required");
-            }
-            if (availability.CatchLimit > 0)
-            {
-                lines.Add(availability.CatchLimit is 1 ? "- Once per save" : $"- Limit of {availability.CatchLimit} per save");
-            }
-            if (availability.IsBossFish)
-            {
-                lines.Add("- Is a boss fish");
-            }
-
-            return string.Join("\n", lines);
-        }
-
-        private string BuildLocationRowText(FishAvailabilityRow row, FishAvailability availability)
-        {
-            string location = FishAvailabilityHelper.FormatLocation(row);
-            string seasons = FishAvailabilityHelper.FormatSeasons(row.Seasons) ?? "Never";
-            string gear = row.IsCrabPot ? " (crab pot)" : string.Empty;
-            // an everywhere requirement is stated up top instead, so only flag Magic Bait when it gates some routes and not others
-            bool flagMagicBait = row.RequiresMagicBait && availability.RequiresMagicBaitEverywhere is false;
-            string marker = flagMagicBait ? "*" : row.HasExtraConditions ? "^" : string.Empty;
-
-            // only worth repeating the level when this spot is gated higher than the fish as a whole
-            string level = row.MinFishingLevel > availability.MinFishingLevel ? $", level {row.MinFishingLevel}+" : string.Empty;
-
-            return $"{location}{gear}: {seasons}{level}{marker}";
-        }
-
-        private void AddDetailFootnotes(IPageBuilder page, FishAvailability availability)
-        {
-            List<string> footnotes = new List<string>();
-            if (availability.Rows.Any(row => row.RequiresMagicBait) && availability.RequiresMagicBaitEverywhere is false)
-            {
-                footnotes.Add("* Requires Magic Bait");
-            }
-            if (availability.NeedsConditionFootnote)
-            {
-                footnotes.Add("^ Has requirements beyond the season");
-            }
-
-            if (footnotes.Count is 0)
-            {
-                return;
-            }
-
-            page.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
-            page.AddParagraph(string.Join("\n", footnotes)).Alignment("Left").Margin(24, 0).Spacing(12);
-        }
-
-        private List<Rectangle> GetRandomFishStickers(Random random, Point sheetOrigin, int columns, int rows, Point stickerSize, int count)
-        {
-            List<Rectangle> results = new List<Rectangle>();
-
-            List<int> indices = Enumerable.Range(0, columns * rows).ToList();
-            for (int i = 0; i < count && indices.Count > 0; i++)
-            {
-                int pick = random.Next(indices.Count);
-                int index = indices[pick];
-                indices.RemoveAt(pick);
-
-                int x = sheetOrigin.X + (index % columns) * stickerSize.X;
-                int y = sheetOrigin.Y + (index / columns) * stickerSize.Y;
-                results.Add(new Rectangle(x, y, stickerSize.X, stickerSize.Y));
-            }
-
-            return results;
-        }
-
-
-        private void BuildFishPreviewGrid(IBookBuilder book, IPageBuilder page, IReadOnlyList<FishEntry> fishes, int maxColumns)
-        {
-            int startingColumnX = 40;
-            int startingRowY = 100;
-            int cellSize = 75;
-
-            for (int index = 0; index < fishes.Count; index++)
-            {
-                var fishEntry = fishes[index];
-                var point = new Point(startingColumnX + index % maxColumns * cellSize, startingRowY + index / maxColumns * cellSize);
-
-                AddCollectableItemWithBackground(book, page, point, fishEntry, Game1.player.fishCaught.ContainsKey(fishEntry.QualifiedItemId), "Left");
-            }
-        }
-
-        private void AddCollectableItemWithBackground(IBookBuilder book, IPageBuilder page, Point point, FishEntry fishEntry, bool itemUnlocked, string alignment = "Left")
-        {
-            var fishPageId = $"fishChapter{fishEntry.ItemData.ItemId}";
-
-            page.AddBackground("Image").Texture(BOOK_DETAILS_ASSET).TextureSource(48, 0, 16, 16).Scale(4).Alignment(alignment).Position(point.X, point.Y);
-            page.AddBackground("Image").Item(fishEntry.QualifiedItemId).Tint(itemUnlocked ? "255 255 255 255" : "0 0 0 89").Set("DisplayName", itemUnlocked ? fishEntry.DisplayName : "???")
-                .Set("Description", "").Scale(3).Alignment(alignment).Position(point.X + 8, point.Y + 8).Origin(8, 8)
-                .AddHoverFrameInPlace(100, 1f).AddHoverFrameInPlace(100, 1.1f).AddHoverFrameInPlace(100, 1.15f).AddHoverFrameInPlace(100, 1.1f)
-                .Action($"PeacefulEnd.Parchment_JumpToChapter {fishPageId}");
-        }
-
-        private void AddPanelWithTitle(IPageBuilder page, Point point, string panelTitle, string panelText, int parentPanelWidth = 150, int childPanelWidth = 25, string alignment = "Left")
-        {
-            var parentPanel = page.AddBackground("Panel").Width(parentPanelWidth).Sizing("Fixed").Padding(0).Alignment(alignment).Position(point.X, point.Y);
-            parentPanel.AddChild("Paragraph").Text(panelTitle).Alignment("Center");
-
-            var childPanel = parentPanel.AddChild("Panel").Texture(BOOK_DETAILS_ASSET).TextureSource(64, 32, 24, 24).Scale(3).Width(childPanelWidth).Sizing("Fixed").Padding(0).Alignment("Center");
-            childPanel.AddChild("Paragraph").Text(panelText).Alignment("Center");
-        }
-
-        private void GetUniqueFishStats(Farmer who, out int uniqueFishCaught, out int uniqueFishTotal)
-        {
-            uniqueFishCaught = 0;
-            uniqueFishTotal = 0;
-
-            foreach (var fishData in GetCollectableFishes())
-            {
-                uniqueFishTotal += 1;
-                if (Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId))
-                {
-                    uniqueFishCaught += 1;
-                }
-            }
-        }
-
-        private List<ParsedItemData> GetCollectableFishes()
-        {
-            List<ParsedItemData> collectableFishes = new List<ParsedItemData>();
-            foreach (var fishData in ItemRegistry.GetObjectTypeDefinition().GetAllData().Where(d => d.ObjectType.EqualsIgnoreCase("Fish")))
-            {
-                ObjectData objectData = fishData.RawData as ObjectData;
-                if (objectData is not null && objectData.ExcludeFromFishingCollection)
-                {
-                    continue;
-                }
-
-                collectableFishes.Add(fishData);
-            }
-
-            return collectableFishes;
+            // Generate stickers
+            logbookBuilder.GenerateStickers();
         }
     }
 }
