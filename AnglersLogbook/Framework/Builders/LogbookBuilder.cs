@@ -344,8 +344,7 @@ namespace AnglersLogbook.Framework.Builders
             // Ordering is left position-independent so the page reads the same wherever the player opens the book
             FishAvailability availability = FishAvailabilityHelper.Summarize(fish, preferCurrentLocation: false);
 
-            var detailsPage = book.AddPage($"{fishPageId}_details", fishPageId).Tag("Searchable");
-            detailsPage.OnKeyPress("Escape, ControllerB").Action("PeacefulEnd.Parchment_JumpToPageId fishPreview0");
+            var detailsPage = AddDetailPage(book, $"{fishPageId}_details", fishPageId);
             detailsPage.AddTitle("Details").Alignment("Center").Spacing(36);
 
             // Only the genuinely fish wide gates go here, so an ordinary fish skips the heading entirely
@@ -366,8 +365,7 @@ namespace AnglersLogbook.Framework.Builders
                 // Add page turn hint
                 addedPageTurnHint = true;
                 AddRightSidePageTurnHint(detailsPage);
-                detailsPage = book.AddPage($"{fishPageId}_detailsContinued", fishPageId);
-                detailsPage.OnKeyPress("Escape, ControllerB").Action("PeacefulEnd.Parchment_JumpToPageId fishPreview0");
+                detailsPage = AddDetailPage(book, $"{fishPageId}_detailsContinued", fishPageId);
             }
             detailsPage.AddHeading("Where").Alignment("Center").Spacing(12);
 
@@ -422,13 +420,20 @@ namespace AnglersLogbook.Framework.Builders
                 }
 
                 detailPageIndex++;
-                currentPage = book.AddPage($"{fishPageId}_details{detailPageIndex}", fishPageId);
-                detailsPage.OnKeyPress("Escape, ControllerB").Action("PeacefulEnd.Parchment_JumpToPageId fishPreview0");
+                currentPage = AddDetailPage(book, $"{fishPageId}_details{detailPageIndex}", fishPageId);
                 currentPage.AddHeading("Where (continued)").Alignment("Center").Margin(24, 0).Spacing(12);
                 currentPageRows.Clear();
             }
 
             AddDetailFootnotes(book, fishPageId, currentPage, availability, detailPageIndex + 1);
+        }
+
+        private IPageBuilder AddDetailPage(IBookBuilder book, string pageId, string fishPageId)
+        {
+            var page = book.AddPage(pageId, fishPageId).Tag("Searchable");
+            page.OnKeyPress("Escape, ControllerB").Action("PeacefulEnd.Parchment_JumpToPageId fishPreview0");
+
+            return page;
         }
 
         private void AddRightSidePageTurnHint(IPageBuilder page)
@@ -548,7 +553,7 @@ namespace AnglersLogbook.Framework.Builders
             page.RemoveLast();
             AddContinuationHint(page);
 
-            var footnotePage = book.AddPage($"{fishPageId}_details{spillPageIndex}", fishPageId);
+            var footnotePage = AddDetailPage(book, $"{fishPageId}_details{spillPageIndex}", fishPageId);
             footnotePage.AddParagraph(string.Join("\n", footnotes)).Alignment("Left").Margin(24, 0).Spacing(12);
         }
 
