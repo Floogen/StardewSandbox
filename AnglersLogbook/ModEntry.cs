@@ -1,5 +1,7 @@
-﻿using AnglersLogbook.Framework.API.External.Parchment;
+﻿using AnglersLogbook.Framework;
+using AnglersLogbook.Framework.API.External.Parchment;
 using AnglersLogbook.Framework.Builders;
+using AnglersLogbook.Framework.External.API.GMCM;
 using AnglersLogbook.Framework.Managers;
 using AnglersLogbook.Framework.Models.Fish;
 using AnglersLogbook.Framework.Models.Stickers;
@@ -43,6 +45,7 @@ namespace AnglersLogbook
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
         internal static Multiplayer multiplayer;
+        internal static Config config;
 
         // Builders
         internal static LogbookBuilder logbookBuilder;
@@ -59,6 +62,7 @@ namespace AnglersLogbook
             monitor = Monitor;
             modHelper = helper;
             multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
+            config = helper.ReadConfig<Config>();
 
             // Create managers
             stickerManager = new StickerManager(monitor, helper);
@@ -149,11 +153,8 @@ namespace AnglersLogbook
 
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (e.Button is SButton.O && Context.IsPlayerFree && Game1.activeClickableMenu is null)
+            if (config.LogbookShortcut is not null && config.LogbookShortcut.IsDown() && _parchmentApi is not null && Context.IsPlayerFree && Game1.activeClickableMenu is null)
             {
-                // Consume the button press
-                Helper.Input.Suppress(e.Button);
-
                 logbookBuilder.OpenBook();
             }
         }
@@ -170,6 +171,23 @@ namespace AnglersLogbook
             {
                 Monitor.Log("Parchment is installed but its API could not be loaded!", LogLevel.Warn);
                 return;
+            }
+
+            var gmcmApi = Helper.ModRegistry.GetApi<IGenericModConfigMenuApi>("spacechase0.GenericModConfigMenu");
+            if (gmcmApi is not null)
+            {
+                gmcmApi.Register(
+                    mod: ModManifest,
+                    reset: () => config = new Config(),
+                    save: () => modHelper.WriteConfig(config)
+                );
+
+                gmcmApi.AddKeybindList(
+                    mod: ModManifest,
+                    name: () => "Open Fishing Log Shortcut",
+                    getValue: () => config.LogbookShortcut,
+                    setValue: value => config.LogbookShortcut = value
+                );
             }
 
             // Create the book builder
