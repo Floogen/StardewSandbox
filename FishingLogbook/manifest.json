@@ -1,0 +1,11 @@
+﻿{
+  "Name": "[Parchment] Fishing Logbook",
+  "Author": "PeacefulEnd",
+  "Version": "%ProjectVersion%",
+  "Description": "A Parchment mod that adds a handy logbook which helps with all things fishing.",
+  "UniqueID": "PeacefulEnd.Parchment.FishingLogbook",
+  "EntryDll": "FishingLogbook.dll",
+  "MinimumApiVersion": "3.14.4",
+  "UpdateKeys": [ "Nexus:????" ],
+  "Dependencies": []
+}
