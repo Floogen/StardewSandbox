@@ -1,4 +1,4 @@
-namespace Parchment.Framework.API
+namespace AnglersLogbook.Framework.API.External.Parchment
 {
     /// <summary>Builds one element. Obtained from the add methods on <see cref="IPageBuilder"/> and <see cref="IBookBuilder"/>.</summary>
     public interface IElementBuilder
@@ -11,7 +11,7 @@ namespace Parchment.Framework.API
 
         /// <summary>Sets any field on the element by name, for anything the methods below don't cover. Fields that don't exist on this
         /// element type are reported when the book is registered, along with the ones that do.</summary>
-        IElementBuilder Set(string field, object? value);
+        IElementBuilder Set(string field, object value);
 
         /// <summary>Sets the element's ID, which page actions and queries use to refer to it.</summary>
         IElementBuilder WithId(string id);
@@ -165,7 +165,7 @@ namespace Parchment.Framework.API
         /// overhangs its own bounds rather than pushing anything aside.</param>
         /// <param name="condition">A game state query deciding whether the frame plays. When every frame's condition fails, the element
         /// falls back to drawing its source rectangle.</param>
-        IElementBuilder AddFrame(int x, int y, float duration = 0f, float scale = 1f, string? condition = null);
+        IElementBuilder AddFrame(int x, int y, float duration = 0f, float scale = 1f, string condition = null);
 
         /// <summary>Adds an animation frame that keeps whatever the element already draws, varying only its timing, offset, scale or condition.
         /// Understood by every element type, so this is what animates a Panel or a Heading as well as how an item's icon is animated, since Item draws a sprite whose place in the sheet isn't yours to know.
@@ -173,14 +173,14 @@ namespace Parchment.Framework.API
         /// <param name="duration">How long the frame is shown, in milliseconds. 0 leaves it to the element's FrameDuration.</param>
         /// <param name="scale">A multiplier on the element's scale while this frame draws.</param>
         /// <param name="condition">A game state query deciding whether the frame plays.</param>
-        IElementBuilder AddFrameInPlace(float duration = 0f, float scale = 1f, string? condition = null);
+        IElementBuilder AddFrameInPlace(float duration = 0f, float scale = 1f, string condition = null);
 
         /// <summary>Adds a frame played while the cursor is over the element, replacing the idle frames for as long as it stays there.
         /// When the hover frames are empty or fully conditioned out, the idle animation carries on rather than the element going still.</summary>
-        IElementBuilder AddHoverFrame(int x, int y, float duration = 0f, float scale = 1f, string? condition = null);
+        IElementBuilder AddHoverFrame(int x, int y, float duration = 0f, float scale = 1f, string condition = null);
 
         /// <summary>Adds a hover frame that keeps whatever the element already draws, varying only its timing, scale or condition.</summary>
-        IElementBuilder AddHoverFrameInPlace(float duration = 0f, float scale = 1f, string? condition = null);
+        IElementBuilder AddHoverFrameInPlace(float duration = 0f, float scale = 1f, string condition = null);
 
         /// <summary>Shifts the frame added last, whether idle or hover, without moving where the element sits. Measured in unscaled sprite pixels multiplied by the element's scale.
         /// A draw-time effect like a frame's scale, so the element keeps the space and the hitbox it was measured with. Unlike scale it works on any element type, and a container carries its children and its own layers along with it.

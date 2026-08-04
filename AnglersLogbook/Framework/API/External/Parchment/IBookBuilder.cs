@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Parchment.Framework.API
+namespace AnglersLogbook.Framework.API.External.Parchment
 {
     /// <summary>Builds a book in code. Obtained from <see cref="IParchmentApi.CreateBook"/>, then registered or opened through its own methods.</summary>
     public interface IBookBuilder
@@ -10,7 +10,7 @@ namespace Parchment.Framework.API
 
         /// <summary>Sets any field on the book by name, for anything the methods below don't cover. The name may be a dotted path into a
         /// nested group, such as "Appearance.Scale", "Layout.MarginTop" or "Animation.PageTurnDuration".</summary>
-        IBookBuilder Set(string field, object? value);
+        IBookBuilder Set(string field, object value);
 
         /// <summary>Sets the sprite used for the book item.</summary>
         IBookBuilder Sprite(string spritePath);

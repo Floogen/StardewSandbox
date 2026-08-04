@@ -1,4 +1,5 @@
-﻿using AnglersLogbook.Framework.Builders;
+﻿using AnglersLogbook.Framework.API.External.Parchment;
+using AnglersLogbook.Framework.Builders;
 using AnglersLogbook.Framework.Managers;
 using AnglersLogbook.Framework.Models.Fish;
 using AnglersLogbook.Framework.Models.Stickers;
@@ -6,7 +7,6 @@ using AnglersLogbook.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Parchment.Framework.API;
 using Parchment.Framework.Patches.Objects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;

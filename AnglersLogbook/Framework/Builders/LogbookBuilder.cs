@@ -1,9 +1,9 @@
-﻿using AnglersLogbook.Framework.Managers;
+﻿using AnglersLogbook.Framework.API.External.Parchment;
+using AnglersLogbook.Framework.Managers;
 using AnglersLogbook.Framework.Models.Fish;
 using AnglersLogbook.Framework.Models.Stickers;
 using AnglersLogbook.Framework.Utilities;
 using Microsoft.Xna.Framework;
-using Parchment.Framework.API;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Delegates;

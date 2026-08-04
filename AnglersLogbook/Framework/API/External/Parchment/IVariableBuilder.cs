@@ -1,4 +1,4 @@
-﻿namespace Parchment.Framework.API
+﻿namespace AnglersLogbook.Framework.API.External.Parchment
 {
     /// <summary>Builds one variable a book declares. Obtained from <see cref="IBookBuilder.AddVariable"/>.</summary>
     public interface IVariableBuilder
@@ -7,7 +7,7 @@
         string VariableId { get; }
 
         /// <summary>Sets any field on the variable by name, for anything the methods below don't cover. Fields that don't exist are reported when the book is registered, along with the ones that do.</summary>
-        IVariableBuilder Set(string field, object? value);
+        IVariableBuilder Set(string field, object value);
 
         /// <summary>What the variable holds: "Boolean", "Number" or "Text". Defaults to "Boolean", and decides which values Default and AllowedValue accept.</summary>
         IVariableBuilder Type(string variableType);

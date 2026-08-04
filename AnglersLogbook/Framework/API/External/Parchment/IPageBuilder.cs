@@ -1,4 +1,4 @@
-﻿namespace Parchment.Framework.API
+﻿namespace AnglersLogbook.Framework.API.External.Parchment
 {
     /// <summary>Builds one page of a book. Obtained from <see cref="IBookBuilder.AddPage(string)"/>.</summary>
     public interface IPageBuilder
@@ -7,7 +7,7 @@
         string PageId { get; }
 
         /// <summary>Sets any field on the page by name, for anything the methods below don't cover.</summary>
-        IPageBuilder Set(string field, object? value);
+        IPageBuilder Set(string field, object value);
 
         /// <summary>Adds an element to the page's stacked content, by element type name such as "Heading" or "Image".</summary>
         IElementBuilder Add(string elementType);
