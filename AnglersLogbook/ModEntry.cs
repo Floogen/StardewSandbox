@@ -259,6 +259,8 @@ namespace AnglersLogbook
         {
             // Generate stickers
             logbookBuilder.GenerateStickers();
+
+            logbookBuilder.RefreshBook();
         }
     }
 }

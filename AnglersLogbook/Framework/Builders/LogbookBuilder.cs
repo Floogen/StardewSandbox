@@ -122,7 +122,7 @@ namespace AnglersLogbook.Framework.Builders
                     .Condition($"!PeacefulEnd.Parchment_HasVariable {ModEntry.BOOK_ID} bookmark{slot} none, ANY \"PeacefulEnd.Parchment_CurrentBookState Ready\" \"PeacefulEnd.Parchment_CurrentBookState Turning\"");
 
                 bookmarkPanel.AddChild("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(64, 64, 32, 17).Scale(4).Alignment("Center")
-                    .Set("Description", $"Go to {fishData.DisplayName}")
+                    .Set("Description", $"Go to {(ShouldShowFishName(Game1.player, fishData.QualifiedItemId) ? fishData.DisplayName : "???")}")
                     .Tint(nameof(Color.MediumSeaGreen))
                     .AddFrameInPlace()
                     .FrameAction($"PeacefulEnd.Parchment_ClearFlag bookmark{fishData.ItemData.ItemId}")
@@ -173,15 +173,15 @@ namespace AnglersLogbook.Framework.Builders
             // Build the intro pages (first two seen on book open)
             var contentsPage = book.AddPage("recent-catches", "front");
             contentsPage.AddTitle("Recent Catches").Alignment("Center").Spacing(32);
-            foreach (var recentCatchInfo in RecentCatchHelper.GetRecentCatches(Game1.player).Reverse<RecentCatchInfo>())
+            foreach (var recentCatchInfo in RecentCatchHelper.GetRecentCatches(Game1.player).Reverse<RecentCatchInfo>().Take(7))
             {
-                var recentCatchPanel = contentsPage.AddPanel().Alignment("Center").Margin(64, 0);
+                var recentCatchPanel = contentsPage.AddPanel().Alignment("Center").Margin(64, 0).Spacing(20);
 
                 recentCatchPanel.AddBackground("Paragraph").Font("Small").Text($"•").Scale(1).Alignment("Left").VerticalAlignment("Center").Position(-25, 8);
                 recentCatchPanel.AddChild("Image").Item(recentCatchInfo.Id).Scale(3);
 
                 var catchText = recentCatchInfo.SizeInInches > 0 ? $"[ItemName {recentCatchInfo.Id}] ({recentCatchInfo.SizeInInches} in.)" : $"[ItemName {recentCatchInfo.Id}]";
-                recentCatchPanel.AddBackground("Paragraph").Font("Small").Text(catchText).Scale(1).Alignment("Left").VerticalAlignment("Center").Position(75, 0);
+                recentCatchPanel.AddBackground("Paragraph").Font("Small").Text(catchText).Scale(1).Alignment("Left").VerticalAlignment("Center").Width(300).Position(75, 0);
             }
 
             var statsPage = book.AddPage("stats", "front");
@@ -323,7 +323,8 @@ namespace AnglersLogbook.Framework.Builders
         {
             if (Build().TryOpen(out string error) is false) { ModEntry.monitor.Log($"Couldn't open the logbook: {error}", LogLevel.Warn); }
         }
-        private void RefreshBook()
+
+        public void RefreshBook()
         {
             IBookBuilder book = Build();
 
@@ -347,7 +348,7 @@ namespace AnglersLogbook.Framework.Builders
             var detailsPage = AddDetailPage(book, $"{fishPageId}_details", fishPageId);
             detailsPage.AddTitle("Details").Alignment("Center").Spacing(36);
 
-            // Only the genuinely fish wide gates go here, so an ordinary fish skips the heading entirely
+            // Only the genuinely fish with requirements go here, so an ordinary fish skips the heading entirely
             if (availability.HasRequirements)
             {
                 detailsPage.AddHeading("Requirements").Alignment("Center").Margin(0, 0).Spacing(12);
@@ -364,7 +365,11 @@ namespace AnglersLogbook.Framework.Builders
             {
                 // Add page turn hint
                 addedPageTurnHint = true;
-                AddRightSidePageTurnHint(detailsPage);
+                //AddRightSidePageTurnHint(detailsPage);
+
+                detailsPage.AddHeading("Where").Alignment("Center").Spacing(12);
+                AddContinuationHint(detailsPage);
+
                 detailsPage = AddDetailPage(book, $"{fishPageId}_detailsContinued", fishPageId);
             }
             detailsPage.AddHeading("Where").Alignment("Center").Spacing(12);
