@@ -1,5 +1,4 @@
 ﻿using AnglersLogbook.Framework;
-using AnglersLogbook.Framework.API.External.Parchment;
 using AnglersLogbook.Framework.Builders;
 using AnglersLogbook.Framework.External.API.GMCM;
 using AnglersLogbook.Framework.Managers;
@@ -9,6 +8,7 @@ using AnglersLogbook.Framework.Utilities;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Parchment.Framework.API;
 using Parchment.Framework.Patches.Objects;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -242,7 +242,7 @@ namespace AnglersLogbook
             }
             Game1.player.mailReceived.Add("PeacefulEnd.Parchment.AnglersLogbook");
 
-            Item reward = ItemRegistry.Create("(O)74");
+            Item reward = ItemRegistry.Create($"(O){BOOK_ID}");
             Game1.player.holdUpItemThenMessage(reward);
             Game1.player.addItemByMenuIfNecessary(reward);
         }
