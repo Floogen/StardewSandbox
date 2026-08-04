@@ -189,7 +189,7 @@ namespace FishingLogbook.Framework.Builders
 
             GetUniqueFishStats(Game1.player, out int uniqueFishCaught, out int uniqueFishTotal);
             AddPanelWithTitle(statsPage, new Point(40, 100), "Unique\nFish Caught", $"{uniqueFishCaught} / {uniqueFishTotal}", childPanelWidth: 50);
-            AddPanelWithTitle(statsPage, new Point(-40, 100), "Total\nFish Caught", $"{Game1.player.stats.Get("PreciseFishCaught")}", alignment: "Right", childPanelWidth: 50);
+            AddPanelWithTitle(statsPage, new Point(-40, 100), "Total\nFish Caught", $"{Game1.player.stats.Get("FishCaught")}", alignment: "Right", childPanelWidth: 50);
             AddPanelWithTitle(statsPage, new Point(40, 300), "Treasures Found", $"{Game1.player.stats.Get("FishingTreasures")}", childPanelWidth: 50);
             AddPanelWithTitle(statsPage, new Point(-40, 300), "Fishing\nAttempts", $"{Game1.player.stats.Get("TimesFished")}", alignment: "Right", childPanelWidth: 50);
 

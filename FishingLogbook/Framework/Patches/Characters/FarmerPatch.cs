@@ -1,3 +1,5 @@
+using FishingLogbook;
+using FishingLogbook.Framework.Builders;
 using FishingLogbook.Framework.Models.Fish;
 using FishingLogbook.Framework.Patches;
 using FishingLogbook.Framework.Utilities;
@@ -34,6 +36,8 @@ namespace Parchment.Framework.Patches.Objects
             }
 
             RecentCatchHelper.AddRecentCatch(__instance, itemId, size);
+
+            ModEntry.logbookBuilder.RefreshBook();
         }
     }
 }

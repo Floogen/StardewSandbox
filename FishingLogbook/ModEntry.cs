@@ -259,8 +259,6 @@ namespace FishingLogbook
         {
             // Generate stickers
             logbookBuilder.GenerateStickers();
-
-            logbookBuilder.RefreshBook();
         }
     }
 }
