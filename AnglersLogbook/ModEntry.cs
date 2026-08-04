@@ -15,6 +15,7 @@ using StardewValley.Constants;
 using StardewValley.Delegates;
 using StardewValley.Extensions;
 using StardewValley.GameData.Objects;
+using StardewValley.GameData.Shops;
 using StardewValley.ItemTypeDefinitions;
 using StardewValley.Menus;
 using StardewValley.Minigames;
@@ -36,6 +37,8 @@ namespace AnglersLogbook
         public const string NOTEBOOK_ASSET = "Assets/PeacefulEnd.Parchment.AnglersLogbook/notebook";
         public const string NOTEBOOK_GRAYSCALE_ASSET = "Assets/PeacefulEnd.Parchment.AnglersLogbook/notebookGrayscale";
 
+        public const string FISHING_TUTORIAL_EVENT_ID = "739330";
+
         // Shared static helpers
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
@@ -48,6 +51,7 @@ namespace AnglersLogbook
         internal static StickerManager stickerManager;
 
         private IParchmentApi _parchmentApi;
+        private string _activeEventId;
 
         public override void Entry(IModHelper helper)
         {
@@ -78,11 +82,57 @@ namespace AnglersLogbook
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+            helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
             helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         }
 
-        private void OnAssetRequested(object sender, StardewModdingAPI.Events.AssetRequestedEventArgs e)
+        private void OnAssetRequested(object sender, AssetRequestedEventArgs e)
         {
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/Objects"))
+            {
+                e.Edit(asset =>
+                {
+                    var data = asset.AsDictionary<string, ObjectData>().Data;
+
+                    data[BOOK_ID] = new ObjectData()
+                    {
+                        Name = BOOK_ID,
+                        DisplayName = "Fishing Log",
+                        Description = "A handy notebook for logging your catches.",
+                        Type = "Basic",
+                        Category = 0,
+                        Price = 0,
+                        Texture = BOOK_DETAILS_ASSET,
+                        SpriteIndex = 0,
+                        Edibility = -300,
+                        CustomFields = new Dictionary<string, string>()
+                        {
+                            { "PeacefulEnd.Parchment/CustomFields/BookId", BOOK_ID }
+                        }
+                    };
+                }, AssetEditPriority.Early);
+            }
+            if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops"))
+            {
+                e.Edit(asset =>
+                {
+                    var data = asset.AsDictionary<string, ShopData>().Data;
+
+                    if (data.TryGetValue("FishShop", out ShopData shop) is false)
+                    {
+                        return;
+                    }
+
+                    shop.Items.Add(new ShopItemData()
+                    {
+                        Id = BOOK_ID,
+                        ItemId = $"(O){BOOK_ID}",
+                        Price = 0,
+                        AvailableStock = 1,
+                        AvailableStockLimit = LimitedStockMode.Player
+                    });
+                });
+            }
             if (e.NameWithoutLocale.IsEquivalentTo(BOOK_DETAILS_ASSET))
             {
                 e.LoadFrom(() => Helper.ModContent.Load<Texture2D>("Framework/Assets/bookDetails.png"), AssetLoadPriority.Low);
@@ -97,7 +147,7 @@ namespace AnglersLogbook
             }
         }
 
-        private void OnButtonPressed(object sender, StardewModdingAPI.Events.ButtonPressedEventArgs e)
+        private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (e.Button is SButton.O && Context.IsPlayerFree && Game1.activeClickableMenu is null)
             {
@@ -108,7 +158,7 @@ namespace AnglersLogbook
             }
         }
 
-        private void OnGameLaunched(object sender, StardewModdingAPI.Events.GameLaunchedEventArgs e)
+        private void OnGameLaunched(object sender, GameLaunchedEventArgs e)
         {
             if (Helper.ModRegistry.IsLoaded(PARCHMENT_ID) is false)
             {
@@ -133,6 +183,50 @@ namespace AnglersLogbook
 
             // Track new fish being caught
             Game1.player.fishCaught.OnValueAdded += OnFishCaught;
+
+            // Register the book
+            if (logbookBuilder.Build().TryRegister(out var error))
+            {
+
+            }
+        }
+
+        private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
+        {
+            if (Context.IsWorldReady is false)
+            {
+                return;
+            }
+
+            if (Game1.CurrentEvent is Event currentEvent)
+            {
+                _activeEventId = currentEvent.id;
+                return;
+            }
+
+            if (string.IsNullOrEmpty(_activeEventId))
+            {
+                return;
+            }
+
+            // Cache and clear first, so an early return can't leave us re-triggering
+            string finishedEventId = _activeEventId;
+            _activeEventId = null;
+
+            if (finishedEventId != FISHING_TUTORIAL_EVENT_ID)
+            {
+                return;
+            }
+
+            if (Game1.player.mailReceived.Contains("PeacefulEnd.Parchment.AnglersLogbook"))
+            {
+                return;
+            }
+            Game1.player.mailReceived.Add("PeacefulEnd.Parchment.AnglersLogbook");
+
+            Item reward = ItemRegistry.Create("(O)74");
+            Game1.player.holdUpItemThenMessage(reward);
+            Game1.player.addItemByMenuIfNecessary(reward);
         }
 
         private void OnReturnedToTitle(object sender, ReturnedToTitleEventArgs e)

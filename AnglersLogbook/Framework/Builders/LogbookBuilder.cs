@@ -119,7 +119,7 @@ namespace AnglersLogbook.Framework.Builders
                     continue;
                 }
                 var bookmarkPanel = bookmarkGrid.AddChild("Panel")
-                    .Condition($"!PeacefulEnd.Parchment_HasVariable {ModEntry.BOOK_ID} bookmark1 none, ANY \"PeacefulEnd.Parchment_CurrentBookState Ready\" \"PeacefulEnd.Parchment_CurrentBookState Turning\"");
+                    .Condition($"!PeacefulEnd.Parchment_HasVariable {ModEntry.BOOK_ID} bookmark{slot} none, ANY \"PeacefulEnd.Parchment_CurrentBookState Ready\" \"PeacefulEnd.Parchment_CurrentBookState Turning\"");
 
                 bookmarkPanel.AddChild("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(64, 64, 32, 17).Scale(4).Alignment("Center")
                     .Set("Description", $"Go to {fishData.DisplayName}")
@@ -323,10 +323,20 @@ namespace AnglersLogbook.Framework.Builders
         {
             if (Build().TryOpen(out string error) is false) { ModEntry.monitor.Log($"Couldn't open the logbook: {error}", LogLevel.Warn); }
         }
-
         private void RefreshBook()
         {
-            if (Build().TryRefresh(out string error) is false) { ModEntry.monitor.Log($"Couldn't refresh the logbook: {error}", LogLevel.Trace); }
+            IBookBuilder book = Build();
+
+            if (book.TryRegister(out string registerError) is false)
+            {
+                ModEntry.monitor.Log($"Couldn't register the logbook, because {registerError}.", LogLevel.Warn);
+                return;
+            }
+
+            if (book.TryRefresh(out string refreshError) is false)
+            {
+                ModEntry.monitor.Log($"Couldn't refresh the logbook, because {refreshError}.", LogLevel.Trace);
+            }
         }
 
         private void BuildFishDetailPages(IBookBuilder book, string fishPageId, FishEntry fish)
