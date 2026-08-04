@@ -1,4 +1,4 @@
-namespace AnglersLogbook.Framework.API.External.Parchment
+namespace Parchment.Framework.API
 {
     /// <summary>Builds one element. Obtained from the add methods on <see cref="IPageBuilder"/> and <see cref="IBookBuilder"/>.</summary>
     public interface IElementBuilder
@@ -11,10 +11,16 @@ namespace AnglersLogbook.Framework.API.External.Parchment
 
         /// <summary>Sets any field on the element by name, for anything the methods below don't cover. Fields that don't exist on this
         /// element type are reported when the book is registered, along with the ones that do.</summary>
-        IElementBuilder Set(string field, object value);
+        IElementBuilder Set(string field, object? value);
 
         /// <summary>Sets the element's ID, which page actions and queries use to refer to it.</summary>
         IElementBuilder WithId(string id);
+
+        /// <summary>Adds a tag to the element, which other mods can read off whatever the cursor is over. Calling this more than once builds a list, so there's no
+        /// need to decide up front between one tag and several. Tagging an element also makes it reachable by the cursor, since a tag is only useful on something that can be hovered.
+        /// Parchment leaves most tags alone, acting only on the ones it recognises, such as "NpcId.Abigail" naming the NPC the element is about.
+        /// </summary>
+        IElementBuilder WithTag(string tag);
 
         IElementBuilder Text(string text);
 
@@ -47,7 +53,7 @@ namespace AnglersLogbook.Framework.API.External.Parchment
         IElementBuilder TextureSource(int x, int y, int width, int height);
         IElementBuilder HoverTextureSource(int x, int y, int width, int height);
 
-        /// <summary>A colour multiplied over the sprite, as a name such as "Red" or a value such as "255 128 0".</summary>
+        /// <summary>A color multiplied over the sprite, as a name such as "Red" or a value such as "255 128 0".</summary>
         IElementBuilder Tint(string tintColor);
 
         /// <summary>Draws an item's icon instead of a texture, using a qualified item ID such as "(O)24".</summary>
@@ -165,7 +171,7 @@ namespace AnglersLogbook.Framework.API.External.Parchment
         /// overhangs its own bounds rather than pushing anything aside.</param>
         /// <param name="condition">A game state query deciding whether the frame plays. When every frame's condition fails, the element
         /// falls back to drawing its source rectangle.</param>
-        IElementBuilder AddFrame(int x, int y, float duration = 0f, float scale = 1f, string condition = null);
+        IElementBuilder AddFrame(int x, int y, float duration = 0f, float scale = 1f, string? condition = null);
 
         /// <summary>Adds an animation frame that keeps whatever the element already draws, varying only its timing, offset, scale or condition.
         /// Understood by every element type, so this is what animates a Panel or a Heading as well as how an item's icon is animated, since Item draws a sprite whose place in the sheet isn't yours to know.
@@ -173,14 +179,14 @@ namespace AnglersLogbook.Framework.API.External.Parchment
         /// <param name="duration">How long the frame is shown, in milliseconds. 0 leaves it to the element's FrameDuration.</param>
         /// <param name="scale">A multiplier on the element's scale while this frame draws.</param>
         /// <param name="condition">A game state query deciding whether the frame plays.</param>
-        IElementBuilder AddFrameInPlace(float duration = 0f, float scale = 1f, string condition = null);
+        IElementBuilder AddFrameInPlace(float duration = 0f, float scale = 1f, string? condition = null);
 
         /// <summary>Adds a frame played while the cursor is over the element, replacing the idle frames for as long as it stays there.
         /// When the hover frames are empty or fully conditioned out, the idle animation carries on rather than the element going still.</summary>
-        IElementBuilder AddHoverFrame(int x, int y, float duration = 0f, float scale = 1f, string condition = null);
+        IElementBuilder AddHoverFrame(int x, int y, float duration = 0f, float scale = 1f, string? condition = null);
 
         /// <summary>Adds a hover frame that keeps whatever the element already draws, varying only its timing, scale or condition.</summary>
-        IElementBuilder AddHoverFrameInPlace(float duration = 0f, float scale = 1f, string condition = null);
+        IElementBuilder AddHoverFrameInPlace(float duration = 0f, float scale = 1f, string? condition = null);
 
         /// <summary>Shifts the frame added last, whether idle or hover, without moving where the element sits. Measured in unscaled sprite pixels multiplied by the element's scale.
         /// A draw-time effect like a frame's scale, so the element keeps the space and the hitbox it was measured with. Unlike scale it works on any element type, and a container carries its children and its own layers along with it.

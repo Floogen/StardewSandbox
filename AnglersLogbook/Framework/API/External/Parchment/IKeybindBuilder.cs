@@ -1,4 +1,4 @@
-﻿namespace AnglersLogbook.Framework.API.External.Parchment
+﻿namespace Parchment.Framework.API
 {
     /// <summary>Builds one keybind, on a book or on a single page. Obtained from <see cref="IBookBuilder.OnKeyPress(string)"/> or <see cref="IPageBuilder.OnKeyPress(string)"/>.</summary>
     public interface IKeybindBuilder
@@ -7,7 +7,7 @@
         string Keybind { get; }
 
         /// <summary>Sets any field on the keybind by name, for anything the methods below don't cover. Fields that don't exist are reported when the book is registered, along with the ones that do.</summary>
-        IKeybindBuilder Set(string field, object value);
+        IKeybindBuilder Set(string field, object? value);
 
         /// <summary>Adds a trigger action to run when the keybind is pressed. Calling this more than once runs them in the order they were added, and at least one is required.</summary>
         IKeybindBuilder Action(string action);

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace AnglersLogbook.Framework.API.External.Parchment
+namespace Parchment.Framework.API
 {
     /// <summary>Builds a book in code. Obtained from <see cref="IParchmentApi.CreateBook"/>, then registered or opened through its own methods.</summary>
     public interface IBookBuilder
@@ -10,7 +10,7 @@ namespace AnglersLogbook.Framework.API.External.Parchment
 
         /// <summary>Sets any field on the book by name, for anything the methods below don't cover. The name may be a dotted path into a
         /// nested group, such as "Appearance.Scale", "Layout.MarginTop" or "Animation.PageTurnDuration".</summary>
-        IBookBuilder Set(string field, object value);
+        IBookBuilder Set(string field, object? value);
 
         /// <summary>Sets the sprite used for the book item.</summary>
         IBookBuilder Sprite(string spritePath);
@@ -40,7 +40,8 @@ namespace AnglersLogbook.Framework.API.External.Parchment
 
         /// <summary>What to run when something asks this book to rebuild itself, being the PeacefulEnd.Parchment_RefreshBook action or a call to TryRefresh.
         /// Assemble a fresh builder from your current state inside the callback and call TryRefresh on that one, as this builder holds the values it was already given.
-        /// Only takes effect on a book opened with TryOpen, since a registered book comes from the books asset rather than from a builder.
+        /// Works for a registered book as well as one opened with TryOpen, as the callback is found through the registration whenever a book comes out of the books asset.
+        /// Registering the same book again without restating this keeps the callback the earlier registration was given.
         /// </summary>
         IBookBuilder OnRefresh(Action onRefresh);
 

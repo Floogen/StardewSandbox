@@ -1,4 +1,4 @@
-﻿namespace AnglersLogbook.Framework.API.External.Parchment
+﻿namespace Parchment.Framework.API
 {
     /// <summary>Builds one page of a book. Obtained from <see cref="IBookBuilder.AddPage(string)"/>.</summary>
     public interface IPageBuilder
@@ -7,7 +7,7 @@
         string PageId { get; }
 
         /// <summary>Sets any field on the page by name, for anything the methods below don't cover.</summary>
-        IPageBuilder Set(string field, object value);
+        IPageBuilder Set(string field, object? value);
 
         /// <summary>Adds an element to the page's stacked content, by element type name such as "Heading" or "Image".</summary>
         IElementBuilder Add(string elementType);
@@ -67,19 +67,26 @@
         IPageBuilder RemoveLast();
 
         /// <summary>The width in pixels this page has for stacked content, being what text wraps to.</summary>
+        /// <remarks>This is a size rather than a position, since a page has no place on screen until its book is open. Use <c>TryGetLeftPageBounds</c> on the API for that.</remarks>
         float GetAvailableWidth();
 
         /// <summary>The height in pixels this page has for stacked content, from the book's appearance and layout.</summary>
+        /// <remarks>Returns 0 before Parchment has finished starting up, since the page size isn't known until then.</remarks>
         float GetAvailableHeight();
 
         /// <summary>How tall the stacked elements added so far come to in pixels, measured with the fonts, wrapping and spacing they will actually be drawn with.
         /// Content past the bottom of the page still counts, so this keeps growing rather than stopping at the page edge.</summary>
+        /// <remarks>Each call rebuilds and measures the page, so prefer calling it once per element added rather than in a tight loop.</remarks>
         float GetContentHeight();
 
         /// <summary>How much room is left on the page in pixels, which goes negative once the content overflows.</summary>
         float GetRemainingHeight();
 
         /// <summary>Whether the elements added so far run past the bottom of the page.</summary>
+        /// <remarks>
+        /// Pair this with <see cref="RemoveLast"/> to fill pages greedily: add an element, and if the page now overflows,
+        /// take it back off and start a new page with it instead.
+        /// </remarks>
         bool WouldOverflow();
     }
 }
