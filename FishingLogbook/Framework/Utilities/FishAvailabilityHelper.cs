@@ -64,7 +64,7 @@ namespace FishingLogbook.Framework.Utilities
         public static string FormatSeasons(IReadOnlyCollection<Season> seasons)
         {
             if (seasons is null || seasons.Count is 0) { return null; }
-            if (seasons.Count >= AllSeasons.Length) { return "All year"; }
+            if (seasons.Count >= AllSeasons.Length) { return ModEntry.translation.Get("ui.season.allYear"); }
 
             return string.Join(", ", seasons.OrderBy(season => (int)season).Select(season => Utility.getSeasonNameFromNumber((int)season)));
         }
@@ -75,7 +75,7 @@ namespace FishingLogbook.Framework.Utilities
         {
             if (row.IsGlobal) { return row.LocationDisplayName; }
 
-            return string.IsNullOrWhiteSpace(row.FishAreaDisplayName) ? row.LocationDisplayName : $"{row.LocationDisplayName} ({row.FishAreaDisplayName})";
+            return string.IsNullOrWhiteSpace(row.FishAreaDisplayName) ? row.LocationDisplayName : ModEntry.translation.Get("ui.location.withArea", new { location = row.LocationDisplayName, area = row.FishAreaDisplayName }).ToString();
         }
 
         /// <summary>Format a fish's spawn windows, returning <c>null</c> when it is available all day.</summary>
@@ -85,14 +85,14 @@ namespace FishingLogbook.Framework.Utilities
             if (fishData?.TimeWindows is null || fishData.TimeWindows.Count is 0) { return null; }
             if (fishData.TimeWindows.Count is 1 && fishData.TimeWindows[0].StartTime <= 600 && fishData.TimeWindows[0].EndTime >= 2600) { return null; }
 
-            return string.Join(", ", fishData.TimeWindows.Select(window => $"{Game1.getTimeOfDayString(window.StartTime)} to {Game1.getTimeOfDayString(window.EndTime)}"));
+            return string.Join(", ", fishData.TimeWindows.Select(window => ModEntry.translation.Get("ui.time.range", new { start = Game1.getTimeOfDayString(window.StartTime), end = Game1.getTimeOfDayString(window.EndTime) }).ToString()));
         }
 
         /// <summary>Format a fish's weather requirement, returning <c>null</c> when weather does not matter.</summary>
         /// <param name="fishData">The parsed fish entry.</param>
         public static string FormatWeather(ParsedFishData fishData)
         {
-            return fishData?.Weather switch { "sunny" => "Sunny only", "rainy" => "Rain only", _ => null };
+            return fishData?.Weather switch { "sunny" => ModEntry.translation.Get("ui.weather.sunnyOnly").ToString(), "rainy" => ModEntry.translation.Get("ui.weather.rainOnly").ToString(), _ => null };
         }
 
 

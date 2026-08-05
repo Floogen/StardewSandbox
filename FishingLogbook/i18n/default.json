@@ -1,0 +1,80 @@
+{
+  "item.fishingLog.name": "Fishing Log",
+  "item.fishingLog.description": "A handy notebook for logging your catches.",
+
+  "config.logbookShortcut.name": "Open Fishing Log Shortcut",
+
+  "ui.cover.title": "Fishing Log",
+
+  "ui.search.placeholder": "Search...",
+
+  "ui.tooltip.goToStats": "Go to stats",
+  "ui.tooltip.goToFishOverview": "Go to fish overview",
+  "ui.tooltip.goToSettings": "Go to settings",
+  "ui.tooltip.goToBookmark": "Go to {{fishName}}",
+  "ui.tooltip.bookmarkFish": "Bookmark this fish",
+
+  "ui.bookmark.noSlots": "All five bookmarks are used!",
+
+  "ui.page.recentCatches.title": "Recent Catches",
+  "ui.page.stats.title": "Stats",
+  "ui.page.fish.title": "Fish",
+  "ui.page.search.title": "Search",
+  "ui.page.settings.title": "Settings",
+  "ui.page.details.title": "Details",
+
+  "ui.recentCatch.withSize": "{{itemName}} ({{size}} in.)",
+
+  "ui.stats.uniqueFishCaught": "Unique\nFish Caught",
+  "ui.stats.totalFishCaught": "Total\nFish Caught",
+  "ui.stats.treasuresFound": "Treasures Found",
+  "ui.stats.fishingAttempts": "Fishing\nAttempts",
+
+  "ui.fish.unknownName": "???",
+  "ui.fish.statsHeading": "Stats",
+  "ui.fish.amountCaught": "Amount caught: {{amount}}",
+  "ui.fish.largestSize": "Largest size: {{size}}",
+  "ui.fish.largestSizeNone": "None",
+  "ui.fish.maxSize": "Max size: {{size}} inches",
+
+  "ui.settings.alwaysShowFishNames": "Always Show Fish Names",
+  "ui.settings.clearBookmarks": "Clear Bookmarks",
+
+  "ui.details.requirementsHeading": "Requirements",
+  "ui.details.whenHeading": "When",
+  "ui.details.whereHeading": "Where",
+  "ui.details.whereContinuedHeading": "Where (continued)",
+  "ui.details.notCatchable": "Not catchable anywhere",
+  "ui.details.continued": "... continued on next page",
+  "ui.details.time": "Time: {{time}}",
+  "ui.details.anyTime": "Any time",
+  "ui.details.weather": "Weather: {{weather}}",
+
+  "ui.requirement.fishingLevel": "- Fishing level: {{level}}+{{spread}}",
+  "ui.requirement.fishingLevelSpread": " (higher in some spots)",
+  "ui.requirement.magicBait": "- Magic Bait required",
+  "ui.requirement.oncePerSave": "- Once per save",
+  "ui.requirement.catchLimit": "- Limit of {{limit}} per save",
+  "ui.requirement.bossFish": "- Is a boss fish",
+
+  "ui.footnote.requiresMagicBait": "* Requires Magic Bait",
+  "ui.footnote.extraConditions": "^ Has requirements beyond the season",
+
+  "ui.location.row": "{{location}}{{gear}}: {{seasons}}{{level}}{{marker}}",
+  "ui.location.anywhere": "Anywhere",
+  "ui.location.withArea": "{{location}} ({{area}})",
+  "ui.location.crabPot": " (crab pot)",
+  "ui.location.level": ", level {{level}}+",
+
+  "ui.season.allYear": "All year",
+  "ui.season.never": "Never",
+
+  "ui.weather.sunnyOnly": "Sunny only",
+  "ui.weather.rainOnly": "Rain only",
+
+  "ui.time.range": "{{start}} to {{end}}",
+  "ui.time.rangeCompact": "{{start}} - {{end}}",
+
+  "ui.size.inches": "{{size}} inches",
+  "ui.size.centimeters": "{{size}} cm"
+}

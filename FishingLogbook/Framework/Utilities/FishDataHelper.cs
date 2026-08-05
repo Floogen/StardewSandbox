@@ -20,7 +20,7 @@ namespace FishingLogbook.Framework.Utilities
         private const string DefaultLocationKey = "Default";
 
         /// <summary>The label shown for spawns inherited from the <c>Default</c> entry, which apply in every location.</summary>
-        private const string GlobalLocationName = "Anywhere";
+        private static string GlobalLocationName => ModEntry.translation.Get("ui.location.anywhere");
 
         /// <summary>The item query which pulls another location's fish list into this one.</summary>
         private const string LocationFishQuery = "LOCATION_FISH";
@@ -146,7 +146,7 @@ namespace FishingLogbook.Framework.Utilities
             if (fishData?.TimeWindows is null || fishData.TimeWindows.Count is 0) { return I18n_AnyTime(); }
             if (fishData.TimeWindows.Count is 1 && fishData.TimeWindows[0].StartTime <= 600 && fishData.TimeWindows[0].EndTime >= 2600) { return I18n_AnyTime(); }
 
-            return string.Join(", ", fishData.TimeWindows.Select(window => $"{Game1.getTimeOfDayString(window.StartTime)} - {Game1.getTimeOfDayString(window.EndTime)}"));
+            return string.Join(", ", fishData.TimeWindows.Select(window => ModEntry.translation.Get("ui.time.rangeCompact", new { start = Game1.getTimeOfDayString(window.StartTime), end = Game1.getTimeOfDayString(window.EndTime) }).ToString()));
         }
 
         /// <summary>Get an approximate catch chance for display purposes, mirroring the shape of <c>GameLocation.CheckGenericFishRequirements</c>.</summary>
@@ -500,7 +500,7 @@ namespace FishingLogbook.Framework.Utilities
 
         private static bool ParseBool(string value) => bool.TryParse(value?.Trim(), out bool parsed) && parsed;
 
-        /// <summary>Placeholder for a translated "any time" string. Swap this for your own i18n call.</summary>
-        private static string I18n_AnyTime() => "Any time";
+        /// <summary>The translated "any time" label, shown when a fish is available all day.</summary>
+        private static string I18n_AnyTime() => ModEntry.translation.Get("ui.details.anyTime");
     }
 }

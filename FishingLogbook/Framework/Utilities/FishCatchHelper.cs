@@ -98,10 +98,10 @@ namespace FishingLogbook.Framework.Utilities
             }
             if (LocalizedContentManager.CurrentLanguageCode is LocalizedContentManager.LanguageCode.en)
             {
-                return $"{info.BiggestCatchInches} inches";
+                return ModEntry.translation.Get("ui.size.inches", new { size = info.BiggestCatchInches });
             }
 
-            return $"{Math.Round(info.BiggestCatchInches * 2.54)} cm";
+            return ModEntry.translation.Get("ui.size.centimeters", new { size = Math.Round(info.BiggestCatchInches * 2.54) });
         }
     }
 }

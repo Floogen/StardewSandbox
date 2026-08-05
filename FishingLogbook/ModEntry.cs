@@ -26,6 +26,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Transactions;
 
 namespace FishingLogbook
 {
@@ -42,10 +43,11 @@ namespace FishingLogbook
         public const string FISHING_TUTORIAL_EVENT_ID = "739330";
 
         // Shared static helpers
+        internal static Config config;
         internal static IMonitor monitor;
         internal static IModHelper modHelper;
         internal static Multiplayer multiplayer;
-        internal static Config config;
+        internal static ITranslationHelper translation;
 
         // Builders
         internal static LogbookBuilder logbookBuilder;
@@ -59,10 +61,11 @@ namespace FishingLogbook
         public override void Entry(IModHelper helper)
         {
             // Set up the monitor, helper and multiplayer
+            config = helper.ReadConfig<Config>();
             monitor = Monitor;
             modHelper = helper;
             multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
-            config = helper.ReadConfig<Config>();
+            translation = helper.Translation;
 
             // Create managers
             stickerManager = new StickerManager(monitor, helper);
@@ -101,8 +104,8 @@ namespace FishingLogbook
                     data[BOOK_ID] = new ObjectData()
                     {
                         Name = BOOK_ID,
-                        DisplayName = "Fishing Log",
-                        Description = "A handy notebook for logging your catches.",
+                        DisplayName = translation.Get("item.fishingLog.name"),
+                        Description = translation.Get("item.fishingLog.description"),
                         Type = "Basic",
                         Category = 0,
                         Price = 0,
@@ -184,7 +187,7 @@ namespace FishingLogbook
 
                 gmcmApi.AddKeybindList(
                     mod: ModManifest,
-                    name: () => "Open Fishing Log Shortcut",
+                    name: () => translation.Get("config.logbookShortcut.name").ToString(),
                     getValue: () => config.LogbookShortcut,
                     setValue: value => config.LogbookShortcut = value
                 );
