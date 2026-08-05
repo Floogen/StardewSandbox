@@ -86,6 +86,7 @@ namespace FishingLogbook
             // Hook into the required events
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.Content.AssetRequested += OnAssetRequested;
+            helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -154,6 +155,20 @@ namespace FishingLogbook
             }
         }
 
+        private void OnAssetsInvalidated(object sender, AssetsInvalidatedEventArgs e)
+        {
+            foreach (var assetName in e.NamesWithoutLocale)
+            {
+                if (assetName.IsEquivalentTo("Data/Fish") is false && assetName.IsEquivalentTo("Data/Locations") is false && assetName.IsEquivalentTo("Data/Objects") is false && assetName.IsEquivalentTo("Data/WorldMap") is false)
+                {
+                    continue;
+                }
+
+                FishDataHelper.ClearCache();
+                return;
+            }
+        }
+
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (config.LogbookShortcut is not null && config.LogbookShortcut.IsDown() && _parchmentApi is not null && Context.IsPlayerFree && Game1.activeClickableMenu is null)
@@ -219,6 +234,11 @@ namespace FishingLogbook
                 return;
             }
 
+            if (logbookBuilder is not null)
+            {
+                logbookBuilder.UpdateQueuedRefresh();
+            }
+
             if (Game1.CurrentEvent is Event currentEvent)
             {
                 _activeEventId = currentEvent.id;
@@ -255,6 +275,14 @@ namespace FishingLogbook
             if (Game1.player is not null)
             {
                 Game1.player.fishCaught.OnValueAdded -= OnFishCaught;
+            }
+
+            // Required to clear the cached farm type location
+            FishDataHelper.ClearCache();
+
+            if (logbookBuilder is not null)
+            {
+                logbookBuilder.CancelQueuedRefresh();
             }
         }
 

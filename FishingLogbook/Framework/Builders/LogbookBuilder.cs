@@ -29,8 +29,13 @@ namespace FishingLogbook.Framework.Builders
         private const string COVER_STATE_CONDITION = "ANY \"PeacefulEnd.Parchment_CurrentBookState Cover\" \"PeacefulEnd.Parchment_CurrentBookState Sliding\"";
         private const string READABLE_STATE_CONDITION = "ANY \"PeacefulEnd.Parchment_CurrentBookState Ready\" \"PeacefulEnd.Parchment_CurrentBookState Turning\"";
 
+        private const int REFRESH_DELAY_TICKS = 10;
+
         private IParchmentApi _parchmentApi;
         private List<StickerPlacement> _stickerPlacements;
+
+        private bool _isRefreshQueued;
+        private int _ticksUntilRefresh;
 
         public LogbookBuilder(IParchmentApi api)
         {
@@ -44,8 +49,6 @@ namespace FishingLogbook.Framework.Builders
         /// </summary>
         public void GenerateStickers()
         {
-            var collectableFishes = FishDataHelper.GetAllFish();
-
             var stickers = ModEntry.stickerManager.GetRandomStickers(Game1.player, count: 64, skipCaughtRequirement: false);
             var exclusions = new[] { new Rectangle(435, 250, 220, 80) };
             _stickerPlacements = StickerLayoutHelper.Arrange(stickers, new Rectangle(325, 260, 440, 375), exclusions, minScale: 4, maxScale: 5, largeScaleChance: 0.15f, gridStep: 4, spacing: 4, packingSamples: 20, preserveOrder: false);
@@ -58,6 +61,8 @@ namespace FishingLogbook.Framework.Builders
         /// </summary>
         public IBookBuilder Build()
         {
+            var collectableFishes = FishDataHelper.GetAllFish();
+
             var book = _parchmentApi.CreateBook(ModEntry.BOOK_ID);
             book.AddVariable("forceFishNames").Type("Boolean").Default("false").Scope("Global");
             book.AddVariable("startOnCover").Type("Boolean").Default("true").Scope("Global");
@@ -121,7 +126,7 @@ namespace FishingLogbook.Framework.Builders
                     continue;
                 }
 
-                var fishData = FishDataHelper.GetAllFish().FirstOrDefault(fish => fish.QualifiedItemId.EqualsIgnoreCase(itemId));
+                var fishData = collectableFishes.FirstOrDefault(fish => fish.QualifiedItemId.EqualsIgnoreCase(itemId));
                 if (fishData is null)
                 {
                     continue;
@@ -166,7 +171,6 @@ namespace FishingLogbook.Framework.Builders
             // Build the stickers
             book.AddOverlay("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(96, 0, 48, 16).Position(400, 250).Origin(24, 8).Rotation(20).Scale(6).Condition(COVER_STATE_CONDITION);
 
-            var collectableFishes = FishDataHelper.GetAllFish();
             foreach (var placement in _stickerPlacements)
             {
                 book.AddOverlay("Image")
@@ -195,7 +199,7 @@ namespace FishingLogbook.Framework.Builders
             var statsPage = book.AddPage("stats", "front");
             statsPage.AddTitle(ModEntry.translation.Get("ui.page.stats.title")).Alignment("Center");
 
-            GetUniqueFishStats(Game1.player, out int uniqueFishCaught, out int uniqueFishTotal);
+            GetUniqueFishStats(Game1.player, collectableFishes, out int uniqueFishCaught, out int uniqueFishTotal);
             AddPanelWithTitle(statsPage, new Point(40, 100), ModEntry.translation.Get("ui.stats.uniqueFishCaught"), $"{uniqueFishCaught} / {uniqueFishTotal}", childPanelWidth: 50);
             AddPanelWithTitle(statsPage, new Point(-40, 100), ModEntry.translation.Get("ui.stats.totalFishCaught"), $"{Game1.player.stats.Get("FishCaught")}", alignment: "Right", childPanelWidth: 50);
             AddPanelWithTitle(statsPage, new Point(40, 300), ModEntry.translation.Get("ui.stats.treasuresFound"), $"{Game1.player.stats.Get("FishingTreasures")}", childPanelWidth: 50);
@@ -352,6 +356,35 @@ namespace FishingLogbook.Framework.Builders
         public void OpenBook()
         {
             if (Build().TryOpen(out string error) is false) { ModEntry.monitor.Log($"Couldn't open the logbook: {error}", LogLevel.Warn); }
+        }
+
+        public void QueueRefresh()
+        {
+            _isRefreshQueued = true;
+            _ticksUntilRefresh = REFRESH_DELAY_TICKS;
+        }
+
+        public void CancelQueuedRefresh()
+        {
+            _isRefreshQueued = false;
+            _ticksUntilRefresh = 0;
+        }
+
+        public void UpdateQueuedRefresh()
+        {
+            if (_isRefreshQueued is false)
+            {
+                return;
+            }
+
+            _ticksUntilRefresh -= 1;
+            if (_ticksUntilRefresh > 0)
+            {
+                return;
+            }
+
+            _isRefreshQueued = false;
+            RefreshBook();
         }
 
         public void RefreshBook()
@@ -630,15 +663,14 @@ namespace FishingLogbook.Framework.Builders
             childPanel.AddChild("Paragraph").Text(panelText).Alignment("Center");
         }
 
-        private void GetUniqueFishStats(Farmer who, out int uniqueFishCaught, out int uniqueFishTotal)
+        private void GetUniqueFishStats(Farmer who, IReadOnlyList<FishEntry> collectableFishes, out int uniqueFishCaught, out int uniqueFishTotal)
         {
             uniqueFishCaught = 0;
-            uniqueFishTotal = 0;
+            uniqueFishTotal = collectableFishes.Count;
 
-            foreach (var fishData in FishDataHelper.GetAllFish())
+            foreach (var fishData in collectableFishes)
             {
-                uniqueFishTotal += 1;
-                if (Game1.player.fishCaught.ContainsKey(fishData.QualifiedItemId))
+                if (who.fishCaught.ContainsKey(fishData.QualifiedItemId))
                 {
                     uniqueFishCaught += 1;
                 }

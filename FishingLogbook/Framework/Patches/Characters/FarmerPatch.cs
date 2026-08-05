@@ -37,7 +37,8 @@ namespace Parchment.Framework.Patches.Objects
 
             RecentCatchHelper.AddRecentCatch(__instance, itemId, size);
 
-            ModEntry.logbookBuilder.RefreshBook();
+            // Queue the book's refresh
+            ModEntry.logbookBuilder?.QueueRefresh();
         }
     }
 }

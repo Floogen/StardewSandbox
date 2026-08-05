@@ -37,6 +37,9 @@ namespace FishingLogbook.Framework.Utilities
         /// <summary>Every season, used when a spawn entry has no season restriction.</summary>
         private static readonly Season[] AllSeasons = { Season.Spring, Season.Summer, Season.Fall, Season.Winter };
 
+        /// <summary>The cached result of the default <see cref="GetAllFish"/> query, or <c>null</c> if it needs rebuilding.</summary>
+        private static List<FishEntry> _cachedFish;
+
 
         /// <summary>Build the full fish list from the currently loaded game data, including any mod edits.</summary>
         /// <param name="includeCrabPotFish">Whether to derive crab pot spawns from each location's fish areas.</param>
@@ -45,6 +48,30 @@ namespace FishingLogbook.Framework.Utilities
         /// <param name="excludeNonCollectableFish">Whether to drop items flagged <c>ExcludeFromFishingCollection</c> in <c>Data/Objects</c>, matching what the vanilla collections tab shows.</param>
         /// <param name="excludeLocation">An optional extra test for locations to leave out, on top of the built-in exclusions.</param>
         public static List<FishEntry> GetAllFish(bool includeCrabPotFish = true, bool includeGlobalSpawns = true, bool includeItemsWithoutFishData = false, bool excludeNonCollectableFish = true, Func<string, LocationData, bool> excludeLocation = null)
+        {
+            // Only the default query is cached, since it is rebuilt on every refresh
+            bool isCacheable = includeCrabPotFish && includeGlobalSpawns && includeItemsWithoutFishData is false && excludeNonCollectableFish && excludeLocation is null;
+            if (isCacheable is false)
+            {
+                return BuildAllFish(includeCrabPotFish, includeGlobalSpawns, includeItemsWithoutFishData, excludeNonCollectableFish, excludeLocation);
+            }
+
+            if (_cachedFish is null)
+            {
+                _cachedFish = BuildAllFish(includeCrabPotFish, includeGlobalSpawns, includeItemsWithoutFishData, excludeNonCollectableFish, excludeLocation);
+            }
+
+            return _cachedFish;
+        }
+
+        /// <summary>Discards the cached fish list, so the next default query rebuilds it from the current game data.</summary>
+        public static void ClearCache()
+        {
+            _cachedFish = null;
+        }
+
+        /// <summary>Builds the fish list from the currently loaded game data, without consulting the cache.</summary>
+        private static List<FishEntry> BuildAllFish(bool includeCrabPotFish, bool includeGlobalSpawns, bool includeItemsWithoutFishData, bool excludeNonCollectableFish, Func<string, LocationData, bool> excludeLocation)
         {
             Dictionary<string, string> rawFish = DataLoader.Fish(Game1.content);
             Dictionary<string, LocationData> locations = DataLoader.Locations(Game1.content);
