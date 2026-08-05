@@ -221,9 +221,9 @@ namespace FishingLogbook
             Game1.player.fishCaught.OnValueAdded += OnFishCaught;
 
             // Register the book
-            if (logbookBuilder.Build().TryRegister(out var error))
+            if (logbookBuilder.Build().TryRegister(out string error) is false)
             {
-
+                Monitor.Log($"Couldn't register the logbook, because {error}.", LogLevel.Warn);
             }
         }
 

@@ -353,9 +353,21 @@ namespace FishingLogbook.Framework.Builders
             return book;
         }
 
+        /// <summary>
+        /// Opens the registered logbook, falling back to building a fresh copy if the registration didn't take.
+        /// </summary>
         public void OpenBook()
         {
-            if (Build().TryOpen(out string error) is false) { ModEntry.monitor.Log($"Couldn't open the logbook: {error}", LogLevel.Warn); }
+            // The registered copy is kept current by RefreshBook, so opening it avoids rebuilding every page here
+            if (_parchmentApi.HasBook(ModEntry.BOOK_ID) && _parchmentApi.TryOpenBook(ModEntry.BOOK_ID))
+            {
+                return;
+            }
+
+            if (Build().TryOpen(out string error) is false)
+            {
+                ModEntry.monitor.Log($"Couldn't open the logbook, because {error}.", LogLevel.Warn);
+            }
         }
 
         public void QueueRefresh()
