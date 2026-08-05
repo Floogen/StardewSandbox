@@ -38,6 +38,8 @@
   "ui.fish.maxSize": "Max size: {{size}} inches",
 
   "ui.settings.alwaysShowFishNames": "Always Show Fish Names",
+  "ui.settings.startOnCover": "Start on Book Cover",
+  "ui.settings.exitToCover": "Exit to Book Cover",
   "ui.settings.clearBookmarks": "Clear Bookmarks",
 
   "ui.details.requirementsHeading": "Requirements",

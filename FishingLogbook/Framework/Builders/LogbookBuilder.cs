@@ -60,6 +60,8 @@ namespace FishingLogbook.Framework.Builders
         {
             var book = _parchmentApi.CreateBook(ModEntry.BOOK_ID);
             book.AddVariable("forceFishNames").Type("Boolean").Default("false").Scope("Global");
+            book.AddVariable("startOnCover").Type("Boolean").Default("true").Scope("Global");
+            book.AddVariable("exitToCover").Type("Boolean").Default("true").Scope("Global");
             book.AddVariable("bookmark1").Type("Text").Default("none").Scope("Save");
             book.AddVariable("bookmark2").Type("Text").Default("none").Scope("Save");
             book.AddVariable("bookmark3").Type("Text").Default("none").Scope("Save");
@@ -69,8 +71,14 @@ namespace FishingLogbook.Framework.Builders
             book.OnRefresh(RefreshBook);
 
             // Setup the BookData
-            book.Set("StartOnCover", true);
-            book.Set("ExitToCover", true);
+            if (_parchmentApi.TryGetVariable(ModEntry.BOOK_ID, "startOnCover", out var startOnCoverValue))
+            {
+                book.Set("StartOnCover", startOnCoverValue);
+            }
+            if (_parchmentApi.TryGetVariable(ModEntry.BOOK_ID, "exitToCover", out var exitToCoverValue))
+            {
+                book.Set("ExitToCover", exitToCoverValue);
+            }
 
             book.AddOverlay("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(0, 192, 32, 32).Scale(4).Position(-68, 125)
                 .Set("Description", ModEntry.translation.Get("ui.tooltip.goToStats").ToString())
@@ -303,7 +311,7 @@ namespace FishingLogbook.Framework.Builders
             var settingsPage = book.AddPage("settingsPage", "settingsChapter");
             settingsPage.AddTitle(ModEntry.translation.Get("ui.page.settings.title")).Alignment("Center").Spacing(48);
 
-            var forceFishNamePanel = settingsPage.AddPanel().Margin(32, 0).Spacing(12);
+            var forceFishNamePanel = settingsPage.AddPanel().Margin(32, 0).Spacing(24);
             forceFishNamePanel
                 .AddChild("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(96, 80, 9, 9).Scale(4).Alignment("Left")
                 .AddFrame(96, 89, condition: $"PeacefulEnd.Parchment_HasVariable {ModEntry.BOOK_ID} forceFishNames true")
@@ -311,6 +319,24 @@ namespace FishingLogbook.Framework.Builders
                 .Action("PeacefulEnd.Parchment_RefreshBook");
             forceFishNamePanel
                 .AddForeground("Paragraph").Text(ModEntry.translation.Get("ui.settings.alwaysShowFishNames")).Alignment("Left").Position(50, 0);
+
+            var startOnCoverPanel = settingsPage.AddPanel().Margin(32, 0).Spacing(24);
+            startOnCoverPanel
+                .AddChild("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(96, 80, 9, 9).Scale(4).Alignment("Left")
+                .AddFrame(96, 89, condition: $"PeacefulEnd.Parchment_HasVariable {ModEntry.BOOK_ID} startOnCover true")
+                .Action($"PeacefulEnd.Parchment_ToggleVariable {ModEntry.BOOK_ID} startOnCover")
+                .Action("PeacefulEnd.Parchment_RefreshBook");
+            startOnCoverPanel
+                .AddForeground("Paragraph").Text(ModEntry.translation.Get("ui.settings.startOnCover")).Alignment("Left").Position(50, 0);
+
+            var exitToCoverPanel = settingsPage.AddPanel().Margin(32, 0).Spacing(24);
+            exitToCoverPanel
+                .AddChild("Image").Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(96, 80, 9, 9).Scale(4).Alignment("Left")
+                .AddFrame(96, 89, condition: $"PeacefulEnd.Parchment_HasVariable {ModEntry.BOOK_ID} exitToCover true")
+                .Action($"PeacefulEnd.Parchment_ToggleVariable {ModEntry.BOOK_ID} exitToCover")
+                .Action("PeacefulEnd.Parchment_RefreshBook");
+            exitToCoverPanel
+                .AddForeground("Paragraph").Text(ModEntry.translation.Get("ui.settings.exitToCover")).Alignment("Left").Position(50, 0);
 
             settingsPage.AddBanner(ModEntry.translation.Get("ui.settings.clearBookmarks")).Alignment("Center").Spacing(48).Scale(6).Font("Small").Set("CapWidth", 4)
                 .Texture(ModEntry.BOOK_DETAILS_ASSET).TextureSource(130, 131, 13, 9).Padding(8)
