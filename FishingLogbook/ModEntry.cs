@@ -57,6 +57,7 @@ namespace FishingLogbook
 
         private IParchmentApi _parchmentApi;
         private string _activeEventId;
+        private bool _skipDayStartedRefresh;
 
         public override void Entry(IModHelper helper)
         {
@@ -90,6 +91,7 @@ namespace FishingLogbook
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
+            helper.Events.GameLoop.DayStarted += OnDayStarted;
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
             helper.Events.GameLoop.ReturnedToTitle += OnReturnedToTitle;
         }
@@ -225,6 +227,21 @@ namespace FishingLogbook
             {
                 Monitor.Log($"Couldn't register the logbook, because {error}.", LogLevel.Warn);
             }
+
+            // DayStarted follows this on the day the save is loaded, so the book is already current for it
+            _skipDayStartedRefresh = true;
+        }
+
+        private void OnDayStarted(object sender, DayStartedEventArgs e)
+        {
+            if (_skipDayStartedRefresh)
+            {
+                _skipDayStartedRefresh = false;
+                return;
+            }
+
+            // Rebuild so season and weather driven availability isn't left over from yesterday
+            logbookBuilder?.QueueRefresh();
         }
 
         private void OnUpdateTicked(object sender, UpdateTickedEventArgs e)
@@ -284,6 +301,8 @@ namespace FishingLogbook
             {
                 logbookBuilder.CancelQueuedRefresh();
             }
+
+            _skipDayStartedRefresh = false;
         }
 
         private void OnFishCaught(string key, int[] value)
