@@ -88,6 +88,7 @@ namespace FishingLogbook
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.Content.AssetRequested += OnAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
+            helper.Events.Display.MenuChanged += OnMenuChanged;
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -167,8 +168,21 @@ namespace FishingLogbook
                 }
 
                 FishDataHelper.ClearCache();
+                DetailPagePlanner.ClearPlans();
+                logbookBuilder?.QueueRefresh();
                 return;
             }
+        }
+
+        private void OnMenuChanged(object sender, MenuChangedEventArgs e)
+        {
+            if (e.NewMenu is null)
+            {
+                return;
+            }
+
+            // Catches the book being opened through its item, which Parchment handles without going through OpenBook
+            logbookBuilder?.OnMenuOpened();
         }
 
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
@@ -216,17 +230,14 @@ namespace FishingLogbook
 
         private void OnSaveLoaded(object sender, SaveLoadedEventArgs e)
         {
-            // Generate stickers
-            logbookBuilder.GenerateStickers();
+            // The stickers are laid out by the build below, rather than twice over
+            logbookBuilder.QueueStickerRefresh();
 
             // Track new fish being caught
             Game1.player.fishCaught.OnValueAdded += OnFishCaught;
 
-            // Register the book
-            if (logbookBuilder.Build().TryRegister(out string error) is false)
-            {
-                Monitor.Log($"Couldn't register the logbook, because {error}.", LogLevel.Warn);
-            }
+            // Registered up front, since the book's item has to work before anything marks it stale
+            logbookBuilder.RefreshBook();
 
             // DayStarted follows this on the day the save is loaded, so the book is already current for it
             _skipDayStartedRefresh = true;
@@ -296,10 +307,11 @@ namespace FishingLogbook
 
             // Required to clear the cached farm type location
             FishDataHelper.ClearCache();
+            DetailPagePlanner.ClearPlans();
 
             if (logbookBuilder is not null)
             {
-                logbookBuilder.CancelQueuedRefresh();
+                logbookBuilder.Reset();
             }
 
             _skipDayStartedRefresh = false;
@@ -307,8 +319,8 @@ namespace FishingLogbook
 
         private void OnFishCaught(string key, int[] value)
         {
-            // Generate stickers
-            logbookBuilder.GenerateStickers();
+            // Laying the stickers out here would land on the frame the fish is caught, so it waits for the next build
+            logbookBuilder.QueueStickerRefresh();
         }
     }
 }

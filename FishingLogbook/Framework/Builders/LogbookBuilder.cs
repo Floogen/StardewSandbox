@@ -30,12 +30,17 @@ namespace FishingLogbook.Framework.Builders
         private const string READABLE_STATE_CONDITION = "ANY \"PeacefulEnd.Parchment_CurrentBookState Ready\" \"PeacefulEnd.Parchment_CurrentBookState Turning\"";
 
         private const int REFRESH_DELAY_TICKS = 10;
+        private const int SWAP_ATTEMPT_LIMIT = 60;
 
         private IParchmentApi _parchmentApi;
         private List<StickerPlacement> _stickerPlacements;
 
-        private bool _isRefreshQueued;
+        private bool _isBookStale;
+        private bool _areStickersStale;
         private int _ticksUntilRefresh;
+
+        private IBookBuilder _pendingSwap;
+        private int _swapAttemptsRemaining;
 
         public LogbookBuilder(IParchmentApi api)
         {
@@ -49,6 +54,8 @@ namespace FishingLogbook.Framework.Builders
         /// </summary>
         public void GenerateStickers()
         {
+            _areStickersStale = false;
+
             var stickers = ModEntry.stickerManager.GetRandomStickers(Game1.player, count: 64, skipCaughtRequirement: false);
             var exclusions = new[] { new Rectangle(435, 250, 220, 80) };
             _stickerPlacements = StickerLayoutHelper.Arrange(stickers, new Rectangle(325, 260, 440, 375), exclusions, minScale: 4, maxScale: 5, largeScaleChance: 0.15f, gridStep: 4, spacing: 4, packingSamples: 20, preserveOrder: false);
@@ -61,6 +68,12 @@ namespace FishingLogbook.Framework.Builders
         /// </summary>
         public IBookBuilder Build()
         {
+            // The stickers are only seen on the cover, so their layout waits until the book is actually being put together
+            if (_areStickersStale || _stickerPlacements is null)
+            {
+                GenerateStickers();
+            }
+
             var collectableFishes = FishDataHelper.GetAllFish();
 
             var book = _parchmentApi.CreateBook(ModEntry.BOOK_ID);
@@ -269,7 +282,6 @@ namespace FishingLogbook.Framework.Builders
                 fishPageSummary.AddParagraph($"{amountCaughtText}\n{largestSizeText}\n{maxSizeText}").Alignment("Left").Margin(24, 0).Spacing(12);
                 fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
 
-
                 BuildFishDetailPages(book, fishPageId, fishData);
             }
 
@@ -354,11 +366,15 @@ namespace FishingLogbook.Framework.Builders
         }
 
         /// <summary>
-        /// Opens the registered logbook, falling back to building a fresh copy if the registration didn't take.
+        /// Opens the registered logbook, rebuilding it first if a catch has left it out of date.
         /// </summary>
         public void OpenBook()
         {
-            // The registered copy is kept current by RefreshBook, so opening it avoids rebuilding every page here
+            if (_isBookStale)
+            {
+                RefreshBook();
+            }
+
             if (_parchmentApi.HasBook(ModEntry.BOOK_ID) && _parchmentApi.TryOpenBook(ModEntry.BOOK_ID))
             {
                 return;
@@ -370,21 +386,71 @@ namespace FishingLogbook.Framework.Builders
             }
         }
 
+        /// <summary>
+        /// Rebuilds a stale book once a menu has opened, so the reader who just opened it sees the current contents.
+        /// </summary>
+        public void OnMenuOpened()
+        {
+            // Only a Parchment book needs this, and OpenBook has already handled the one it opened itself
+            if (_isBookStale is false || IsBookOpen() is false)
+            {
+                return;
+            }
+
+            RefreshBook();
+        }
+
+        /// <summary>
+        /// Records that the book's contents have changed. The rebuild itself waits until someone reads it, unless it is already open.
+        /// </summary>
         public void QueueRefresh()
         {
-            _isRefreshQueued = true;
-            _ticksUntilRefresh = REFRESH_DELAY_TICKS;
+            _isBookStale = true;
+
+            // A reader with the book open needs it now, since nothing else will prompt a rebuild while they sit there
+            if (IsBookOpen())
+            {
+                _ticksUntilRefresh = REFRESH_DELAY_TICKS;
+            }
+        }
+
+        /// <summary>
+        /// Records that the cover's stickers need laying out again, which happens on the next build.
+        /// </summary>
+        public void QueueStickerRefresh()
+        {
+            _areStickersStale = true;
         }
 
         public void CancelQueuedRefresh()
         {
-            _isRefreshQueued = false;
             _ticksUntilRefresh = 0;
+            _pendingSwap = null;
+            _swapAttemptsRemaining = 0;
+        }
+
+        /// <summary>
+        /// Drops everything held for the current save, so the next one starts from scratch.
+        /// </summary>
+        public void Reset()
+        {
+            CancelQueuedRefresh();
+
+            _isBookStale = false;
+            _areStickersStale = false;
+            _stickerPlacements = null;
         }
 
         public void UpdateQueuedRefresh()
         {
-            if (_isRefreshQueued is false)
+            // A swap refused while the book animates open is retried until it takes, rather than rebuilding again
+            if (_pendingSwap is not null)
+            {
+                TrySwapPendingBook();
+                return;
+            }
+
+            if (_ticksUntilRefresh <= 0)
             {
                 return;
             }
@@ -395,12 +461,13 @@ namespace FishingLogbook.Framework.Builders
                 return;
             }
 
-            _isRefreshQueued = false;
             RefreshBook();
         }
 
         public void RefreshBook()
         {
+            CancelQueuedRefresh();
+
             IBookBuilder book = Build();
 
             if (book.TryRegister(out string registerError) is false)
@@ -409,16 +476,67 @@ namespace FishingLogbook.Framework.Builders
                 return;
             }
 
-            if (book.TryRefresh(out string refreshError) is false)
+            _isBookStale = false;
+
+            if (book.TryRefresh(out string refreshError))
             {
-                ModEntry.monitor.Log($"Couldn't refresh the logbook, because {refreshError}.", LogLevel.Trace);
+                return;
             }
+
+            // Nothing being open is the ordinary case here, so only a book which is open is worth waiting on
+            if (IsBookOpen())
+            {
+                _pendingSwap = book;
+                _swapAttemptsRemaining = SWAP_ATTEMPT_LIMIT;
+                return;
+            }
+
+            ModEntry.monitor.Log($"Couldn't refresh the logbook, because {refreshError}.", LogLevel.Trace);
+        }
+
+        /// <summary>
+        /// Retries a swap Parchment turned down, which it does while the book is mid-animation.
+        /// </summary>
+        private void TrySwapPendingBook()
+        {
+            _swapAttemptsRemaining -= 1;
+
+            if (_pendingSwap.TryRefresh(out string refreshError))
+            {
+                CancelQueuedRefresh();
+                return;
+            }
+
+            // The reader may have closed the book in the meantime, in which case there is nothing left to swap into
+            if (_swapAttemptsRemaining > 0 && IsBookOpen())
+            {
+                return;
+            }
+
+            CancelQueuedRefresh();
+            ModEntry.monitor.Log($"Couldn't refresh the logbook, because {refreshError}.", LogLevel.Trace);
+        }
+
+        /// <summary>
+        /// Gets whether a Parchment book is currently on screen, which is any book rather than this one specifically.
+        /// </summary>
+        private bool IsBookOpen()
+        {
+            return _parchmentApi.TryGetBookBounds(out _);
         }
 
         private void BuildFishDetailPages(IBookBuilder book, string fishPageId, FishEntry fish)
         {
             // Ordering is left position-independent so the page reads the same wherever the player opens the book
             FishAvailability availability = FishAvailabilityHelper.Summarize(fish, preferCurrentLocation: false);
+
+            // The text is worked out up front, since it both fills the pages and decides whether a recorded plan still applies
+            string requirementsText = availability.HasRequirements ? BuildRequirementsText(availability) : string.Empty;
+            string whenText = BuildWhenText(availability);
+            List<string> rowTexts = availability.Rows.Select(row => BuildLocationRowText(row, availability)).ToList();
+            List<string> footnotes = BuildFootnotes(availability);
+
+            DetailPagePlanner planner = DetailPagePlanner.For(fish.QualifiedItemId, GetLayoutSignature(requirementsText, whenText, rowTexts, footnotes));
 
             var detailsPage = AddDetailPage(book, $"{fishPageId}_details", fishPageId);
             detailsPage.AddTitle(ModEntry.translation.Get("ui.page.details.title")).Alignment("Center").Spacing(36);
@@ -427,12 +545,12 @@ namespace FishingLogbook.Framework.Builders
             if (availability.HasRequirements)
             {
                 detailsPage.AddHeading(ModEntry.translation.Get("ui.details.requirementsHeading")).Alignment("Center").Margin(0, 0).Spacing(12);
-                detailsPage.AddParagraph(BuildRequirementsText(availability)).Alignment("Left").Margin(24, 0).Spacing(24);
+                detailsPage.AddParagraph(requirementsText).Alignment("Left").Margin(24, 0).Spacing(24);
             }
 
             // Time and weather come from Data/Fish, so they hold everywhere and belong in one block rather than on every row
             detailsPage.AddHeading(ModEntry.translation.Get("ui.details.whenHeading")).Alignment("Center").Margin(0, 0).Spacing(12);
-            detailsPage.AddParagraph(BuildWhenText(availability)).Alignment("Left").Margin(24, 0).Spacing(24);
+            detailsPage.AddParagraph(whenText).Alignment("Left").Margin(24, 0).Spacing(24);
 
             // Go to next page if it has requirements and has locations
             bool addedPageTurnHint = false;
@@ -449,7 +567,7 @@ namespace FishingLogbook.Framework.Builders
             }
             detailsPage.AddHeading(ModEntry.translation.Get("ui.details.whereHeading")).Alignment("Center").Spacing(12);
 
-            if (availability.Rows.Count is 0)
+            if (rowTexts.Count is 0)
             {
                 detailsPage.AddParagraph(ModEntry.translation.Get("ui.details.notCatchable")).Alignment("Left").Margin(24, 0).Spacing(12);
                 return;
@@ -458,17 +576,17 @@ namespace FishingLogbook.Framework.Builders
             // Fill each page until Parchment says the next row won't fit, then take it back off and carry it over
             int detailPageIndex = 0;
             var currentPage = detailsPage;
-            var pendingRows = new List<FishAvailabilityRow>(availability.Rows);
-            var currentPageRows = new List<FishAvailabilityRow>();
+            var pendingRows = new List<string>(rowTexts);
+            var currentPageRows = new List<string>();
 
             while (pendingRows.Count > 0)
             {
-                FishAvailabilityRow row = pendingRows[0];
+                string row = pendingRows[0];
                 pendingRows.RemoveAt(0);
 
-                AddLocationRow(currentPage, row, availability);
+                AddLocationRow(currentPage, row);
 
-                if (currentPage.WouldOverflow() is false)
+                if (planner.WouldOverflow(currentPage) is false)
                 {
                     currentPageRows.Add(row);
                     continue;
@@ -481,7 +599,7 @@ namespace FishingLogbook.Framework.Builders
                 AddContinuationHint(currentPage);
 
                 // The hint is an element of its own, so keep giving rows back until it has room too
-                while (currentPage.WouldOverflow() && currentPageRows.Count > 0)
+                while (planner.WouldOverflow(currentPage) && currentPageRows.Count > 0)
                 {
                     // The hint first, then the row beneath it, since only the last element can be removed
                     currentPage.RemoveLast();
@@ -505,7 +623,33 @@ namespace FishingLogbook.Framework.Builders
                 currentPageRows.Clear();
             }
 
-            AddDetailFootnotes(book, fishPageId, currentPage, availability, detailPageIndex + 1);
+            AddDetailFootnotes(book, fishPageId, currentPage, footnotes, planner, detailPageIndex + 1);
+        }
+
+        /// <summary>
+        /// Builds a value which identifies the text a fish's detail pages are laid out from, so a recorded plan is dropped once any of it changes
+        /// </summary>
+        private int GetLayoutSignature(string requirementsText, string whenText, IReadOnlyList<string> rowTexts, IReadOnlyList<string> footnotes)
+        {
+            int signature = CombineSignature(rowTexts.Count, requirementsText);
+            signature = CombineSignature(signature, whenText);
+
+            foreach (string rowText in rowTexts)
+            {
+                signature = CombineSignature(signature, rowText);
+            }
+
+            foreach (string footnote in footnotes)
+            {
+                signature = CombineSignature(signature, footnote);
+            }
+
+            return signature;
+        }
+
+        private int CombineSignature(int signature, string value)
+        {
+            return signature * 31 + Game1.hash.GetDeterministicHashCode(value ?? string.Empty);
         }
 
         private IPageBuilder AddDetailPage(IBookBuilder book, string pageId, string fishPageId)
@@ -599,12 +743,12 @@ namespace FishingLogbook.Framework.Builders
             page.AddParagraph(ModEntry.translation.Get("ui.details.continued")).Alignment("Left").Margin(24, 0).Spacing(8);
         }
 
-        private void AddLocationRow(IPageBuilder page, FishAvailabilityRow row, FishAvailability availability)
+        private void AddLocationRow(IPageBuilder page, string rowText)
         {
-            page.AddParagraph(BuildLocationRowText(row, availability)).Alignment("Left").Margin(24, 0).Spacing(8);
+            page.AddParagraph(rowText).Alignment("Left").Margin(24, 0).Spacing(8);
         }
 
-        private void AddDetailFootnotes(IBookBuilder book, string fishPageId, IPageBuilder page, FishAvailability availability, int spillPageIndex)
+        private List<string> BuildFootnotes(FishAvailability availability)
         {
             List<string> footnotes = new List<string>();
             if (availability.Rows.Any(row => row.RequiresMagicBait) && availability.RequiresMagicBaitEverywhere is false)
@@ -616,6 +760,11 @@ namespace FishingLogbook.Framework.Builders
                 footnotes.Add(ModEntry.translation.Get("ui.footnote.extraConditions"));
             }
 
+            return footnotes;
+        }
+
+        private void AddDetailFootnotes(IBookBuilder book, string fishPageId, IPageBuilder page, List<string> footnotes, DetailPagePlanner planner, int spillPageIndex)
+        {
             if (footnotes.Count is 0)
             {
                 return;
@@ -624,7 +773,7 @@ namespace FishingLogbook.Framework.Builders
             page.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
             page.AddParagraph(string.Join("\n", footnotes)).Alignment("Left").Margin(24, 0).Spacing(12);
 
-            if (page.WouldOverflow() is false)
+            if (planner.WouldOverflow(page) is false)
             {
                 return;
             }
