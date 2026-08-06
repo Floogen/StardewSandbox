@@ -35,7 +35,6 @@ namespace FishingLogbook.Framework.Builders
         private IParchmentApi _parchmentApi;
         private List<StickerPlacement> _stickerPlacements;
 
-        private bool _isBookStale;
         private bool _areStickersStale;
         private int _ticksUntilRefresh;
 
@@ -366,15 +365,10 @@ namespace FishingLogbook.Framework.Builders
         }
 
         /// <summary>
-        /// Opens the registered logbook, rebuilding it first if a catch has left it out of date.
+        /// Opens the registered logbook, which Parchment rebuilds on the way in when a catch has left it out of date.
         /// </summary>
         public void OpenBook()
         {
-            if (_isBookStale)
-            {
-                RefreshBook();
-            }
-
             if (_parchmentApi.HasBook(ModEntry.BOOK_ID) && _parchmentApi.TryOpenBook(ModEntry.BOOK_ID))
             {
                 return;
@@ -387,27 +381,17 @@ namespace FishingLogbook.Framework.Builders
         }
 
         /// <summary>
-        /// Rebuilds a stale book once a menu has opened, so the reader who just opened it sees the current contents.
-        /// </summary>
-        public void OnMenuOpened()
-        {
-            // Only a Parchment book needs this, and OpenBook has already handled the one it opened itself
-            if (_isBookStale is false || IsBookOpen() is false)
-            {
-                return;
-            }
-
-            RefreshBook();
-        }
-
-        /// <summary>
-        /// Records that the book's contents have changed. The rebuild itself waits until someone reads it, unless it is already open.
+        /// Records that the book's contents have changed. Parchment rebuilds it on the way into the next opening, unless it is already open.
         /// </summary>
         public void QueueRefresh()
         {
-            _isBookStale = true;
+            // The mark costs nothing, so a day of catches nobody reads costs no rebuilds at all
+            if (_parchmentApi.HasBook(ModEntry.BOOK_ID) && _parchmentApi.TryMarkBookStale(ModEntry.BOOK_ID, out string error) is false)
+            {
+                ModEntry.monitor.Log($"Couldn't mark the logbook as stale, because {error}.", LogLevel.Warn);
+            }
 
-            // A reader with the book open needs it now, since nothing else will prompt a rebuild while they sit there
+            // A reader with the book open needs it now, since the mark above only takes effect at the next opening
             if (IsBookOpen())
             {
                 _ticksUntilRefresh = REFRESH_DELAY_TICKS;
@@ -436,7 +420,6 @@ namespace FishingLogbook.Framework.Builders
         {
             CancelQueuedRefresh();
 
-            _isBookStale = false;
             _areStickersStale = false;
             _stickerPlacements = null;
         }
@@ -475,8 +458,6 @@ namespace FishingLogbook.Framework.Builders
                 ModEntry.monitor.Log($"Couldn't register the logbook, because {registerError}.", LogLevel.Warn);
                 return;
             }
-
-            _isBookStale = false;
 
             if (book.TryRefresh(out string refreshError))
             {

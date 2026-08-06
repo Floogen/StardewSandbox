@@ -88,7 +88,6 @@ namespace FishingLogbook
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.Content.AssetRequested += OnAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
-            helper.Events.Display.MenuChanged += OnMenuChanged;
 
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += OnSaveLoaded;
@@ -174,17 +173,6 @@ namespace FishingLogbook
             }
         }
 
-        private void OnMenuChanged(object sender, MenuChangedEventArgs e)
-        {
-            if (e.NewMenu is null)
-            {
-                return;
-            }
-
-            // Catches the book being opened through its item, which Parchment handles without going through OpenBook
-            logbookBuilder?.OnMenuOpened();
-        }
-
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
         {
             if (config.LogbookShortcut is not null && config.LogbookShortcut.IsDown() && _parchmentApi is not null && Context.IsPlayerFree && Game1.activeClickableMenu is null)
@@ -251,7 +239,7 @@ namespace FishingLogbook
                 return;
             }
 
-            // The selection is seeded per day, so the cover is rerolled here
+            // The selection is seeded per day, so the cover is rerolled here while the day transition hides the cost
             logbookBuilder?.GenerateStickers();
 
             // Rebuild so season and weather driven availability isn't left over from yesterday
