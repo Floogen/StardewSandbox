@@ -251,6 +251,9 @@ namespace FishingLogbook
                 return;
             }
 
+            // The selection is seeded per day, so the cover is rerolled here
+            logbookBuilder?.GenerateStickers();
+
             // Rebuild so season and weather driven availability isn't left over from yesterday
             logbookBuilder?.QueueRefresh();
         }
