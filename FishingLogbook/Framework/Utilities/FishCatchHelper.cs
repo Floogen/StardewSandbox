@@ -53,7 +53,7 @@ namespace FishingLogbook.Framework.Utilities
         /// <param name="fishData">The parsed <c>Data/Fish</c> entry.</param>
         public static float? GetRecordSizeRatio(FishCatchInfo info, ParsedFishData fishData)
         {
-            if (!info.HasSize || fishData is null || fishData.MaxSize <= 0)
+            if (!info.HasSize || fishData is null || fishData.HasSize is false)
             {
                 return null;
             }

@@ -25,6 +25,9 @@ namespace FishingLogbook.Framework.Models.Fish
         /// <summary>The maximum size in inches used for fishing stats.</summary>
         public int MaxSize { get; set; }
 
+        /// <summary>Whether the game records a catch size for this fish. Trap entries carry placeholder values in fields 5 and 6 which the game never reads, since it only parses the size out of fields 3 and 4.</summary>
+        public bool HasSize => this.IsTrapFish is false && this.MaxSize > 0;
+
         /// <summary>How often the fish darts during the minigame, between 15 and 100. Field 1.</summary>
         public int DartChance { get; set; }
 

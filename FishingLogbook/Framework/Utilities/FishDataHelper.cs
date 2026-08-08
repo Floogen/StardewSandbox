@@ -28,6 +28,9 @@ namespace FishingLogbook.Framework.Utilities
         /// <summary>The key prefix shared by every farm type's entry, of which only one applies to any given save.</summary>
         private const string FarmKeyPrefix = "Farm_";
 
+        /// <summary>The context tag marking an item which is caught while fishing but isn't treated as a fish, such as seaweed, algae or the jellies.</summary>
+        private const string NonFishContextTag = "fish_nonfish";
+
         /// <summary>A custom field a content pack can set on its location entry to keep it out of the logbook.</summary>
         private const string HideFromLogbookField = "PeacefulEnd.Parchment.FishingLogbook_Hide";
 
@@ -164,6 +167,19 @@ namespace FishingLogbook.Framework.Utilities
                 CanBeTutorialCatch = ParseBool(GetField(fields, 13))
             };
             return true;
+        }
+
+        /// <summary>Check whether the game records a catch size for an item, so a maximum size is meaningful to show.</summary>
+        /// <param name="entry">The fish entry to check.</param>
+        public static bool HasCatchSize(FishEntry entry)
+        {
+            if (entry?.FishData?.HasSize is not true)
+            {
+                return false;
+            }
+
+            // Seaweed, algae and the jellies carry real size fields in Data/Fish, but a size is never recorded
+            return ItemContextTagManager.DoesTagMatch(NonFishContextTag, ItemContextTagManager.GetBaseContextTags(entry.QualifiedItemId)) is false;
         }
 
         /// <summary>Format a fish's spawn windows into a human-readable string such as "6:00am to 7:00pm".</summary>

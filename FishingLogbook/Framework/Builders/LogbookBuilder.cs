@@ -273,12 +273,18 @@ namespace FishingLogbook.Framework.Builders
                     .Spacing(8);
                 fishPageSummary.AddParagraph(fishData.ItemData.Description).Alignment("Left").Margin(24, 0).Spacing(12);
                 fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
-                string amountCaughtText = ModEntry.translation.Get("ui.fish.amountCaught", new { amount = amountCaught });
-                string largestSizeText = ModEntry.translation.Get("ui.fish.largestSize", new { size = string.IsNullOrEmpty(size) ? ModEntry.translation.Get("ui.fish.largestSizeNone").ToString() : size });
-                string maxSizeText = ModEntry.translation.Get("ui.fish.maxSize", new { size = fishData.FishData.MaxSize });
+                string statsText = ModEntry.translation.Get("ui.fish.amountCaught", new { amount = amountCaught }).ToString();
+
+                // Crab pot entries and non-fish catches store sizes the game never reads, so omit both size lines rather than showing a max the player can never reach
+                if (FishDataHelper.HasCatchSize(fishData))
+                {
+                    string largestSizeText = ModEntry.translation.Get("ui.fish.largestSize", new { size = string.IsNullOrEmpty(size) ? ModEntry.translation.Get("ui.fish.largestSizeNone").ToString() : size });
+                    string maxSizeText = ModEntry.translation.Get("ui.fish.maxSize", new { size = fishData.FishData.MaxSize });
+                    statsText = $"{statsText}\n{largestSizeText}\n{maxSizeText}";
+                }
 
                 fishPageSummary.AddHeading(ModEntry.translation.Get("ui.fish.statsHeading")).Alignment("Center").Margin(24, 0).Spacing(12);
-                fishPageSummary.AddParagraph($"{amountCaughtText}\n{largestSizeText}\n{maxSizeText}").Alignment("Left").Margin(24, 0).Spacing(12);
+                fishPageSummary.AddParagraph(statsText).Alignment("Left").Margin(24, 0).Spacing(12);
                 fishPageSummary.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(16);
 
                 BuildFishDetailPages(book, fishPageId, fishData);
