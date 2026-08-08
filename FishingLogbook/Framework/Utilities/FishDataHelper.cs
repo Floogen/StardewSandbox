@@ -31,6 +31,9 @@ namespace FishingLogbook.Framework.Utilities
         /// <summary>The context tag marking an item which is caught while fishing but isn't treated as a fish, such as seaweed, algae or the jellies.</summary>
         private const string NonFishContextTag = "fish_nonfish";
 
+        /// <summary>The <c>Data/Objects</c> type which puts an item in the vanilla fishing collection.</summary>
+        private const string FishObjectType = "Fish";
+
         /// <summary>A custom field a content pack can set on its location entry to keep it out of the logbook.</summary>
         private const string HideFromLogbookField = "PeacefulEnd.Parchment.FishingLogbook_Hide";
 
@@ -113,7 +116,7 @@ namespace FishingLogbook.Framework.Utilities
                 }
             }
 
-            // the Default entry applies everywhere, so record it once as its own row rather than duplicating it per location
+            // Default entry applies everywhere, so record it once as its own row rather than duplicating it per location
             if (includeGlobalSpawns && defaultLocation is not null)
             {
                 foreach (SpawnFishData spawn in defaultLocation.Fish ?? Enumerable.Empty<SpawnFishData>())
@@ -121,6 +124,9 @@ namespace FishingLogbook.Framework.Utilities
                     AddRodSpawn(entries, parsedFish, locations, DefaultLocationKey, GlobalLocationName, defaultLocation, spawn, isGlobal: true, isInherited: false, includeItemsWithoutFishData, new HashSet<string> { DefaultLocationKey });
                 }
             }
+
+            // Game rolls the jellies in place of trash rather than through a spawn list, so recover anything the collection knows about but no location declares
+            AddCollectionOnlyFish(entries, parsedFish);
 
             return entries.Values
                 .Where(entry => excludeNonCollectableFish is false || IsInFishingCollection(entry.ItemData))
@@ -248,6 +254,29 @@ namespace FishingLogbook.Framework.Utilities
                     IsCrabPot = false,
                     Raw = spawn
                 });
+            }
+        }
+
+        /// <summary>Add any collectable fish which no location declares a spawn for, so the logbook stays in step with the vanilla collections tab. These entries carry no spawn rows, since the game offers nothing to describe.</summary>
+        /// <param name="entries">The aggregate lookup to add to.</param>
+        /// <param name="parsedFish">The parsed <c>Data/Fish</c> entries, keyed by unqualified item ID.</param>
+        private static void AddCollectionOnlyFish(Dictionary<string, FishEntry> entries, Dictionary<string, ParsedFishData> parsedFish)
+        {
+            foreach ((string itemId, ObjectData objectData) in Game1.objectData)
+            {
+                if (objectData is null || objectData.Type != FishObjectType || objectData.ExcludeFromFishingCollection)
+                {
+                    continue;
+                }
+
+                ParsedItemData itemData = ItemRegistry.GetData(ItemRegistry.ManuallyQualifyItemId(itemId, ItemRegistry.type_object));
+                if (itemData is null || entries.ContainsKey(itemData.QualifiedItemId))
+                {
+                    continue;
+                }
+
+                parsedFish.TryGetValue(itemData.ItemId, out ParsedFishData fishData);
+                GetOrCreateEntry(entries, itemData, fishData).IsCollectionOnly = true;
             }
         }
 

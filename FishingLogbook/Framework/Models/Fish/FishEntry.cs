@@ -18,6 +18,9 @@ namespace FishingLogbook.Framework.Models.Fish
         /// <summary>Every location and fish area this item can be caught in.</summary>
         public List<FishSpawnLocation> SpawnLocations { get; set; } = new();
 
+        /// <summary>Whether this entry was recovered from the fishing collection rather than a location's spawn list, meaning the game gives no data on where it's caught. This is how the jellies reach the logbook, since the game rolls them in place of trash.</summary>
+        public bool IsCollectionOnly { get; set; }
+
         /// <summary>The translated display name.</summary>
         public string DisplayName => this.ItemData.DisplayName;
     }

@@ -556,7 +556,8 @@ namespace FishingLogbook.Framework.Builders
 
             if (rowTexts.Count is 0)
             {
-                detailsPage.AddParagraph(ModEntry.translation.Get("ui.details.notCatchable")).Alignment("Left").Margin(24, 0).Spacing(12);
+                string emptyText = fish.IsCollectionOnly ? ModEntry.translation.Get("ui.details.unlistedSpawn") : ModEntry.translation.Get("ui.details.notCatchable");
+                detailsPage.AddParagraph(emptyText).Alignment("Left").Margin(24, 4).Spacing(12);
                 return;
             }
 
