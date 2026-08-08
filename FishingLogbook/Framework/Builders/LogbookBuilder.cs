@@ -225,8 +225,11 @@ namespace FishingLogbook.Framework.Builders
             foreach (var pageFishes in collectableFishes.OrderBy(b => b.ItemData.ItemId).Chunk(maxFishPerPage).DefaultIfEmpty(Array.Empty<FishEntry>()))
             {
                 var fishPreviewPage = book.AddPage($"fishPreview{fishPreviewPageCounter}", "front").Tag("Searchable");
-                if (fishPreviewPageCounter is 0)
+
+                var pageNumber = fishPreviewPage.AddBackground("Paragraph").Font("Small").Text($"{fishPreviewPageCounter + 1}").Alignment("Right").VerticalAlignment("Bottom").Position(-16, 0);
+                if (fishPreviewPageCounter is 0 || fishPreviewPageCounter % 2 == 0)
                 {
+                    pageNumber.Alignment("Left").Position(16, 0);
                     fishPreviewPage.AddTitle(ModEntry.translation.Get("ui.page.fish.title")).Alignment("Center");
                 }
 
