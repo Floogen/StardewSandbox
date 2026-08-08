@@ -32,10 +32,10 @@
 
   "ui.fish.unknownName": "???",
   "ui.fish.statsHeading": "Stats",
-  "ui.fish.amountCaught": "Amount caught: {{amount}}",
-  "ui.fish.largestSize": "Largest size: {{size}}",
+  "ui.fish.amountCaught": "Amount Caught: {{amount}}",
+  "ui.fish.largestSize": "Best Catch: {{size}}",
   "ui.fish.largestSizeNone": "None",
-  "ui.fish.maxSize": "Max size: {{size}} inches",
+  "ui.fish.maxSize": "Max Possible: {{size}} inches",
 
   "ui.settings.alwaysShowFishNames": "Always Show Fish Names",
   "ui.settings.startOnCover": "Start on Book Cover",
