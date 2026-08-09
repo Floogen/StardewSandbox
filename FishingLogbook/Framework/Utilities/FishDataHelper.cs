@@ -34,6 +34,22 @@ namespace FishingLogbook.Framework.Utilities
         /// <summary>The <c>Data/Objects</c> type which puts an item in the vanilla fishing collection.</summary>
         private const string FishObjectType = "Fish";
 
+        /// <summary>The <c>Data/Locations</c> key for the mine entrance, borrowed for its translated name since the floors below it have no entry of their own.</summary>
+        private const string MineLocationKey = "Mine";
+
+        /// <summary>The mine floors each fish is caught on, keyed by unqualified item ID. The floors are chosen by <c>MineShaft.getFish</c> in code and bypass the normal fishing path entirely, so nothing in <c>Data/Locations</c> or <c>Data/Fish</c> describes them and they have to be stated here.</summary>
+        private static readonly Dictionary<string, int[]> MineFishFloors = new()
+        {
+            // Ghostfish
+            ["156"] = new[] { 20, 60 },
+            // Stonefish
+            ["158"] = new[] { 20 },
+            // Ice Pip
+            ["161"] = new[] { 60 },
+            // Lava Eel
+            ["162"] = new[] { 100 }
+        };
+
         /// <summary>A custom field a content pack can set on its location entry to keep it out of the logbook.</summary>
         private const string HideFromLogbookField = "PeacefulEnd.Parchment.FishingLogbook_Hide";
 
@@ -124,6 +140,9 @@ namespace FishingLogbook.Framework.Utilities
                     AddRodSpawn(entries, parsedFish, locations, DefaultLocationKey, GlobalLocationName, defaultLocation, spawn, isGlobal: true, isInherited: false, includeItemsWithoutFishData, new HashSet<string> { DefaultLocationKey });
                 }
             }
+
+            // The mine floors aren't locations in the data at all, so their catches have to be stated rather than discovered
+            AddMineSpawns(entries, parsedFish, locations, worldMapNames);
 
             // Game rolls the jellies in place of trash rather than through a spawn list, so recover anything the collection knows about but no location declares
             AddCollectionOnlyFish(entries, parsedFish);
@@ -254,6 +273,35 @@ namespace FishingLogbook.Framework.Utilities
                     IsCrabPot = false,
                     Raw = spawn
                 });
+            }
+        }
+
+        /// <summary>Add the mine floor catches, which <c>MineShaft.getFish</c> picks in code without ever invoking the normal fishing path. The floors are runtime <c>MineShaft</c> instances rather than <c>Data/Locations</c> entries, so this is the one place the logbook states spawns rather than reading them.</summary>
+        /// <param name="entries">The aggregate lookup to add to.</param>
+        /// <param name="parsedFish">The parsed <c>Data/Fish</c> entries, keyed by unqualified item ID.</param>
+        /// <param name="locations">The <c>Data/Locations</c> entries, used for the mine's translated name.</param>
+        /// <param name="worldMapNames">The location to world map name lookup.</param>
+        private static void AddMineSpawns(Dictionary<string, FishEntry> entries, Dictionary<string, ParsedFishData> parsedFish, Dictionary<string, LocationData> locations, Dictionary<string, string> worldMapNames)
+        {
+            locations.TryGetValue(MineLocationKey, out LocationData mineData);
+            string locationName = GetLocationDisplayName(MineLocationKey, mineData, worldMapNames) ?? ModEntry.translation.Get("ui.location.mines").ToString();
+
+            foreach ((string itemId, int[] floors) in MineFishFloors)
+            {
+                ParsedItemData itemData = ItemRegistry.GetData(ItemRegistry.ManuallyQualifyItemId(itemId, ItemRegistry.type_object));
+                if (itemData is null)
+                {
+                    continue;
+                }
+
+                parsedFish.TryGetValue(itemId, out ParsedFishData fishData);
+                FishEntry entry = GetOrCreateEntry(entries, itemData, fishData);
+
+                foreach (int floor in floors)
+                {
+                    // The mine path skips the Data/Fish checks, so a level or weather requirement listed there doesn't hold down here
+                    entry.SpawnLocations.Add(new FishSpawnLocation { LocationId = MineLocationKey, LocationDisplayName = locationName, FishAreaId = floor.ToString(), FishAreaDisplayName = ModEntry.translation.Get("ui.location.mineFloor", new { floor = floor }).ToString(), Seasons = AllSeasons.ToList(), EffectiveMinFishingLevel = 0, IgnoreFishDataRequirements = true });
+                }
             }
         }
 

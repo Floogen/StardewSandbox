@@ -48,6 +48,8 @@
   "ui.details.whereContinuedHeading": "Where (continued)",
   "ui.details.notCatchable": "Not catchable anywhere",
   "ui.details.unlistedSpawn": "Caught while fishing, but no location is listed",
+  "ui.location.mines": "The Mines",
+  "ui.location.mineFloor": "Floor {{floor}}",
   "ui.details.continued": "... continued on next page",
   "ui.details.time": "Time: {{time}}",
   "ui.details.anyTime": "Any time",
