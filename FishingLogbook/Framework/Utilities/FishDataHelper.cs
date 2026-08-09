@@ -50,6 +50,17 @@ namespace FishingLogbook.Framework.Utilities
             ["162"] = new[] { 100 }
         };
 
+        /// <summary>The stand-in location ID used for the jelly rows, which describe a kind of water rather than a place. It never matches a real location name, so it simply falls through the current-location sort.</summary>
+        private const string JellyLocationId = "PeacefulEnd.FishingLogbook_JellyWater";
+
+        /// <summary>The translation key naming the water each jelly turns up in, keyed by unqualified item ID. The game rolls these in place of trash wherever that water exists rather than through a spawn list, so there's no location to name and the water type is the whole of what can be said.</summary>
+        private static readonly Dictionary<string, string> JellyWaterKeys = new()
+        {
+            ["SeaJelly"] = "ui.location.oceanWater",
+            ["RiverJelly"] = "ui.location.freshWater",
+            ["CaveJelly"] = "ui.location.undergroundWater"
+        };
+
         /// <summary>A custom field a content pack can set on its location entry to keep it out of the logbook.</summary>
         private const string HideFromLogbookField = "PeacefulEnd.Parchment.FishingLogbook_Hide";
 
@@ -144,7 +155,10 @@ namespace FishingLogbook.Framework.Utilities
             // The mine floors aren't locations in the data at all, so their catches have to be stated rather than discovered
             AddMineSpawns(entries, parsedFish, locations, worldMapNames);
 
-            // Game rolls the jellies in place of trash rather than through a spawn list, so recover anything the collection knows about but no location declares
+            // The jellies have no place to name, so each gets one row describing the water instead
+            AddJellySpawns(entries, parsedFish);
+
+            // Recover anything else the collection knows about but no location declares
             AddCollectionOnlyFish(entries, parsedFish);
 
             return entries.Values
@@ -302,6 +316,27 @@ namespace FishingLogbook.Framework.Utilities
                     // The mine path skips the Data/Fish checks, so a level or weather requirement listed there doesn't hold down here
                     entry.SpawnLocations.Add(new FishSpawnLocation { LocationId = MineLocationKey, LocationDisplayName = locationName, FishAreaId = floor.ToString(), FishAreaDisplayName = ModEntry.translation.Get("ui.location.mineFloor", new { floor = floor }).ToString(), Seasons = AllSeasons.ToList(), EffectiveMinFishingLevel = 0, IgnoreFishDataRequirements = true });
                 }
+            }
+        }
+
+        /// <summary>Add one row per jelly naming the water it turns up in. The game rolls these in place of trash wherever that water exists, so enumerating every matching location would bury the one useful fact under dozens of place names.</summary>
+        /// <param name="entries">The aggregate lookup to add to.</param>
+        /// <param name="parsedFish">The parsed <c>Data/Fish</c> entries, keyed by unqualified item ID.</param>
+        private static void AddJellySpawns(Dictionary<string, FishEntry> entries, Dictionary<string, ParsedFishData> parsedFish)
+        {
+            foreach ((string itemId, string waterKey) in JellyWaterKeys)
+            {
+                ParsedItemData itemData = ItemRegistry.GetData(ItemRegistry.ManuallyQualifyItemId(itemId, ItemRegistry.type_object));
+                if (itemData is null)
+                {
+                    continue;
+                }
+
+                parsedFish.TryGetValue(itemId, out ParsedFishData fishData);
+                FishEntry entry = GetOrCreateEntry(entries, itemData, fishData);
+
+                // nothing in Data/Fish gates these, since the trash roll they replace never consults it
+                entry.SpawnLocations.Add(new FishSpawnLocation { LocationId = JellyLocationId, LocationDisplayName = ModEntry.translation.Get(waterKey).ToString(), Seasons = AllSeasons.ToList(), EffectiveMinFishingLevel = 0, IgnoreFishDataRequirements = true });
             }
         }
 
