@@ -58,7 +58,7 @@ namespace FishingLogbook.Framework.Utilities
                 return null;
             }
 
-            return Math.Clamp((float)info.BiggestCatchInches / fishData.MaxSize, 0f, 1f);
+            return Math.Clamp((float)info.BiggestCatchInches / fishData.AttainableMaxSize, 0f, 1f);
         }
 
         /// <summary>Get how many distinct fish a player has caught, for a "42 of 78" style counter.</summary>

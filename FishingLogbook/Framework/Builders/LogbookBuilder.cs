@@ -282,7 +282,7 @@ namespace FishingLogbook.Framework.Builders
                 if (FishDataHelper.HasCatchSize(fishData))
                 {
                     string largestSizeText = ModEntry.translation.Get("ui.fish.largestSize", new { size = string.IsNullOrEmpty(size) ? ModEntry.translation.Get("ui.fish.largestSizeNone").ToString() : size });
-                    string maxSizeText = ModEntry.translation.Get("ui.fish.maxSize", new { size = fishData.FishData.MaxSize });
+                    string maxSizeText = ModEntry.translation.Get("ui.fish.maxSize", new { size = fishData.FishData.AttainableMaxSize });
                     statsText = $"{statsText}\n{largestSizeText}\n{maxSizeText}";
                 }
 
