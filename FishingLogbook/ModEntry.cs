@@ -221,8 +221,9 @@ namespace FishingLogbook
             // The stickers are laid out by the build below, rather than twice over
             logbookBuilder.QueueStickerRefresh();
 
-            // Track new fish being caught
-            Game1.player.fishCaught.OnValueAdded += OnFishCaught;
+            // Detect when a fish is caught or if a cached value is removed (due to Content Patcher migration)
+            Game1.player.fishCaught.OnValueAdded += OnFishCaughtChanged;
+            Game1.player.fishCaught.OnValueRemoved += OnFishCaughtChanged;
 
             // Registered up front, since the book's item has to work before anything marks it stale
             logbookBuilder.RefreshBook();
@@ -293,7 +294,8 @@ namespace FishingLogbook
         {
             if (Game1.player is not null)
             {
-                Game1.player.fishCaught.OnValueAdded -= OnFishCaught;
+                Game1.player.fishCaught.OnValueAdded -= OnFishCaughtChanged;
+                Game1.player.fishCaught.OnValueRemoved -= OnFishCaughtChanged;
             }
 
             // Required to clear the cached farm type location
@@ -308,10 +310,13 @@ namespace FishingLogbook
             _skipDayStartedRefresh = false;
         }
 
-        private void OnFishCaught(string key, int[] value)
+        private void OnFishCaughtChanged(string key, int[] value)
         {
             // Laying the stickers out here would land on the frame the fish is caught, so it waits for the next build
             logbookBuilder.QueueStickerRefresh();
+
+            // Farmer.caughtFish patch covers most situations, but need to handle if the collection is modified directly
+            logbookBuilder.QueueRefresh();
         }
     }
 }

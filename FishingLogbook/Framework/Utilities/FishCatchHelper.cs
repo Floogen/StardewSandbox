@@ -65,7 +65,12 @@ namespace FishingLogbook.Framework.Utilities
         /// <param name="who">The player to read from.</param>
         public static int GetDistinctCaughtCount(Farmer who)
         {
-            return who?.fishCaught?.Length ?? 0;
+            if (who?.fishCaught is null)
+            {
+                return 0;
+            }
+
+            return who.fishCaught.Keys.Count(key => ItemRegistry.GetData(key) is not null);
         }
 
         /// <summary>Count how many of the given fish a player has caught, for a progress counter scoped to your own list.</summary>
