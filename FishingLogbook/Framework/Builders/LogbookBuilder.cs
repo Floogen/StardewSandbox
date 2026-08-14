@@ -197,7 +197,7 @@ namespace FishingLogbook.Framework.Builders
             // Build the intro pages (first two seen on book open)
             var contentsPage = book.AddPage("recent-catches", "front");
             contentsPage.AddTitle(ModEntry.translation.Get("ui.page.recentCatches.title")).Alignment("Center").Spacing(32);
-            foreach (var recentCatchInfo in RecentCatchHelper.GetRecentCatches(Game1.player).Reverse<RecentCatchInfo>().Take(7))
+            foreach (var recentCatchInfo in RecentCatchHelper.GetResolvableRecentCatches(Game1.player).Reverse<RecentCatchInfo>().Take(7))
             {
                 var recentCatchPanel = contentsPage.AddPanel().Alignment("Center").Margin(64, 0).Spacing(20);
 

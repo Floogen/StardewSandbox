@@ -16,12 +16,19 @@ namespace FishingLogbook.Framework.Utilities
         /// <param name="who">The player to read from.</param>
         public static List<RecentCatchInfo> GetRecentCatches(Farmer who)
         {
-            if (who.modData.TryGetValue(RECENT_CATCHES_MOD_DATA_KEY, out var recentCatchesText) is false)
+            if (who is null || who.modData.TryGetValue(RECENT_CATCHES_MOD_DATA_KEY, out var recentCatchesText) is false)
             {
                 return new List<RecentCatchInfo>();
             }
 
-            return JsonConvert.DeserializeObject<List<RecentCatchInfo>>(recentCatchesText);
+            return JsonConvert.DeserializeObject<List<RecentCatchInfo>>(recentCatchesText) ?? new List<RecentCatchInfo>();
+        }
+
+        /// <summary>Get a player's recent catch records, skipping any whose item no longer resolves.</summary>
+        /// <param name="who">The player to read from.</param>
+        public static List<RecentCatchInfo> GetResolvableRecentCatches(Farmer who)
+        {
+            return GetRecentCatches(who).Where(entry => string.IsNullOrWhiteSpace(entry?.Id) is false && ItemRegistry.GetData(entry.Id) is not null).ToList();
         }
 
         /// <summary>
