@@ -3,6 +3,7 @@ using CropTraits.Framework.Traits;
 using StardewValley;
 using StardewValley.GameData.Crops;
 using StardewValley.TerrainFeatures;
+using System.Collections.Generic;
 
 namespace CropTraits.Framework.Utilities.Helpers
 {
@@ -15,15 +16,54 @@ namespace CropTraits.Framework.Utilities.Helpers
         // Applies growth traits on top of the crop's current phases (used right after planting)
         public static void ApplyGrowthTraits(Crop crop, TraitSet traits)
         {
-            if (crop is null || traits is null || crop.phaseDays.Count < 2)
+            if (crop is null)
+            {
+                return;
+            }
+
+            ApplyGrowthTraits(crop.phaseDays, crop.GetData(), traits);
+        }
+
+        public static void ApplyGrowthTraits(IList<int> phaseDays, CropData cropData, TraitSet traits)
+        {
+            if (phaseDays is null || traits is null || phaseDays.Count < 2)
             {
                 return;
             }
 
             foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(traits))
             {
-                trait.ModifyGrowth(crop, tier);
+                trait.ModifyGrowth(phaseDays, cropData, tier);
             }
+        }
+
+        public static int GetBaseGrowthDays(CropData cropData)
+        {
+            return GetGrowthDays(BuildPhaseDays(cropData));
+        }
+
+        // Matches the vanilla seed description, so fertilizer and profession boosts are left out
+        public static int GetEstimatedGrowthDays(CropData cropData, TraitSet traits)
+        {
+            List<int> phaseDays = BuildPhaseDays(cropData);
+            ApplyGrowthTraits(phaseDays, cropData, traits);
+
+            return GetGrowthDays(phaseDays);
+        }
+
+        // Data phases plus the final phase, the same shape as a planted crop's phaseDays
+        public static List<int> BuildPhaseDays(CropData cropData)
+        {
+            List<int> phaseDays = new List<int>();
+            if (cropData?.DaysInPhase is null || cropData.DaysInPhase.Count == 0)
+            {
+                return phaseDays;
+            }
+
+            phaseDays.AddRange(cropData.DaysInPhase);
+            phaseDays.Add(FINAL_PHASE_LENGTH);
+
+            return phaseDays;
         }
 
         // Rebuilds phases from crop data so growth traits never double up or get wiped by vanilla speed increases
@@ -65,38 +105,38 @@ namespace CropTraits.Framework.Utilities.Helpers
             return fallback ?? Game1.MasterPlayer;
         }
 
-        public static int GetGrowthDays(Crop crop)
+        public static int GetGrowthDays(IList<int> phaseDays)
         {
             int totalDays = 0;
-            for (int index = 0; index < crop.phaseDays.Count - 1; index++)
+            for (int index = 0; index < phaseDays.Count - 1; index++)
             {
-                totalDays += crop.phaseDays[index];
+                totalDays += phaseDays[index];
             }
 
             return totalDays;
         }
 
-        public static void RemoveGrowthDays(Crop crop, int daysToRemove)
+        public static void RemoveGrowthDays(IList<int> phaseDays, int daysToRemove)
         {
-            int lastGrowthIndex = crop.phaseDays.Count - 1;
+            int lastGrowthIndex = phaseDays.Count - 1;
 
             // Each phase keeps at least one day, matching how Speed-Gro trims phases
             for (int pass = 0; pass < MAX_REMOVAL_PASSES && daysToRemove > 0; pass++)
             {
                 for (int index = 0; index < lastGrowthIndex && daysToRemove > 0; index++)
                 {
-                    if (crop.phaseDays[index] > 1)
+                    if (phaseDays[index] > 1)
                     {
-                        crop.phaseDays[index]--;
+                        phaseDays[index]--;
                         daysToRemove--;
                     }
                 }
             }
         }
 
-        public static void AddGrowthDays(Crop crop, int daysToAdd)
+        public static void AddGrowthDays(IList<int> phaseDays, int daysToAdd)
         {
-            int lastGrowthIndex = crop.phaseDays.Count - 1;
+            int lastGrowthIndex = phaseDays.Count - 1;
             if (lastGrowthIndex <= 0)
             {
                 return;
@@ -104,7 +144,7 @@ namespace CropTraits.Framework.Utilities.Helpers
 
             for (int index = 0; daysToAdd > 0; index = (index + 1) % lastGrowthIndex)
             {
-                crop.phaseDays[index]++;
+                phaseDays[index]++;
                 daysToAdd--;
             }
         }

@@ -11,6 +11,7 @@
 
   // Tooltips
   "tooltip.traits": "Traits: {{traits}}",
+  "tooltip.growth_days": "With its traits, takes {{days}} days to mature.",
 
   // Seed Splicer menu
   "menu.title": "Seed Splicer",

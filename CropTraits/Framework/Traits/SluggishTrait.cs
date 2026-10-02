@@ -1,6 +1,7 @@
 using CropTraits.Framework.Utilities.Helpers;
-using StardewValley;
+using StardewValley.GameData.Crops;
 using System;
+using System.Collections.Generic;
 
 namespace CropTraits.Framework.Traits
 {
@@ -15,9 +16,9 @@ namespace CropTraits.Framework.Traits
         public override bool IsNegative => true;
         public override int Weight => 12;
 
-        public override void ModifyGrowth(Crop crop, int tier)
+        public override void ModifyGrowth(IList<int> phaseDays, CropData cropData, int tier)
         {
-            GrowthHelper.AddGrowthDays(crop, (int)Math.Ceiling(GrowthHelper.GetGrowthDays(crop) * SLOWDOWN_PER_TIER * tier));
+            GrowthHelper.AddGrowthDays(phaseDays, (int)Math.Ceiling(GrowthHelper.GetGrowthDays(phaseDays) * SLOWDOWN_PER_TIER * tier));
         }
     }
 }

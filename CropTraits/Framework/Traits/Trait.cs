@@ -1,5 +1,6 @@
 using CropTraits.Framework.Models;
 using StardewValley;
+using StardewValley.GameData.Crops;
 using System;
 using System.Collections.Generic;
 
@@ -58,9 +59,10 @@ namespace CropTraits.Framework.Traits
         public virtual bool BlocksMutationReplacement => false;
 
         /// <summary>
-        /// Adjusts the crop's growth phases. Called after planting and again whenever the phases are rebuilt from crop data.
+        /// Adjusts the growth phase lengths. The last entry is the final phase and must be left alone.
+        /// Called after planting, whenever the phases are rebuilt from crop data and when a seed's tooltip estimates its growth time, so it should only change the list it's given.
         /// </summary>
-        public virtual void ModifyGrowth(Crop crop, int tier)
+        public virtual void ModifyGrowth(IList<int> phaseDays, CropData cropData, int tier)
         {
 
         }

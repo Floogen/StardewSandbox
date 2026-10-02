@@ -1,5 +1,5 @@
 using CropTraits.Framework.Utilities.Helpers;
-using StardewValley;
+using StardewValley.GameData.Crops;
 using System;
 using System.Collections.Generic;
 
@@ -19,9 +19,9 @@ namespace CropTraits.Framework.Traits
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
 
         // Removes a share of the growth days, with each phase keeping at least one day
-        public override void ModifyGrowth(Crop crop, int tier)
+        public override void ModifyGrowth(IList<int> phaseDays, CropData cropData, int tier)
         {
-            GrowthHelper.RemoveGrowthDays(crop, (int)Math.Ceiling(GrowthHelper.GetGrowthDays(crop) * SPEED_PER_TIER * tier));
+            GrowthHelper.RemoveGrowthDays(phaseDays, (int)Math.Ceiling(GrowthHelper.GetGrowthDays(phaseDays) * SPEED_PER_TIER * tier));
         }
     }
 }

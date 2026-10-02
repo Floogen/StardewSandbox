@@ -5,6 +5,7 @@ using CropTraits.Framework.Utilities.Helpers;
 using HarmonyLib;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.GameData.Crops;
 
 namespace CropTraits.Framework.Patches.Objects
 {
@@ -66,6 +67,30 @@ namespace CropTraits.Framework.Patches.Objects
 
             string traitLine = Game1.parseText(TranslationHelper.Get("tooltip.traits", new { traits = label }), Game1.smallFont, DESCRIPTION_WIDTH);
             __result = $"{__result}{System.Environment.NewLine}{System.Environment.NewLine}{traitLine}";
+
+            string growthLine = GetGrowthLine(__instance);
+            if (string.IsNullOrEmpty(growthLine) is false)
+            {
+                __result = $"{__result}{System.Environment.NewLine}{growthLine}";
+            }
+        }
+
+        // The vanilla seed description states the base growth time, so seeds with growth traits add their adjusted time
+        private static string GetGrowthLine(Object item)
+        {
+            if (item.Category != Object.SeedsCategory || Game1.cropData.TryGetValue(item.ItemId, out CropData cropData) is false)
+            {
+                return null;
+            }
+
+            int baseDays = GrowthHelper.GetBaseGrowthDays(cropData);
+            int estimatedDays = GrowthHelper.GetEstimatedGrowthDays(cropData, TraitModDataHelper.GetTraits(item.modData));
+            if (baseDays == 0 || estimatedDays == baseDays)
+            {
+                return null;
+            }
+
+            return Game1.parseText(TranslationHelper.Get("tooltip.growth_days", new { days = estimatedDays }), Game1.smallFont, DESCRIPTION_WIDTH);
         }
 
         // Price traits apply at sale, so produce and artisan goods carrying them get the same effect
