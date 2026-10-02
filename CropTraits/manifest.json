@@ -1,0 +1,11 @@
+﻿{
+  "Name": "Crop Traits",
+  "Author": "PeacefulEnd",
+  "Version": "%ProjectVersion%",
+  "Description": "Adds mutations and traits to crops.",
+  "UniqueID": "PeacefulEnd.CropTraits",
+  "EntryDll": "CropTraits.dll",
+  "MinimumApiVersion": "3.14.4",
+  "UpdateKeys": [ "Nexus:????" ],
+  "Dependencies": []
+}
