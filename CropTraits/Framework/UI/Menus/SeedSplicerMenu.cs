@@ -134,7 +134,9 @@ namespace CropTraits.Framework.UI.Menus
             _hoveredItem = null;
             _spliceButton.tryHover(x, y);
 
-            Item inventoryItem = _inventory.hover(x, y, null);
+            _inventory.hover(x, y, null);
+
+            Item inventoryItem = _inventory.getItemAt(x, y);
             if (inventoryItem is not null)
             {
                 _hoveredItem = inventoryItem;
