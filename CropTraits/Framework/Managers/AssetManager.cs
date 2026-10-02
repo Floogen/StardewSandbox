@@ -1,0 +1,68 @@
+using CropTraits.Framework.Utilities.Helpers;
+using StardewModdingAPI;
+using StardewModdingAPI.Events;
+using StardewValley.GameData.BigCraftables;
+using StardewValley.GameData.Objects;
+using System.Collections.Generic;
+
+namespace CropTraits.Framework.Managers
+{
+    public class AssetManager : BaseManager
+    {
+        public const string BIG_CRAFTABLES_DATA_PATH = "Data/BigCraftables";
+        public const string OBJECTS_DATA_PATH = "Data/Objects";
+
+        // TODO: Change this temp path
+        public const string CRAFTABLES_TEXTURE_PATH = "TileSheets/Craftables";
+        public const int SEED_MAKER_SPRITE_INDEX = 25;
+        public const int SPEED_GRO_SPRITE_INDEX = 465;
+
+        public const int SEED_SPLICER_PRICE = 500;
+        public const int MUTAGENIC_FERTILIZER_PRICE = 50;
+        public const int FERTILIZER_CATEGORY = -19;
+
+        public AssetManager(IMonitor monitor, IModHelper helper) : base(monitor, helper)
+        {
+
+        }
+
+        public void OnAssetRequested(object sender, AssetRequestedEventArgs e)
+        {
+            if (e.NameWithoutLocale.IsEquivalentTo(BIG_CRAFTABLES_DATA_PATH))
+            {
+                e.Edit(asset =>
+                {
+                    IDictionary<string, BigCraftableData> data = asset.AsDictionary<string, BigCraftableData>().Data;
+                    data[CropTraits.SEED_SPLICER_ID] = new BigCraftableData
+                    {
+                        Name = CropTraits.SEED_SPLICER_ID,
+                        DisplayName = TranslationHelper.Get("item.seed_splicer.name"),
+                        Description = TranslationHelper.Get("item.seed_splicer.description"),
+                        Price = SEED_SPLICER_PRICE,
+                        CanBePlacedIndoors = true,
+                        CanBePlacedOutdoors = true,
+                        Texture = CRAFTABLES_TEXTURE_PATH,
+                        SpriteIndex = SEED_MAKER_SPRITE_INDEX
+                    };
+                });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(OBJECTS_DATA_PATH))
+            {
+                e.Edit(asset =>
+                {
+                    IDictionary<string, ObjectData> data = asset.AsDictionary<string, ObjectData>().Data;
+                    data[CropTraits.MUTAGENIC_FERTILIZER_ID] = new ObjectData
+                    {
+                        Name = CropTraits.MUTAGENIC_FERTILIZER_ID,
+                        DisplayName = TranslationHelper.Get("item.mutagenic_fertilizer.name"),
+                        Description = TranslationHelper.Get("item.mutagenic_fertilizer.description"),
+                        Type = "Basic",
+                        Category = FERTILIZER_CATEGORY,
+                        Price = MUTAGENIC_FERTILIZER_PRICE,
+                        SpriteIndex = SPEED_GRO_SPRITE_INDEX
+                    };
+                });
+            }
+        }
+    }
+}

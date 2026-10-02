@@ -1,0 +1,48 @@
+{
+  // Items
+  "item.seed_splicer.name": "Seed Splicer",
+  "item.seed_splicer.description": "Crossbreeds two crops of the same type into new seeds, or dilutes a traited crop with a plain one.",
+  "item.mutagenic_fertilizer.name": "Mutagenic Fertilizer",
+  "item.mutagenic_fertilizer.description": "Raises the chance that a crop planted in this soil mutates.",
+
+  // Traited item names
+  "item.name.hybrid": "{{name}} (Hybrid)",
+  "item.name.seedless": "Seedless {{name}}",
+
+  // Tooltips
+  "tooltip.traits": "Traits: {{traits}}",
+
+  // Seed Splicer menu
+  "menu.title": "Seed Splicer",
+  "menu.button.splice": "Splice",
+  "menu.status.empty": "Place two crops of the same type.",
+  "menu.status.needs_second": "Add a second crop of the same type.",
+  "menu.status.needs_traits": "At least one crop needs a trait.",
+  "menu.status.needs_stack": "Each slot needs at least {{count}} crops.",
+  "menu.status.ready_crossbreed": "Ready to crossbreed.",
+  "menu.status.ready_dilute": "Ready to dilute. Each trait may be lost.",
+  "menu.status.created": "Created {{count}} {{name}}.",
+  "menu.status.upgraded": "A trait grew stronger: {{traits}}!",
+  "menu.status.upgraded_multiple": "Traits grew stronger: {{traits}}!",
+  "menu.status.no_eligible": "You need at least {{count}} of a crop to splice.",
+
+  // Traits
+  "trait.swift.name": "Swift",
+  "trait.swift.description": "Grows faster.",
+  "trait.sluggish.name": "Sluggish",
+  "trait.sluggish.description": "Grows slower.",
+  "trait.prolific.name": "Prolific",
+  "trait.prolific.description": "Chance for an extra harvest.",
+  "trait.regal.name": "Regal",
+  "trait.regal.description": "Chance for higher quality produce.",
+  "trait.sweet.name": "Sweet",
+  "trait.sweet.description": "Sells for more.",
+  "trait.bitter.name": "Bitter",
+  "trait.bitter.description": "Sells for less.",
+  "trait.stable.name": "Stable",
+  "trait.stable.description": "Mutations can't replace or displace existing traits.",
+  "trait.volatile.name": "Volatile",
+  "trait.volatile.description": "More likely to mutate.",
+  "trait.seedless.name": "Seedless",
+  "trait.seedless.description": "Can't be turned into seeds, but sells for more."
+}
