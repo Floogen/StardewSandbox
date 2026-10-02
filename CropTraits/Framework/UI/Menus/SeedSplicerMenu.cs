@@ -252,8 +252,23 @@ namespace CropTraits.Framework.UI.Menus
             }
             else
             {
-                _statusText = TranslationHelper.Get("menu.status.ready_dilute");
+                _statusText = GetDiluteStatus();
             }
+        }
+
+        // The split chance depends on the traited parent's quality, so showing it is the only way players see that quality matters
+        public string GetDiluteStatus()
+        {
+            Item traitedItem = CropTraits.blendManager.HasTraits(_firstItem) ? _firstItem : _secondItem;
+
+            // Removing the only trait is the same as a wipe, so a chance would be misleading
+            if (TraitModDataHelper.GetTraits(traitedItem.modData).Count <= 1)
+            {
+                return TranslationHelper.Get("menu.status.ready_dilute_single");
+            }
+
+            int splitChance = (int)System.Math.Round(DilutionHelper.GetSplitChance(traitedItem.Quality) * 100);
+            return TranslationHelper.Get("menu.status.ready_dilute", new { chance = splitChance });
         }
 
         public void ReturnAllItems()
