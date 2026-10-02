@@ -12,7 +12,7 @@ namespace CropTraits.Framework.Managers
 {
     public class BlendManager : BaseManager
     {
-        public const int REQUIRED_STACK_PER_SLOT = 3;
+        public const int REQUIRED_STACK_PER_SLOT = 5;
         public const int MIN_SEED_OUTPUT = 1;
         public const int MAX_SEED_OUTPUT = 3;
 
