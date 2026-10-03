@@ -1,4 +1,5 @@
 using CropTraits.Framework.Utilities.Helpers;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley.GameData.BigCraftables;
@@ -15,6 +16,9 @@ namespace CropTraits.Framework.Managers
         // TODO: Change this temp path
         public const string CRAFTABLES_TEXTURE_PATH = "TileSheets/Craftables";
         public const int SEED_MAKER_SPRITE_INDEX = 25;
+
+        public const string SEED_SPLICER_MENU_TEXTURE_PATH = "Mods/PeacefulEnd.CropTraits/SeedSplicerMenu";
+        public const string SEED_SPLICER_MENU_FILE_PATH = "Framework/Assets/SeedSplicerMenu.png";
         public const int SPEED_GRO_SPRITE_INDEX = 465;
 
         public const int SEED_SPLICER_PRICE = 500;
@@ -28,7 +32,11 @@ namespace CropTraits.Framework.Managers
 
         public void OnAssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            if (e.NameWithoutLocale.IsEquivalentTo(BIG_CRAFTABLES_DATA_PATH))
+            if (e.NameWithoutLocale.IsEquivalentTo(SEED_SPLICER_MENU_TEXTURE_PATH))
+            {
+                e.LoadFromModFile<Texture2D>(SEED_SPLICER_MENU_FILE_PATH, AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(BIG_CRAFTABLES_DATA_PATH))
             {
                 e.Edit(asset =>
                 {

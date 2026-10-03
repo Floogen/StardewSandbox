@@ -12,14 +12,38 @@ namespace CropTraits.Framework.UI.Menus
     public class SeedSplicerMenu : IClickableMenu
     {
         public const int SLOT_SIZE = 64;
-        public const int SLOT_AREA_HEIGHT = 224;
-        public const int SLOT_SPACING = 128;
-        public const int OK_BUTTON_SPRITE_INDEX = 46;
-        public const int SLOT_SPRITE_INDEX = 10;
+        public const int MENU_SCALE = 4;
+        public const int SECTION_GAP = 16;
+        public const int BOX_PADDING = 32;
+        public const int INVENTORY_COLUMNS = 12;
+        public const int INVENTORY_ROWS = 3;
+        public const float ART_LAYER_DEPTH = 0.86f;
         public const float GHOST_ITEM_TRANSPARENCY = 0.4f;
         public const float GHOST_ITEM_LAYER_DEPTH = 0.865f;
+        public const float BUTTON_LAYER_DEPTH = 0.88f;
+        public const double SPLICE_BUTTON_SWAP_INTERVAL_MILLISECONDS = 2000;
+        public const int SHAKE_INTENSITY = 2;
+        public const double SHAKE_INTERVAL_MILLISECONDS = 50;
+
+        // Pixel positions in the spritesheet (before scaling), so these must match the art
+        public static readonly Rectangle ART_SOURCE = new Rectangle(0, 0, 116, 85);
+        public static readonly Point FIRST_SLOT_PIXEL = new Point(30, 26); // Top left of the slot's inner 16x16 area
+        public static readonly Point SECOND_SLOT_PIXEL = new Point(67, 26);
+        public static readonly Point OUTPUT_SLOT_PIXEL = new Point(49, 53);
+        public static readonly Point SPLICE_BUTTON_PIXEL = new Point(88, 56);
+        public static readonly Rectangle SPLICE_BUTTON_IDLE_SOURCE = new Rectangle(144, 16, 13, 13);
+        public static readonly Rectangle SPLICE_BUTTON_READY_SOURCE = new Rectangle(128, 16, 13, 13);
+        public static readonly Rectangle SPLICE_BUTTON_ACTIVE_OFF_SOURCE = new Rectangle(144, 0, 13, 13);
+        public static readonly Rectangle SPLICE_BUTTON_ACTIVE_ON_SOURCE = new Rectangle(128, 0, 13, 13);
 
         private readonly Object _machine;
+        private readonly Texture2D _menuTexture;
+        private readonly System.Random _shakeRandom = new System.Random();
+        private Vector2 _shakeOffset;
+        private double _shakeTimer;
+        private Vector2 _artPosition;
+        private Rectangle _textBoxBounds;
+        private Rectangle _inventoryBoxBounds;
         private InventoryMenu _inventory;
         private ClickableComponent _firstSlot;
         private ClickableComponent _secondSlot;
@@ -33,13 +57,24 @@ namespace CropTraits.Framework.UI.Menus
         private bool _wasOutputReady;
         private int _lastProgressPercent;
 
-        public SeedSplicerMenu(Object machine) : base(0, 0, 880, 640, true)
+        public SeedSplicerMenu(Object machine) : base(0, 0, GetMenuWidth(), GetMenuHeight(), true)
         {
             _machine = machine;
+            _menuTexture = Game1.content.Load<Texture2D>(AssetManager.SEED_SPLICER_MENU_TEXTURE_PATH);
             _wasOutputReady = SpliceHelper.IsReady(_machine);
 
             Layout();
             UpdateStatus();
+        }
+
+        public static int GetMenuWidth()
+        {
+            return (INVENTORY_COLUMNS * SLOT_SIZE) + (BOX_PADDING * 2);
+        }
+
+        public static int GetMenuHeight()
+        {
+            return (ART_SOURCE.Height * MENU_SCALE) + SECTION_GAP + (INVENTORY_ROWS * SLOT_SIZE) + (BOX_PADDING * 2);
         }
 
         public void Layout()
@@ -49,24 +84,30 @@ namespace CropTraits.Framework.UI.Menus
             yPositionOnScreen = (int)topLeft.Y;
             initializeUpperRightCloseButton();
 
-            int centerX = xPositionOnScreen + (width / 2);
-            int slotY = yPositionOnScreen + spaceToClearTopBorder + 64;
+            int artWidth = ART_SOURCE.Width * MENU_SCALE;
+            int artHeight = ART_SOURCE.Height * MENU_SCALE;
+            _artPosition = new Vector2(xPositionOnScreen, yPositionOnScreen);
+            _textBoxBounds = new Rectangle(xPositionOnScreen + artWidth + SECTION_GAP, yPositionOnScreen, width - artWidth - SECTION_GAP, artHeight);
+            _inventoryBoxBounds = new Rectangle(xPositionOnScreen, yPositionOnScreen + artHeight + SECTION_GAP, width, height - artHeight - SECTION_GAP);
 
-            // Inputs, the splice button and the output slot sit in one centered row
-            int firstX = centerX - (SLOT_SPACING * 3 / 2) - (SLOT_SIZE / 2);
+            _firstSlot = new ClickableComponent(GetBounds(FIRST_SLOT_PIXEL, SLOT_SIZE, SLOT_SIZE), "FirstSlot");
+            _secondSlot = new ClickableComponent(GetBounds(SECOND_SLOT_PIXEL, SLOT_SIZE, SLOT_SIZE), "SecondSlot");
+            _outputSlot = new ClickableComponent(GetBounds(OUTPUT_SLOT_PIXEL, SLOT_SIZE, SLOT_SIZE), "OutputSlot");
 
-            _firstSlot = new ClickableComponent(new Rectangle(firstX, slotY, SLOT_SIZE, SLOT_SIZE), "FirstSlot");
-            _secondSlot = new ClickableComponent(new Rectangle(firstX + SLOT_SPACING, slotY, SLOT_SIZE, SLOT_SIZE), "SecondSlot");
-            _spliceButton = new ClickableTextureComponent("Splice", new Rectangle(firstX + (SLOT_SPACING * 2), slotY, SLOT_SIZE, SLOT_SIZE), null, TranslationHelper.Get("menu.button.splice"), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, OK_BUTTON_SPRITE_INDEX), 1f);
-            _outputSlot = new ClickableComponent(new Rectangle(firstX + (SLOT_SPACING * 3), slotY, SLOT_SIZE, SLOT_SIZE), "OutputSlot");
+            Rectangle buttonBounds = GetBounds(SPLICE_BUTTON_PIXEL, SPLICE_BUTTON_IDLE_SOURCE.Width * MENU_SCALE, SPLICE_BUTTON_IDLE_SOURCE.Height * MENU_SCALE);
+            _spliceButton = new ClickableTextureComponent("Splice", buttonBounds, null, TranslationHelper.Get("menu.button.splice"), _menuTexture, SPLICE_BUTTON_IDLE_SOURCE, MENU_SCALE);
 
-            int inventoryX = xPositionOnScreen + spaceToClearSideBorder + borderWidth;
-            int inventoryY = yPositionOnScreen + spaceToClearTopBorder + SLOT_AREA_HEIGHT + 64;
-            // Not flagged as the player inventory, matching the forge and tailoring menus, so the hotbar numbers aren't drawn above the top row
+            int inventoryX = _inventoryBoxBounds.X + BOX_PADDING;
+            int inventoryY = _inventoryBoxBounds.Y + BOX_PADDING;
+
             _inventory = new InventoryMenu(inventoryX, inventoryY, false, null, CanHighlight);
-
-            // Locked backpack slots are only greyed out automatically for the player inventory, so they're requested explicitly
             _inventory.showGrayedOutSlots = true;
+        }
+
+        // Converts a pixel position in the art into screen bounds
+        public Rectangle GetBounds(Point pixel, int boundsWidth, int boundsHeight)
+        {
+            return new Rectangle((int)_artPosition.X + (pixel.X * MENU_SCALE), (int)_artPosition.Y + (pixel.Y * MENU_SCALE), boundsWidth, boundsHeight);
         }
 
         public override void gameWindowSizeChanged(Rectangle oldBounds, Rectangle newBounds)
@@ -160,7 +201,11 @@ namespace CropTraits.Framework.UI.Menus
         {
             base.performHoverAction(x, y);
             _hoveredItem = null;
-            _spliceButton.tryHover(x, y);
+
+            if (SpliceHelper.IsSplicing(_machine) is false)
+            {
+                _spliceButton.tryHover(x, y);
+            }
 
             _inventory.hover(x, y, null);
 
@@ -188,6 +233,7 @@ namespace CropTraits.Framework.UI.Menus
         public override void update(GameTime time)
         {
             base.update(time);
+            UpdateShake(time);
 
             bool isOutputReady = SpliceHelper.IsReady(_machine);
             if (isOutputReady != _wasOutputReady)
@@ -208,6 +254,26 @@ namespace CropTraits.Framework.UI.Menus
                 _lastProgressPercent = progressPercent;
                 UpdateStatus();
             }
+        }
+
+        public void UpdateShake(GameTime time)
+        {
+            if (SpliceHelper.IsSplicing(_machine) is false)
+            {
+                _shakeOffset = Vector2.Zero;
+                _shakeTimer = 0;
+                return;
+            }
+
+            _shakeTimer += time.ElapsedGameTime.TotalMilliseconds;
+            if (_shakeTimer < SHAKE_INTERVAL_MILLISECONDS)
+            {
+                return;
+            }
+
+            // A long frame only produces one new offset rather than catching up
+            _shakeTimer %= SHAKE_INTERVAL_MILLISECONDS;
+            _shakeOffset = new Vector2(_shakeRandom.Next(-SHAKE_INTENSITY, SHAKE_INTENSITY + 1), _shakeRandom.Next(-SHAKE_INTENSITY, SHAKE_INTENSITY + 1));
         }
 
         // The result is decided now, but the seeds wait in the machine until the splice finishes
@@ -301,7 +367,7 @@ namespace CropTraits.Framework.UI.Menus
             return Game1.player.addItemToInventory(item);
         }
 
-        // A faded copy of the placed crop hints at what the empty slot needs, since only the same crop type is accepted
+        // A faded copy of the placed crop to hint at what the empty slot needs, since only the same crop type is accepted
         public void UpdateGhostItem()
         {
             Item placedItem = _firstItem ?? _secondItem;
@@ -417,22 +483,29 @@ namespace CropTraits.Framework.UI.Menus
         public override void draw(SpriteBatch b)
         {
             b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
-            Game1.drawDialogueBox(xPositionOnScreen, yPositionOnScreen, width, height, false, true);
 
-            int centerX = xPositionOnScreen + (width / 2);
-            DrawCenteredText(b, TranslationHelper.Get("menu.title"), Game1.dialogueFont, centerX, yPositionOnScreen + spaceToClearTopBorder + 8);
+            b.Draw(_menuTexture, _artPosition + _shakeOffset, ART_SOURCE, Color.White, 0f, Vector2.Zero, MENU_SCALE, SpriteEffects.None, ART_LAYER_DEPTH);
+            drawTextureBox(b, _textBoxBounds.X, _textBoxBounds.Y, _textBoxBounds.Width, _textBoxBounds.Height, Color.White);
+            drawTextureBox(b, _inventoryBoxBounds.X, _inventoryBoxBounds.Y, _inventoryBoxBounds.Width, _inventoryBoxBounds.Height, Color.White);
+
+            DrawTextBox(b);
 
             DrawSlot(b, _firstSlot, _firstItem, _ghostItem);
             DrawSlot(b, _secondSlot, _secondItem, _ghostItem);
-            DrawCenteredText(b, "+", Game1.dialogueFont, (_firstSlot.bounds.Right + _secondSlot.bounds.Left) / 2, _firstSlot.bounds.Y + 8);
-
             DrawOutputSlot(b);
 
             bool canSplice = SpliceHelper.HasOutput(_machine) is false && CropTraits.blendManager.CanBlend(_firstItem, _secondItem);
-            _spliceButton.draw(b, canSplice ? Color.White : Color.Gray * 0.5f, 0.88f);
-
-            string wrappedStatus = Game1.parseText(_statusText, Game1.smallFont, width - 128);
-            DrawCenteredText(b, wrappedStatus, Game1.smallFont, centerX, _firstSlot.bounds.Bottom + 24);
+            _spliceButton.sourceRect = SPLICE_BUTTON_IDLE_SOURCE;
+            if (canSplice)
+            {
+                bool isShowingAlternateSprite = (long)(Game1.currentGameTime.TotalGameTime.TotalMilliseconds / SPLICE_BUTTON_SWAP_INTERVAL_MILLISECONDS) % 2 == 1;
+                _spliceButton.sourceRect = isShowingAlternateSprite ? SPLICE_BUTTON_READY_SOURCE : SPLICE_BUTTON_IDLE_SOURCE;
+            }
+            else if (SpliceHelper.IsSplicing(_machine))
+            {
+                _spliceButton.sourceRect = SPLICE_BUTTON_ACTIVE_ON_SOURCE;
+            }
+            _spliceButton.draw(b, Color.White, BUTTON_LAYER_DEPTH, 0, (int)_shakeOffset.X, (int)_shakeOffset.Y);
 
             _inventory.draw(b);
             base.draw(b);
@@ -441,18 +514,27 @@ namespace CropTraits.Framework.UI.Menus
             {
                 drawToolTip(b, _hoveredItem.getDescription(), _hoveredItem.DisplayName, _hoveredItem);
             }
-            else if (_spliceButton.containsPoint(Game1.getMouseX(), Game1.getMouseY()))
-            {
-                drawHoverText(b, _spliceButton.hoverText, Game1.smallFont);
-            }
 
             drawMouse(b);
         }
 
+        public void DrawTextBox(SpriteBatch b)
+        {
+            int textX = _textBoxBounds.X + BOX_PADDING;
+            int textY = _textBoxBounds.Y + BOX_PADDING;
+            int textWidth = _textBoxBounds.Width - (BOX_PADDING * 2);
+
+            string title = TranslationHelper.Get("menu.title");
+            Utility.drawTextWithShadow(b, title, Game1.dialogueFont, new Vector2(textX, textY), Game1.textColor);
+
+            int statusY = textY + (int)Game1.dialogueFont.MeasureString(title).Y + 8;
+            Utility.drawTextWithShadow(b, Game1.parseText(_statusText, Game1.smallFont, textWidth), Game1.smallFont, new Vector2(textX, statusY), Game1.textColor);
+        }
+
         public void DrawSlot(SpriteBatch b, ClickableComponent slot, Item item, Item ghostItem)
         {
-            Vector2 position = new Vector2(slot.bounds.X, slot.bounds.Y);
-            b.Draw(Game1.menuTexture, position, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, SLOT_SPRITE_INDEX), Color.White);
+            // The slot frame is part of the art, so only the contents are drawn (moving with the art when it shakes)
+            Vector2 position = new Vector2(slot.bounds.X, slot.bounds.Y) + _shakeOffset;
 
             if (item is not null)
             {
@@ -467,8 +549,7 @@ namespace CropTraits.Framework.UI.Menus
         // A running splice shows its seeds faded, and they become collectable once it finishes
         public void DrawOutputSlot(SpriteBatch b)
         {
-            Vector2 position = new Vector2(_outputSlot.bounds.X, _outputSlot.bounds.Y);
-            b.Draw(Game1.menuTexture, position, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, SLOT_SPRITE_INDEX), Color.White);
+            Vector2 position = new Vector2(_outputSlot.bounds.X, _outputSlot.bounds.Y) + _shakeOffset;
 
             Object seeds = _machine.heldObject.Value;
             if (seeds is null)
@@ -483,12 +564,6 @@ namespace CropTraits.Framework.UI.Menus
             }
 
             seeds.drawInMenu(b, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
-        }
-
-        public void DrawCenteredText(SpriteBatch b, string text, SpriteFont font, int centerX, int y)
-        {
-            Vector2 size = font.MeasureString(text);
-            Utility.drawTextWithShadow(b, text, font, new Vector2(centerX - (size.X / 2), y), Game1.textColor);
         }
     }
 }
