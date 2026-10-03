@@ -13,12 +13,12 @@ namespace CropTraits.Framework.Managers
         public const string BIG_CRAFTABLES_DATA_PATH = "Data/BigCraftables";
         public const string OBJECTS_DATA_PATH = "Data/Objects";
 
-        // TODO: Change this temp path
-        public const string CRAFTABLES_TEXTURE_PATH = "TileSheets/Craftables";
-        public const int SEED_MAKER_SPRITE_INDEX = 25;
-
+        public const string SPRITE_SHEET_TEXTURE_PATH = "Mods/PeacefulEnd.CropTraits/Spritesheet";
+        public const string SPRITE_SHEET_FILE_PATH = "Framework/Assets/Spritesheet.png";
         public const string SEED_SPLICER_MENU_TEXTURE_PATH = "Mods/PeacefulEnd.CropTraits/SeedSplicerMenu";
         public const string SEED_SPLICER_MENU_FILE_PATH = "Framework/Assets/SeedSplicerMenu.png";
+
+        // TODO: Replace with a custom sprite for the Mutagenic Fertilizer
         public const int SPEED_GRO_SPRITE_INDEX = 465;
 
         public const int SEED_SPLICER_PRICE = 500;
@@ -32,7 +32,11 @@ namespace CropTraits.Framework.Managers
 
         public void OnAssetRequested(object sender, AssetRequestedEventArgs e)
         {
-            if (e.NameWithoutLocale.IsEquivalentTo(SEED_SPLICER_MENU_TEXTURE_PATH))
+            if (e.NameWithoutLocale.IsEquivalentTo(SPRITE_SHEET_TEXTURE_PATH))
+            {
+                e.LoadFromModFile<Texture2D>(SPRITE_SHEET_FILE_PATH, AssetLoadPriority.Exclusive);
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(SEED_SPLICER_MENU_TEXTURE_PATH))
             {
                 e.LoadFromModFile<Texture2D>(SEED_SPLICER_MENU_FILE_PATH, AssetLoadPriority.Exclusive);
             }
@@ -49,8 +53,8 @@ namespace CropTraits.Framework.Managers
                         Price = SEED_SPLICER_PRICE,
                         CanBePlacedIndoors = true,
                         CanBePlacedOutdoors = true,
-                        Texture = CRAFTABLES_TEXTURE_PATH,
-                        SpriteIndex = SEED_MAKER_SPRITE_INDEX
+                        Texture = SPRITE_SHEET_TEXTURE_PATH,
+                        SpriteIndex = 0
                     };
                 });
             }
