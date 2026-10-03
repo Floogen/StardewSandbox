@@ -10,23 +10,23 @@ namespace CropTraits.Framework.Utilities.Helpers
     /// </summary>
     public static class MutationBadgeHelper
     {
-        public const float BADGE_SCALE = 2f;
-        public const float BADGE_MARGIN = 1f;
+        public const float BADGE_SCALE = 3f; // Matches the quality star's scale
+        public const float BADGE_MARGIN = 4f;
+        public const float BADGE_LAYER_OFFSET = 0.0001f;
 
-        public static void DrawBadge(Object item, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber)
+        public static void DrawBadge(Object item, SpriteBatch spriteBatch, Vector2 location, float slotScaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber)
         {
+            // Hidden alongside the stack number and quality star, which also keeps faded previews (like a running splice) from giving anything away
             if (drawStackNumber == StackDrawType.Hide || IsTraitedCrop(item) is false)
             {
                 return;
             }
 
-            float halfSize = (Game1.tileSize / 2f) * scaleSize;
-            float badgeSize = AssetManager.MUTATION_BADGE_SOURCE.Width * BADGE_SCALE * scaleSize;
-            Vector2 center = location + new Vector2(Game1.tileSize / 2f, Game1.tileSize / 2f);
-            Vector2 badgePosition = center + new Vector2(halfSize - badgeSize - (BADGE_MARGIN * scaleSize), -halfSize + (BADGE_MARGIN * scaleSize));
+            Vector2 origin = new Vector2(AssetManager.MUTATION_BADGE_SOURCE.Width / 2f, AssetManager.MUTATION_BADGE_SOURCE.Height / 2f);
+            Vector2 badgeCenter = location + new Vector2(Game1.tileSize - BADGE_MARGIN - (origin.X * BADGE_SCALE), BADGE_MARGIN + (origin.Y * BADGE_SCALE));
 
             Texture2D texture = Game1.content.Load<Texture2D>(AssetManager.SPRITE_SHEET_TEXTURE_PATH);
-            spriteBatch.Draw(texture, badgePosition, AssetManager.MUTATION_BADGE_SOURCE, Color.White * transparency, 0f, Vector2.Zero, BADGE_SCALE * scaleSize, SpriteEffects.None, layerDepth + 0.0001f);
+            spriteBatch.Draw(texture, badgeCenter, AssetManager.MUTATION_BADGE_SOURCE, Color.White * transparency, 0f, origin, BADGE_SCALE * slotScaleSize, SpriteEffects.None, layerDepth + BADGE_LAYER_OFFSET);
         }
 
         public static bool IsTraitedCrop(Item item)
