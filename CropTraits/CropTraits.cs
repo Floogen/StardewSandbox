@@ -29,6 +29,9 @@ namespace CropTraits
         public const string SEED_TRAITS_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SeedTraits"; // Seed's original traits on HoeDirt, shown until the crop reaches maturity
         public const string SEED_ID_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SeedId"; // Seed ID that mutated produce was grown from
         public const string PLANTER_ID_MOD_DATA_KEY = "PeacefulEnd.CropTraits/PlanterId"; // Farmer who planted the crop on HoeDirt, so growth rebuilds use their professions
+        public const string SPLICE_START_DAY_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SpliceStartDay"; // Total day a running splice started, on the Seed Splicer
+        public const string SPLICE_START_TIME_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SpliceStartTime"; // Time of day a running splice started, on the Seed Splicer
+        public const string SPLICE_UPGRADED_TRAITS_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SpliceUpgradedTraits"; // Traits that grew stronger in the held seeds, on the Seed Splicer
 
         // Shared static helpers
         public static IManifest manifest;
@@ -83,6 +86,8 @@ namespace CropTraits
             helper.Events.Content.AssetRequested += assetManager.OnAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
             helper.Events.GameLoop.DayEnding += (sender, args) => mutationManager.ResolveAllPendingMutations();
+            helper.Events.GameLoop.DayStarted += (sender, args) => SpliceHelper.UpdateAllReadyStates();
+            helper.Events.GameLoop.TimeChanged += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.SaveLoaded += (sender, args) => discoveryManager.Load();
             helper.Events.GameLoop.Saving += (sender, args) => discoveryManager.Save();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => discoveryManager.Reset();

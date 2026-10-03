@@ -131,7 +131,7 @@ namespace CropTraits.Framework.Patches.Objects
                 return false;
             }
 
-            Game1.activeClickableMenu = new SeedSplicerMenu();
+            Game1.activeClickableMenu = new SeedSplicerMenu(__instance);
             return false;
         }
 

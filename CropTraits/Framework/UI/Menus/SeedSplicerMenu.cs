@@ -3,6 +3,7 @@ using CropTraits.Framework.Models;
 using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Menus;
 
@@ -18,18 +19,25 @@ namespace CropTraits.Framework.UI.Menus
         public const float GHOST_ITEM_TRANSPARENCY = 0.4f;
         public const float GHOST_ITEM_LAYER_DEPTH = 0.865f;
 
+        private readonly Object _machine;
         private InventoryMenu _inventory;
         private ClickableComponent _firstSlot;
         private ClickableComponent _secondSlot;
+        private ClickableComponent _outputSlot;
         private ClickableTextureComponent _spliceButton;
         private Item _firstItem;
         private Item _secondItem;
         private Item _hoveredItem;
         private Item _ghostItem;
         private string _statusText;
+        private bool _wasOutputReady;
+        private int _lastProgressPercent;
 
-        public SeedSplicerMenu() : base(0, 0, 880, 640, true)
+        public SeedSplicerMenu(Object machine) : base(0, 0, 880, 640, true)
         {
+            _machine = machine;
+            _wasOutputReady = SpliceHelper.IsReady(_machine);
+
             Layout();
             UpdateStatus();
         }
@@ -44,9 +52,13 @@ namespace CropTraits.Framework.UI.Menus
             int centerX = xPositionOnScreen + (width / 2);
             int slotY = yPositionOnScreen + spaceToClearTopBorder + 64;
 
-            _firstSlot = new ClickableComponent(new Rectangle(centerX - SLOT_SPACING - (SLOT_SIZE / 2), slotY, SLOT_SIZE, SLOT_SIZE), "FirstSlot");
-            _secondSlot = new ClickableComponent(new Rectangle(centerX - (SLOT_SIZE / 2), slotY, SLOT_SIZE, SLOT_SIZE), "SecondSlot");
-            _spliceButton = new ClickableTextureComponent("Splice", new Rectangle(centerX + SLOT_SPACING - (SLOT_SIZE / 2), slotY, SLOT_SIZE, SLOT_SIZE), null, TranslationHelper.Get("menu.button.splice"), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, OK_BUTTON_SPRITE_INDEX), 1f);
+            // Inputs, the splice button and the output slot sit in one centered row
+            int firstX = centerX - (SLOT_SPACING * 3 / 2) - (SLOT_SIZE / 2);
+
+            _firstSlot = new ClickableComponent(new Rectangle(firstX, slotY, SLOT_SIZE, SLOT_SIZE), "FirstSlot");
+            _secondSlot = new ClickableComponent(new Rectangle(firstX + SLOT_SPACING, slotY, SLOT_SIZE, SLOT_SIZE), "SecondSlot");
+            _spliceButton = new ClickableTextureComponent("Splice", new Rectangle(firstX + (SLOT_SPACING * 2), slotY, SLOT_SIZE, SLOT_SIZE), null, TranslationHelper.Get("menu.button.splice"), Game1.mouseCursors, Game1.getSourceRectForStandardTileSheet(Game1.mouseCursors, OK_BUTTON_SPRITE_INDEX), 1f);
+            _outputSlot = new ClickableComponent(new Rectangle(firstX + (SLOT_SPACING * 3), slotY, SLOT_SIZE, SLOT_SIZE), "OutputSlot");
 
             int inventoryX = xPositionOnScreen + spaceToClearSideBorder + borderWidth;
             int inventoryY = yPositionOnScreen + spaceToClearTopBorder + SLOT_AREA_HEIGHT + 64;
@@ -65,7 +77,8 @@ namespace CropTraits.Framework.UI.Menus
 
         public bool CanHighlight(Item item)
         {
-            if (_firstItem is not null && _secondItem is not null)
+            // Nothing new can go in until the current splice is collected
+            if (SpliceHelper.HasOutput(_machine) || (_firstItem is not null && _secondItem is not null))
             {
                 return false;
             }
@@ -76,6 +89,12 @@ namespace CropTraits.Framework.UI.Menus
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
             base.receiveLeftClick(x, y, playSound);
+
+            if (_outputSlot.containsPoint(x, y))
+            {
+                TryCollectOutput();
+                return;
+            }
 
             if (_firstSlot.containsPoint(x, y))
             {
@@ -97,7 +116,13 @@ namespace CropTraits.Framework.UI.Menus
                 return;
             }
 
-            Item candidate = _inventory.getItemAt(x, y);
+            int inventoryIndex = _inventory.getInventoryPositionOfClick(x, y);
+            if (inventoryIndex < 0 || inventoryIndex >= _inventory.actualInventory.Count)
+            {
+                return;
+            }
+
+            Item candidate = _inventory.actualInventory[inventoryIndex];
             if (candidate is null)
             {
                 return;
@@ -109,8 +134,11 @@ namespace CropTraits.Framework.UI.Menus
                 return;
             }
 
-            // Taking the whole stack keeps each slot to a single trait set and quality
-            Item takenItem = _inventory.leftClick(x, y, null, false);
+            // Only the required amount is taken, so the rest of the stack stays in the inventory
+            Item takenItem = candidate.getOne();
+            takenItem.Stack = BlendManager.REQUIRED_STACK_PER_SLOT;
+            _inventory.actualInventory[inventoryIndex] = candidate.ConsumeStack(BlendManager.REQUIRED_STACK_PER_SLOT);
+
             if (_firstItem is null)
             {
                 _firstItem = takenItem;
@@ -149,11 +177,43 @@ namespace CropTraits.Framework.UI.Menus
             {
                 _hoveredItem = _secondItem;
             }
+            else if (_outputSlot.containsPoint(x, y) && SpliceHelper.IsReady(_machine))
+            {
+                // The result stays hidden until the splice finishes
+                _hoveredItem = _machine.heldObject.Value;
+            }
         }
 
+        // Time keeps running in multiplayer while the menu is open, so the status follows the splice's progress
+        public override void update(GameTime time)
+        {
+            base.update(time);
+
+            bool isOutputReady = SpliceHelper.IsReady(_machine);
+            if (isOutputReady != _wasOutputReady)
+            {
+                _wasOutputReady = isOutputReady;
+                UpdateStatus();
+                return;
+            }
+
+            if (SpliceHelper.IsSplicing(_machine) is false)
+            {
+                return;
+            }
+
+            int progressPercent = SpliceHelper.GetProgressPercent(_machine);
+            if (progressPercent != _lastProgressPercent)
+            {
+                _lastProgressPercent = progressPercent;
+                UpdateStatus();
+            }
+        }
+
+        // The result is decided now, but the seeds wait in the machine until the splice finishes
         public void TrySplice()
         {
-            if (CropTraits.blendManager.CanBlend(_firstItem, _secondItem) is false)
+            if (SpliceHelper.HasOutput(_machine) || CropTraits.blendManager.CanBlend(_firstItem, _secondItem) is false)
             {
                 Game1.playSound("cancel");
                 return;
@@ -162,40 +222,71 @@ namespace CropTraits.Framework.UI.Menus
             string seedId = CropTraits.blendManager.GetSeedId(_firstItem);
             BlendOutcome outcome = CropTraits.blendManager.Blend(seedId, _firstItem, _secondItem);
 
-            _firstItem = ConsumeFromSlot(_firstItem);
-            _secondItem = ConsumeFromSlot(_secondItem);
-            UpdateGhostItem();
+            // Each slot only ever holds the required amount, so both are used up
+            _firstItem = null;
+            _secondItem = null;
+
+            if (outcome.Seeds is not Object seeds)
+            {
+                CropTraits.monitor.Log($"Splice output {outcome.Seeds?.QualifiedItemId} isn't an object, so it was given directly instead of held in the machine.", LogLevel.Warn);
+                DropRemainder(Game1.player.addItemToInventory(outcome.Seeds));
+                UpdateStatus();
+                return;
+            }
+
+            SpliceHelper.StartSplice(_machine, seeds, outcome.UpgradedTraits);
+            _wasOutputReady = false;
+
+            Game1.playSound("Ship");
+            UpdateStatus();
+        }
+
+        public void TryCollectOutput()
+        {
+            if (SpliceHelper.HasOutput(_machine) is false)
+            {
+                return;
+            }
+
+            if (SpliceHelper.IsReady(_machine) is false)
+            {
+                Game1.playSound("cancel");
+                return;
+            }
 
             // Captured before adding, since the seeds may merge into an existing stack
-            int seedCount = outcome.Seeds.Stack;
-            string seedName = outcome.Seeds.DisplayName;
+            Object seeds = _machine.heldObject.Value;
+            int seedCount = seeds.Stack;
+            string seedName = seeds.DisplayName;
+            TraitSet upgradedTraits = SpliceHelper.GetUpgradedTraits(_machine);
 
-            Item remainder = Game1.player.addItemToInventory(outcome.Seeds);
+            Item remainder = Game1.player.addItemToInventory(seeds);
             if (remainder is not null)
             {
-                Game1.createItemDebris(remainder, Game1.player.getStandingPosition(), Game1.player.FacingDirection);
+                _machine.heldObject.Value = remainder as Object;
+                Game1.playSound("cancel");
+                _statusText = TranslationHelper.Get("menu.status.inventory_full");
+                return;
             }
+
+            SpliceHelper.ClearSplice(_machine);
+            _wasOutputReady = false;
+            UpdateStatus();
 
             _statusText = TranslationHelper.Get("menu.status.created", new { count = seedCount, name = seedName });
 
-            if (outcome.UpgradedTraits.Count == 0)
+            if (upgradedTraits.Count == 0)
             {
-                Game1.playSound("Ship");
+                Game1.playSound("coin");
                 return;
             }
 
             // Upgrades are rare and easy to miss in the tooltip, so they get their own line and sound
-            string upgradedKey = outcome.UpgradedTraits.Count == 1 ? "menu.status.upgraded" : "menu.status.upgraded_multiple";
-            string upgradedLine = TranslationHelper.Get(upgradedKey, new { traits = CropTraits.traitManager.GetLabel(outcome.UpgradedTraits.ToKey()) });
+            string upgradedKey = upgradedTraits.Count == 1 ? "menu.status.upgraded" : "menu.status.upgraded_multiple";
+            string upgradedLine = TranslationHelper.Get(upgradedKey, new { traits = CropTraits.traitManager.GetLabel(upgradedTraits.ToKey()) });
 
             Game1.playSound("reward");
             _statusText = $"{_statusText}{System.Environment.NewLine}{upgradedLine}";
-        }
-
-        public Item ConsumeFromSlot(Item item)
-        {
-            item.Stack -= BlendManager.REQUIRED_STACK_PER_SLOT;
-            return item.Stack > 0 ? item : null;
         }
 
         // Returns whatever didn't fit, so it stays in the slot
@@ -229,7 +320,11 @@ namespace CropTraits.Framework.UI.Menus
         {
             UpdateGhostItem();
 
-            if (_firstItem is null && _secondItem is null)
+            if (SpliceHelper.HasOutput(_machine))
+            {
+                _statusText = GetMachineStatus();
+            }
+            else if (_firstItem is null && _secondItem is null)
             {
                 bool hasEligibleItem = CropTraits.blendManager.HasEligibleItem(Game1.player.Items);
                 _statusText = hasEligibleItem ? TranslationHelper.Get("menu.status.empty") : TranslationHelper.Get("menu.status.no_eligible", new { count = BlendManager.REQUIRED_STACK_PER_SLOT });
@@ -254,6 +349,16 @@ namespace CropTraits.Framework.UI.Menus
             {
                 _statusText = GetDiluteStatus();
             }
+        }
+
+        public string GetMachineStatus()
+        {
+            if (SpliceHelper.IsReady(_machine))
+            {
+                return TranslationHelper.Get("menu.status.ready_collect");
+            }
+
+            return TranslationHelper.Get("menu.status.splicing", new { percent = SpliceHelper.GetProgressPercent(_machine) });
         }
 
         // The split chance depends on the traited parent's quality, so showing it is the only way players see that quality matters
@@ -311,7 +416,9 @@ namespace CropTraits.Framework.UI.Menus
             DrawSlot(b, _secondSlot, _secondItem, _ghostItem);
             DrawCenteredText(b, "+", Game1.dialogueFont, (_firstSlot.bounds.Right + _secondSlot.bounds.Left) / 2, _firstSlot.bounds.Y + 8);
 
-            bool canSplice = CropTraits.blendManager.CanBlend(_firstItem, _secondItem);
+            DrawOutputSlot(b);
+
+            bool canSplice = SpliceHelper.HasOutput(_machine) is false && CropTraits.blendManager.CanBlend(_firstItem, _secondItem);
             _spliceButton.draw(b, canSplice ? Color.White : Color.Gray * 0.5f, 0.88f);
 
             string wrappedStatus = Game1.parseText(_statusText, Game1.smallFont, width - 128);
@@ -345,6 +452,27 @@ namespace CropTraits.Framework.UI.Menus
 
             // Empty slots show the ghost when the other slot is filled, without a stack number or shadow
             ghostItem?.drawInMenu(b, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
+        }
+
+        // A running splice shows its seeds faded, and they become collectable once it finishes
+        public void DrawOutputSlot(SpriteBatch b)
+        {
+            Vector2 position = new Vector2(_outputSlot.bounds.X, _outputSlot.bounds.Y);
+            b.Draw(Game1.menuTexture, position, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, SLOT_SPRITE_INDEX), Color.White);
+
+            Object seeds = _machine.heldObject.Value;
+            if (seeds is null)
+            {
+                return;
+            }
+
+            if (SpliceHelper.IsReady(_machine))
+            {
+                seeds.drawInMenu(b, position, 1f);
+                return;
+            }
+
+            seeds.drawInMenu(b, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
         }
 
         public void DrawCenteredText(SpriteBatch b, string text, SpriteFont font, int centerX, int y)
