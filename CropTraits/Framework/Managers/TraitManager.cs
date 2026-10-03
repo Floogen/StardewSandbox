@@ -85,6 +85,17 @@ namespace CropTraits.Framework.Managers
             return Math.Max(multiplier, MIN_PRICE_MULTIPLIER);
         }
 
+        public float GetProduceScale(TraitSet traits)
+        {
+            float scale = 1f;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                scale = trait.ModifyProduceScale(scale, tier);
+            }
+
+            return scale;
+        }
+
         public Trait RollTrait(Random random, IReadOnlyDictionary<string, int> weightBonuses)
         {
             List<(Trait Trait, int Weight)> weightedTraits = new();

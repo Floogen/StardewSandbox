@@ -20,7 +20,12 @@ namespace CropTraits.Framework.Patches.Objects
         public override void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Constructor(_coloredObject, new[] { typeof(string), typeof(int), typeof(Color) }), postfix: new HarmonyMethod(GetType(), nameof(ColoredObjectPostfix)));
-            harmony.Patch(AccessTools.Method(_coloredObject, nameof(ColoredObject.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(DrawInMenuPostfix)));
+            harmony.Patch(AccessTools.Method(_coloredObject, nameof(ColoredObject.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)), postfix: new HarmonyMethod(GetType(), nameof(DrawInMenuPostfix)));
+        }
+
+        private static void DrawInMenuPrefix(ColoredObject __instance, ref float scaleSize)
+        {
+            scaleSize *= ProduceScaleHelper.GetScale(__instance);
         }
 
         private static void DrawInMenuPostfix(ColoredObject __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber)

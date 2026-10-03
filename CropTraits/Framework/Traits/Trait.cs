@@ -92,6 +92,14 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
+        /// Adjusts how large the produce is drawn (1 is normal size). Only applies to produce, never seeds or artisan goods.
+        /// </summary>
+        public virtual float ModifyProduceScale(float scale, int tier)
+        {
+            return scale;
+        }
+
+        /// <summary>
         /// Adjusts the sell price multiplier for produce and artisan goods carrying this trait.
         /// </summary>
         public virtual double ModifySellPrice(double multiplier, int tier)
