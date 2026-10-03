@@ -129,12 +129,13 @@ namespace CropTraits.Framework.Managers
                 return false;
             }
 
-            if (incomingTrait.ConflictsWith.Contains(existingId))
+            // Exclusive traits never share a crop, so they conflict with everything
+            if (incomingTrait.IsExclusive || incomingTrait.ConflictsWith.Contains(existingId))
             {
                 return true;
             }
 
-            return TryGetTrait(existingId, out Trait existingTrait) && existingTrait.ConflictsWith.Contains(incomingTrait.Id);
+            return TryGetTrait(existingId, out Trait existingTrait) && (existingTrait.IsExclusive || existingTrait.ConflictsWith.Contains(incomingTrait.Id));
         }
 
         public bool HasConflictWithAny(string incomingId, IEnumerable<string> existingIds)

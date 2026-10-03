@@ -57,7 +57,13 @@ namespace CropTraits.Framework.Utilities.Helpers
                 }
 
                 // An earlier fusion may have consumed one of this combination's traits
-                if (IsSplitAcrossParents(combination, firstRemaining, secondRemaining) is false || random.NextDouble() >= combination.Chance)
+                if (IsSplitAcrossParents(combination, firstRemaining, secondRemaining) is false)
+                {
+                    continue;
+                }
+
+                // A result that conflicts with an earlier fusion is skipped without a roll, leaving its source traits to inherit normally
+                if (CropTraits.traitManager.HasConflictWithAny(combination.ResultTraitId, resultTraits.Ids) || random.NextDouble() >= combination.Chance)
                 {
                     continue;
                 }
