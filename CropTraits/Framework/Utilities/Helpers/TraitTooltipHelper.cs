@@ -31,7 +31,7 @@ namespace CropTraits.Framework.Utilities.Helpers
 
         public static int GetTrailingGap(Item item, SpriteFont font)
         {
-            return item is StardewValley.Object obj && obj.Edibility != StardewValley.Object.inedible ? font.LineSpacing : 0;
+            return item is StardewValley.Object obj && obj.Edibility != StardewValley.Object.inedible ? font.LineSpacing : TEXT_OFFSET_Y;
         }
 
         public static void DrawTraits(Item item, SpriteBatch spriteBatch, int x, ref int y, SpriteFont font, float alpha)
