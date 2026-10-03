@@ -58,6 +58,7 @@ namespace CropTraits.Framework.UI.Menus
         private Item _secondItem;
         private Item _hoveredItem;
         private Item _ghostItem;
+        private Object _previewItem;
         private string _statusText;
         private bool _wasOutputReady;
         private int _lastProgressPercent;
@@ -239,6 +240,11 @@ namespace CropTraits.Framework.UI.Menus
                 // The result stays hidden until the splice finishes
                 _hoveredItem = _machine.heldObject.Value;
             }
+            else if (_outputSlot.containsPoint(x, y) && _previewItem is not null)
+            {
+                // A known result was already discovered, so its traits can be checked before splicing
+                _hoveredItem = _previewItem;
+            }
         }
 
         // Time keeps running in multiplayer while the menu is open, so the status follows the splice's progress
@@ -417,9 +423,28 @@ namespace CropTraits.Framework.UI.Menus
             _ghostItem.Quality = Object.lowQuality;
         }
 
+        public void UpdatePreviewItem()
+        {
+            _previewItem = null;
+            if (SpliceHelper.HasOutput(_machine) || CropTraits.blendManager.CanBlend(_firstItem, _secondItem) is false)
+            {
+                return;
+            }
+
+            if (CropTraits.blendManager.TryGetKnownResult(_firstItem, _secondItem, out TraitSet resultTraits) is false)
+            {
+                return;
+            }
+
+            // A single seed, since the seed count is rolled on every splice
+            _previewItem = ItemRegistry.Create<Object>(CropTraits.blendManager.GetSeedId(_firstItem));
+            TraitModDataHelper.SetTraits(_previewItem.modData, resultTraits);
+        }
+
         public void UpdateStatus()
         {
             UpdateGhostItem();
+            UpdatePreviewItem();
 
             if (SpliceHelper.HasOutput(_machine))
             {
@@ -437,6 +462,10 @@ namespace CropTraits.Framework.UI.Menus
             else if (CropTraits.blendManager.IsFullyMaxedIdenticalPair(_firstItem, _secondItem))
             {
                 _statusText = TranslationHelper.Get("menu.status.max_tier");
+            }
+            else if (_previewItem is not null)
+            {
+                _statusText = GetKnownResultStatus();
             }
             else if (CropTraits.blendManager.IsIdenticalPair(_firstItem, _secondItem))
             {
@@ -477,6 +506,20 @@ namespace CropTraits.Framework.UI.Menus
         public string GetCropName(Item item)
         {
             return ItemRegistry.GetData(item.QualifiedItemId)?.DisplayName ?? item.DisplayName;
+        }
+
+        // The fixed result is previewed, so the only thing left to chance is a rare tier upgrade
+        public string GetKnownResultStatus()
+        {
+            TraitSet resultTraits = TraitModDataHelper.GetTraits(_previewItem.modData);
+            int upgradeableCount = CropTraits.blendManager.GetUpgradeableResultTraitCount(resultTraits, _firstItem, _secondItem);
+            if (upgradeableCount == 0)
+            {
+                return TranslationHelper.Get("menu.status.ready_crossbreed_known");
+            }
+
+            int upgradeChance = (int)System.Math.Round(CropTraits.blendManager.GetAnyTierUpgradeChance(_firstItem, _secondItem, upgradeableCount) * 100);
+            return TranslationHelper.Get("menu.status.ready_crossbreed_known_upgrade", new { chance = upgradeChance });
         }
 
         public string GetMachineStatus()
@@ -622,6 +665,7 @@ namespace CropTraits.Framework.UI.Menus
             Object seeds = _machine.heldObject.Value;
             if (seeds is null)
             {
+                _previewItem?.drawInMenu(spriteBatch, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
                 return;
             }
 

@@ -112,17 +112,17 @@ namespace CropTraits.Framework.Managers
 
         public void RecordBlend(string pairKey, BlendJournalEntryData entry, IEnumerable<string> fusedCombinationKeys)
         {
-            if (Context.IsMainPlayer is false)
-            {
-                SendReport(new DiscoveryReportData { PairKey = pairKey, JournalEntry = entry, FusedCombinationKeys = fusedCombinationKeys.ToList() });
-                return;
-            }
-
+            // Farmhands also keep a copy for the session, so the Seed Splicer can preview their own results right away
             Data.BlendJournal[pairKey] = entry;
 
             foreach (string combinationKey in fusedCombinationKeys)
             {
                 Data.Combinations.Add(combinationKey);
+            }
+
+            if (Context.IsMainPlayer is false)
+            {
+                SendReport(new DiscoveryReportData { PairKey = pairKey, JournalEntry = entry, FusedCombinationKeys = fusedCombinationKeys.ToList() });
             }
         }
 

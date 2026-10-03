@@ -165,10 +165,48 @@ namespace CropTraits.Framework.Managers
         // Each upgradeable trait rolls on its own, so this is the chance that at least one increases its tier
         public double GetAnyTierUpgradeChance(Item firstParent, Item secondParent)
         {
-            int upgradeableCount = GetUpgradeableTraitCount(TraitModDataHelper.GetTraits(firstParent.modData));
+            return GetAnyTierUpgradeChance(firstParent, secondParent, GetUpgradeableTraitCount(TraitModDataHelper.GetTraits(firstParent.modData)));
+        }
+
+        public double GetAnyTierUpgradeChance(Item firstParent, Item secondParent, int upgradeableCount)
+        {
             double upgradeChance = CrossbreedHelper.GetTierUpgradeChance(firstParent.Quality, secondParent.Quality);
 
             return 1 - Math.Pow(1 - upgradeChance, upgradeableCount);
+        }
+
+        public bool TryGetKnownResult(Item firstItem, Item secondItem, out TraitSet resultTraits)
+        {
+            resultTraits = null;
+            if (HasTraits(firstItem) is false || HasTraits(secondItem) is false)
+            {
+                return false;
+            }
+
+            string seedId = GetSeedId(firstItem);
+            if (seedId is null)
+            {
+                return false;
+            }
+
+            (BlendParent first, BlendParent second) = BlendRandomHelper.GetCanonicalOrder(ToBlendParent(firstItem), ToBlendParent(secondItem));
+            string pairKey = BlendRandomHelper.BuildPairKey(seedId, first, second);
+            if (CropTraits.discoveryManager.Data.BlendJournal.TryGetValue(pairKey, out BlendJournalEntryData entry) is false)
+            {
+                return false;
+            }
+
+            resultTraits = TraitSet.FromKey(entry.ResultTraitKey);
+            return true;
+        }
+
+        // Matches ApplyTierUpgrades: only result traits both parents carry at that same tier, and below max tier, can climb
+        public int GetUpgradeableResultTraitCount(TraitSet resultTraits, Item firstParent, Item secondParent)
+        {
+            TraitSet firstTraits = TraitModDataHelper.GetTraits(firstParent.modData);
+            TraitSet secondTraits = TraitModDataHelper.GetTraits(secondParent.modData);
+
+            return resultTraits.Entries.Count(trait => firstTraits.GetTier(trait.Key) == trait.Value && secondTraits.GetTier(trait.Key) == trait.Value && trait.Value < CropTraits.traitManager.GetMaxTier(trait.Key));
         }
 
         public BlendOutcome Blend(string seedId, Item firstItem, Item secondItem)
