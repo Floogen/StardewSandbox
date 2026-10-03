@@ -38,6 +38,9 @@ namespace CropTraits
         public static IMonitor monitor;
         public static IModHelper modHelper;
 
+        // Config
+        public static ModConfig modConfig;
+
         // Managers
         public static AssetManager assetManager;
         public static BlendManager blendManager;
@@ -45,6 +48,7 @@ namespace CropTraits
         public static HarvestManager harvestManager;
         public static MutationManager mutationManager;
         public static TraitManager traitManager;
+        public static TraitViewManager traitViewManager;
 
         public override void Entry(IModHelper helper)
         {
@@ -53,6 +57,9 @@ namespace CropTraits
             monitor = Monitor;
             modHelper = helper;
 
+            // Load the config
+            modConfig = helper.ReadConfig<ModConfig>();
+
             // Create managers
             assetManager = new AssetManager(monitor, helper);
             blendManager = new BlendManager(monitor, helper);
@@ -60,6 +67,7 @@ namespace CropTraits
             harvestManager = new HarvestManager(monitor, helper);
             mutationManager = new MutationManager(monitor, helper);
             traitManager = new TraitManager(monitor, helper);
+            traitViewManager = new TraitViewManager(monitor, helper);
 
             try
             {
@@ -90,6 +98,10 @@ namespace CropTraits
             helper.Events.GameLoop.SaveLoaded += (sender, args) => discoveryManager.Load();
             helper.Events.GameLoop.Saving += (sender, args) => discoveryManager.Save();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => discoveryManager.Reset();
+            helper.Events.GameLoop.ReturnedToTitle += (sender, args) => traitViewManager.Reset();
+            helper.Events.Input.ButtonsChanged += traitViewManager.OnButtonsChanged;
+            helper.Events.Display.RenderedWorld += traitViewManager.OnRenderedWorld;
+            helper.Events.Display.RenderedHud += traitViewManager.OnRenderedHud;
             helper.Events.Player.InventoryChanged += (sender, args) => discoveryManager.RecordInventoryChanges(args);
             helper.Events.Multiplayer.ModMessageReceived += (sender, args) => discoveryManager.HandleModMessage(args);
 

@@ -21,6 +21,7 @@ namespace CropTraits.Framework.Utilities.Helpers
         public const string SEPARATOR = ", ";
 
         public static readonly Color NEGATIVE_TRAIT_COLOR = Color.Red;
+        public static readonly Color NEW_TRAIT_COLOR = Color.ForestGreen;
 
         public static int GetHeight(Item item, SpriteFont font)
         {
@@ -46,24 +47,43 @@ namespace CropTraits.Framework.Utilities.Helpers
 
             foreach (List<(string Text, Color Color)> line in lines)
             {
-                float drawX = x + TEXT_OFFSET_X;
-                foreach ((string text, Color color) in line)
-                {
-                    Utility.drawTextWithShadow(spriteBatch, text, font, new Vector2(drawX, y + TEXT_OFFSET_Y), color * alpha);
-                    drawX += font.MeasureString(text).X;
-                }
-
+                DrawLine(spriteBatch, line, new Vector2(x + TEXT_OFFSET_X, y + TEXT_OFFSET_Y), font, alpha);
                 y += font.LineSpacing;
             }
 
             y += GetTrailingGap(item, font);
         }
 
+        // Draws one line's colored segments side by side
+        public static void DrawLine(SpriteBatch spriteBatch, List<(string Text, Color Color)> line, Vector2 position, SpriteFont font, float alpha)
+        {
+            float drawX = position.X;
+            foreach ((string text, Color color) in line)
+            {
+                Utility.drawTextWithShadow(spriteBatch, text, font, new Vector2(drawX, position.Y), color * alpha);
+                drawX += font.MeasureString(text).X;
+            }
+        }
+
+        public static float GetLineWidth(List<(string Text, Color Color)> line, SpriteFont font)
+        {
+            return line.Sum(segment => font.MeasureString(segment.Text).X);
+        }
+
         public static List<List<(string Text, Color Color)>> BuildLines(Item item, SpriteFont font)
         {
-            List<List<(string Text, Color Color)>> lines = new();
             TraitSet traits = item is null ? new TraitSet() : TraitModDataHelper.GetTraits(item.modData);
-            if (traits.Count == 0)
+            return BuildLines(traits, null, font, LINE_WIDTH);
+        }
+
+        /// <summary>
+        /// Builds the "Traits:" line as colored segments, wrapped by whole trait so a name and its marker never split across lines.
+        /// Traits in newTraitIds get a "New!" marker after them, which the crop tooltip uses for mutations.
+        /// </summary>
+        public static List<List<(string Text, Color Color)>> BuildLines(TraitSet traits, ISet<string> newTraitIds, SpriteFont font, int lineWidth)
+        {
+            List<List<(string Text, Color Color)>> lines = new();
+            if (traits is null || traits.Count == 0)
             {
                 return lines;
             }
@@ -80,22 +100,27 @@ namespace CropTraits.Framework.Utilities.Helpers
                 KeyValuePair<string, int> trait = orderedTraits[index];
                 bool isNegative = CropTraits.traitManager.TryGetTrait(trait.Key, out Trait definition) && definition.IsNegative;
 
-                string text = CropTraits.traitManager.GetTierLabel(trait.Key, trait.Value);
-                if (index < orderedTraits.Count - 1)
+                List<(string Text, Color Color)> segments = new() { (CropTraits.traitManager.GetTierLabel(trait.Key, trait.Value), isNegative ? NEGATIVE_TRAIT_COLOR : Game1.textColor) };
+                if (newTraitIds is not null && newTraitIds.Contains(trait.Key))
                 {
-                    text = $"{text}{SEPARATOR}";
+                    segments.Add(($" {TranslationHelper.Get("tooltip.new_trait")}", NEW_TRAIT_COLOR));
                 }
 
-                float textWidth = font.MeasureString(text).X;
-                if (currentWidth + textWidth > LINE_WIDTH && currentLine.Count > 0)
+                if (index < orderedTraits.Count - 1)
+                {
+                    segments.Add((SEPARATOR, Game1.textColor));
+                }
+
+                float segmentsWidth = GetLineWidth(segments, font);
+                if (currentWidth + segmentsWidth > lineWidth && currentLine.Count > 0)
                 {
                     lines.Add(currentLine);
                     currentLine = new();
                     currentWidth = 0;
                 }
 
-                currentLine.Add((text, isNegative ? NEGATIVE_TRAIT_COLOR : Game1.textColor));
-                currentWidth += textWidth;
+                currentLine.AddRange(segments);
+                currentWidth += segmentsWidth;
             }
 
             lines.Add(currentLine);

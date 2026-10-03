@@ -12,6 +12,8 @@
   // Tooltips
   "tooltip.traits_label": "Traits:",
   "tooltip.growth_days": "With its traits, takes {{days}} days to mature.",
+  "tooltip.new_trait": "New!",
+  "tooltip.mutation_hidden": "Any mutation shows once it's fully grown.",
 
   // Seed Splicer menu
   "menu.title": "Seed Splicer",
