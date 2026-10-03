@@ -3,9 +3,11 @@ using CropTraits.Framework.Models;
 using CropTraits.Framework.Traits;
 using CropTraits.Framework.Utilities.Helpers;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.TerrainFeatures;
+using System.Collections.Generic;
 
 namespace CropTraits.Framework.Patches.TerrainFeatures
 {
@@ -22,6 +24,21 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
         {
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.plant), new[] { typeof(string), typeof(Farmer), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(PlantPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerQualityBoostLevel), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerQualityBoostLevelPostfix)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerSourceRect), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerSourceRectPostfix)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.DrawOptimized), null), transpiler: new HarmonyMethod(GetType(), nameof(DrawOptimizedTranspiler)));
+        }
+
+        private static void GetFertilizerSourceRectPostfix(HoeDirt __instance, ref Rectangle __result)
+        {
+            if (FertilizerHelper.IsTextureSwapActive && MutationHelper.HasMutagenicFertilizer(__instance))
+            {
+                __result = AssetManager.MUTAGENIC_FERTILIZER_DIRT_SOURCE;
+            }
+        }
+
+        private static IEnumerable<CodeInstruction> DrawOptimizedTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            return FertilizerHelper.ReplaceFertilizerTexture(instructions, _monitor, $"{nameof(HoeDirt)}.{nameof(HoeDirt.DrawOptimized)}", true);
         }
 
         private static void PlantPostfix(HoeDirt __instance, string itemId, Farmer who, bool isFertilizer, bool __result)

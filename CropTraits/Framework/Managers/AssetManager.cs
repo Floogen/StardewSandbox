@@ -1,4 +1,5 @@
 using CropTraits.Framework.Utilities.Helpers;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -18,8 +19,8 @@ namespace CropTraits.Framework.Managers
         public const string SEED_SPLICER_MENU_TEXTURE_PATH = "Mods/PeacefulEnd.CropTraits/SeedSplicerMenu";
         public const string SEED_SPLICER_MENU_FILE_PATH = "Framework/Assets/SeedSplicerMenu.png";
 
-        // TODO: Replace with a custom sprite for the Mutagenic Fertilizer
-        public const int SPEED_GRO_SPRITE_INDEX = 465;
+        // Positions in the spritesheet
+        public static readonly Rectangle MUTAGENIC_FERTILIZER_DIRT_SOURCE = new Rectangle(32, 16, 16, 16);
 
         public const int SEED_SPLICER_PRICE = 500;
         public const int MUTAGENIC_FERTILIZER_PRICE = 50;
@@ -71,7 +72,8 @@ namespace CropTraits.Framework.Managers
                         Type = "Basic",
                         Category = FERTILIZER_CATEGORY,
                         Price = MUTAGENIC_FERTILIZER_PRICE,
-                        SpriteIndex = SPEED_GRO_SPRITE_INDEX
+                        Texture = SPRITE_SHEET_TEXTURE_PATH,
+                        SpriteIndex = 2
                     };
                 });
             }
