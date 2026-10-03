@@ -54,6 +54,16 @@ namespace CropTraits.Framework.Utilities.Helpers
             return newTraitIds;
         }
 
+        public static bool IsUnharvestedMutation(HoeDirt dirt)
+        {
+            if (dirt?.crop is null || dirt.crop.dead.Value || dirt.crop.fullyGrown.Value is false || IsMature(dirt.crop) is false)
+            {
+                return false;
+            }
+
+            return GetNewTraitIds(dirt).Count > 0;
+        }
+
         public static bool TryGetDirt(GameLocation location, Vector2 tile, out HoeDirt dirt)
         {
             if (location.terrainFeatures.TryGetValue(tile, out TerrainFeature feature) && feature is HoeDirt groundDirt)

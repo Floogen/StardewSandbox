@@ -47,6 +47,7 @@ namespace CropTraits
         public static DiscoveryManager discoveryManager;
         public static HarvestManager harvestManager;
         public static MutationManager mutationManager;
+        public static MutationSparkleManager mutationSparkleManager;
         public static TraitManager traitManager;
         public static TraitViewManager traitViewManager;
 
@@ -66,6 +67,7 @@ namespace CropTraits
             discoveryManager = new DiscoveryManager(monitor, helper);
             harvestManager = new HarvestManager(monitor, helper);
             mutationManager = new MutationManager(monitor, helper);
+            mutationSparkleManager = new MutationSparkleManager(monitor, helper);
             traitManager = new TraitManager(monitor, helper);
             traitViewManager = new TraitViewManager(monitor, helper);
 
@@ -102,6 +104,7 @@ namespace CropTraits
             helper.Events.Input.ButtonsChanged += traitViewManager.OnButtonsChanged;
             helper.Events.Display.RenderedWorld += traitViewManager.OnRenderedWorld;
             helper.Events.Display.RenderedHud += traitViewManager.OnRenderedHud;
+            helper.Events.GameLoop.UpdateTicked += mutationSparkleManager.OnUpdateTicked;
             helper.Events.Player.InventoryChanged += (sender, args) => discoveryManager.RecordInventoryChanges(args);
             helper.Events.Multiplayer.ModMessageReceived += (sender, args) => discoveryManager.HandleModMessage(args);
 
@@ -113,6 +116,8 @@ namespace CropTraits
 
         private void OnAssetsInvalidated(object sender, AssetsInvalidatedEventArgs e)
         {
+            mutationSparkleManager.HandleAssetsInvalidated(e);
+
             // Other mods can add or change crops, so the produce to seed lookup is rebuilt
             if (e.NamesWithoutLocale.Any(name => name.IsEquivalentTo("Data/Crops")))
             {
