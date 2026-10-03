@@ -19,8 +19,6 @@
   "menu.status.empty": "Place two crops ({{count}} each) of the same type.",
   "menu.status.needs_second": "Add a second crop of the same type.",
   "menu.status.needs_traited": "Add a {{name}} with at least one trait, since two plain crops have nothing to splice.",
-  "menu.status.needs_traits": "At least one crop needs a trait.",
-  "menu.status.needs_stack": "Each slot needs at least {{count}} crops.",
   "menu.status.ready_crossbreed": "Ready to crossbreed.",
   "menu.status.ready_crossbreed_identical": "Ready to crossbreed.\n\nThere is a {{chance}}% chance for a trait to increase its tier.",
   "menu.status.max_tier": "The traits are already at their max tier.",

@@ -15,12 +15,13 @@ namespace CropTraits.Framework.Utilities.Helpers
     {
         public const int FERTILIZER_DRAW_METHOD_COUNT = 2; // HoeDirt.DrawOptimized and IndoorPot.draw
 
-        private static int _swappedMethodCount;
+        // Tracked by name, since Harmony reruns transpilers whenever another mod patches the same method
+        private static readonly HashSet<string> _swappedMethodNames = new HashSet<string>();
         private static readonly MethodInfo _getFertilizerSourceRect = AccessTools.Method(typeof(HoeDirt), nameof(HoeDirt.GetFertilizerSourceRect));
         private static readonly FieldInfo _mouseCursors = AccessTools.Field(typeof(Game1), nameof(Game1.mouseCursors));
 
         // The custom overlay is only used when every fertilizer draw was swapped, since a missed one would draw the wrong part of mouseCursors
-        public static bool IsTextureSwapActive => _swappedMethodCount >= FERTILIZER_DRAW_METHOD_COUNT;
+        public static bool IsTextureSwapActive => _swappedMethodNames.Count >= FERTILIZER_DRAW_METHOD_COUNT;
 
         // Called by the transpiled draw methods in place of Game1.mouseCursors, with the HoeDirt or IndoorPot doing the drawing
         public static Texture2D GetFertilizerTexture(object owner)
@@ -56,7 +57,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             CodeInstruction textureLoad = matcher.Instruction;
             matcher.SetInstruction(new CodeInstruction(OpCodes.Ldarg_0).WithLabels(textureLoad.ExtractLabels()).WithBlocks(textureLoad.ExtractBlocks()));
             matcher.Advance(1).Insert(CodeInstruction.Call(typeof(FertilizerHelper), nameof(GetFertilizerTexture)));
-            _swappedMethodCount++;
+            _swappedMethodNames.Add(methodName);
 
             return matcher.InstructionEnumeration();
         }

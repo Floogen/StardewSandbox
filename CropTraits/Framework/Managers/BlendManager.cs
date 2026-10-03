@@ -182,7 +182,7 @@ namespace CropTraits.Framework.Managers
                 BlendParent traitedParent = firstParent.Traits.Count == 0 ? secondParent : firstParent;
                 TraitSet dilutedTraits = DilutionHelper.Dilute(traitedParent.Traits, traitedParent.Quality, Game1.random);
 
-                return new BlendOutcome(CreateSeeds(seedId, dilutedTraits), dilutedTraits, false, new TraitSet());
+                return new BlendOutcome(CreateSeeds(seedId, dilutedTraits), new TraitSet());
             }
 
             (BlendParent first, BlendParent second) = BlendRandomHelper.GetCanonicalOrder(firstParent, secondParent);
@@ -197,21 +197,21 @@ namespace CropTraits.Framework.Managers
                 SeedId = seedId,
                 FirstParentKey = first.SortKey,
                 SecondParentKey = second.SortKey,
-                // The fixed result is recorded, so the tracking stays accurate for the pair even after a lucky upgrade
+                // The fixed result is recorded, so the journal stays accurate for the pair even after a lucky upgrade
                 ResultTraitKey = result.FixedTraits.ToKey()
             };
 
             CropTraits.discoveryManager.RecordBlend(pairKey, journalEntry, result.FusedCombinationKeys);
 
-            return new BlendOutcome(CreateSeeds(seedId, result.Traits), result.Traits, true, GetUpgradedTraits(result.FixedTraits, result.Traits));
+            return new BlendOutcome(CreateSeeds(seedId, result.Traits), GetUpgradedTraits(result.FixedTraits, result.Traits));
         }
 
         // Seed count is truly random, independent of the trait outcome
-        public Item CreateSeeds(string seedId, TraitSet traits)
+        public StardewValley.Object CreateSeeds(string seedId, TraitSet traits)
         {
             int seedCount = Game1.random.Next(MIN_SEED_OUTPUT, MAX_SEED_OUTPUT + 1);
 
-            Item seeds = ItemRegistry.Create(seedId, seedCount);
+            StardewValley.Object seeds = ItemRegistry.Create<StardewValley.Object>(seedId, seedCount);
             TraitModDataHelper.SetTraits(seeds.modData, traits);
 
             return seeds;

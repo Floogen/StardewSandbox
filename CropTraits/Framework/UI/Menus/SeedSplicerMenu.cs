@@ -4,7 +4,6 @@ using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Audio;
 using StardewValley.Menus;
@@ -38,7 +37,6 @@ namespace CropTraits.Framework.UI.Menus
         public static readonly Point SPLICE_BUTTON_PIXEL = new Point(88, 56);
         public static readonly Rectangle SPLICE_BUTTON_IDLE_SOURCE = new Rectangle(144, 16, 13, 13);
         public static readonly Rectangle SPLICE_BUTTON_READY_SOURCE = new Rectangle(128, 16, 13, 13);
-        public static readonly Rectangle SPLICE_BUTTON_ACTIVE_OFF_SOURCE = new Rectangle(144, 0, 13, 13);
         public static readonly Rectangle SPLICE_BUTTON_ACTIVE_ON_SOURCE = new Rectangle(128, 0, 13, 13);
 
         private readonly Object _machine;
@@ -337,15 +335,7 @@ namespace CropTraits.Framework.UI.Menus
             _firstItem = null;
             _secondItem = null;
 
-            if (outcome.Seeds is not Object seeds)
-            {
-                CropTraits.monitor.Log($"Splice output {outcome.Seeds?.QualifiedItemId} isn't an object, so it was given directly instead of held in the machine.", LogLevel.Warn);
-                DropRemainder(Game1.player.addItemToInventory(outcome.Seeds));
-                UpdateStatus();
-                return;
-            }
-
-            SpliceHelper.StartSplice(_machine, seeds, outcome.UpgradedTraits);
+            SpliceHelper.StartSplice(_machine, outcome.Seeds, outcome.UpgradedTraits);
             _wasOutputReady = false;
 
             Game1.playSound("Ship");
@@ -444,14 +434,6 @@ namespace CropTraits.Framework.UI.Menus
             {
                 _statusText = GetNeedsSecondStatus();
             }
-            else if (CropTraits.blendManager.HasTraits(_firstItem) is false && CropTraits.blendManager.HasTraits(_secondItem) is false)
-            {
-                _statusText = TranslationHelper.Get("menu.status.needs_traits");
-            }
-            else if (CropTraits.blendManager.HasEnoughForSlot(_firstItem) is false || CropTraits.blendManager.HasEnoughForSlot(_secondItem) is false)
-            {
-                _statusText = TranslationHelper.Get("menu.status.needs_stack", new { count = BlendManager.REQUIRED_STACK_PER_SLOT });
-            }
             else if (CropTraits.blendManager.IsFullyMaxedIdenticalPair(_firstItem, _secondItem))
             {
                 _statusText = TranslationHelper.Get("menu.status.max_tier");
@@ -539,19 +521,19 @@ namespace CropTraits.Framework.UI.Menus
             base.emergencyShutDown();
         }
 
-        public override void draw(SpriteBatch b)
+        public override void draw(SpriteBatch spriteBatch)
         {
-            b.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
+            spriteBatch.Draw(Game1.fadeToBlackRect, Game1.graphics.GraphicsDevice.Viewport.Bounds, Color.Black * 0.75f);
 
-            b.Draw(_menuTexture, _artPosition + _shakeOffset, ART_SOURCE, Color.White, 0f, Vector2.Zero, MENU_SCALE, SpriteEffects.None, ART_LAYER_DEPTH);
-            drawTextureBox(b, _textBoxBounds.X, _textBoxBounds.Y, _textBoxBounds.Width, _textBoxBounds.Height, Color.White);
-            drawTextureBox(b, _inventoryBoxBounds.X, _inventoryBoxBounds.Y, _inventoryBoxBounds.Width, _inventoryBoxBounds.Height, Color.White);
+            spriteBatch.Draw(_menuTexture, _artPosition + _shakeOffset, ART_SOURCE, Color.White, 0f, Vector2.Zero, MENU_SCALE, SpriteEffects.None, ART_LAYER_DEPTH);
+            drawTextureBox(spriteBatch, _textBoxBounds.X, _textBoxBounds.Y, _textBoxBounds.Width, _textBoxBounds.Height, Color.White);
+            drawTextureBox(spriteBatch, _inventoryBoxBounds.X, _inventoryBoxBounds.Y, _inventoryBoxBounds.Width, _inventoryBoxBounds.Height, Color.White);
 
-            DrawTextBox(b);
+            DrawTextBox(spriteBatch);
 
-            DrawSlot(b, _firstSlot, _firstItem, _ghostItem);
-            DrawSlot(b, _secondSlot, _secondItem, _ghostItem);
-            DrawOutputSlot(b);
+            DrawSlot(spriteBatch, _firstSlot, _firstItem, _ghostItem);
+            DrawSlot(spriteBatch, _secondSlot, _secondItem, _ghostItem);
+            DrawOutputSlot(spriteBatch);
 
             bool canSplice = SpliceHelper.HasOutput(_machine) is false && CropTraits.blendManager.CanBlend(_firstItem, _secondItem);
             _spliceButton.sourceRect = SPLICE_BUTTON_IDLE_SOURCE;
@@ -564,63 +546,63 @@ namespace CropTraits.Framework.UI.Menus
             {
                 _spliceButton.sourceRect = SPLICE_BUTTON_ACTIVE_ON_SOURCE;
             }
-            _spliceButton.draw(b, Color.White, BUTTON_LAYER_DEPTH, 0, (int)_shakeOffset.X, (int)_shakeOffset.Y);
+            _spliceButton.draw(spriteBatch, Color.White, BUTTON_LAYER_DEPTH, 0, (int)_shakeOffset.X, (int)_shakeOffset.Y);
 
-            _inventory.draw(b);
-            base.draw(b);
+            _inventory.draw(spriteBatch);
+            base.draw(spriteBatch);
 
             if (_hoveredItem is not null)
             {
-                drawToolTip(b, _hoveredItem.getDescription(), _hoveredItem.DisplayName, _hoveredItem);
+                drawToolTip(spriteBatch, _hoveredItem.getDescription(), _hoveredItem.DisplayName, _hoveredItem);
             }
 
-            drawMouse(b);
+            drawMouse(spriteBatch);
         }
 
-        public void DrawTextBox(SpriteBatch b)
+        public void DrawTextBox(SpriteBatch spriteBatch)
         {
             int textX = _textBoxBounds.X + BOX_PADDING;
             int textY = _textBoxBounds.Y + BOX_PADDING;
             int textWidth = _textBoxBounds.Width - (BOX_PADDING * 2);
 
             string title = TranslationHelper.Get("menu.title");
-            Utility.drawTextWithShadow(b, title, Game1.dialogueFont, new Vector2(textX, textY), Game1.textColor);
+            Utility.drawTextWithShadow(spriteBatch, title, Game1.dialogueFont, new Vector2(textX, textY), Game1.textColor);
 
             int statusY = textY + (int)Game1.dialogueFont.MeasureString(title).Y + 8;
-            Utility.drawTextWithShadow(b, Game1.parseText(_statusText, Game1.smallFont, textWidth), Game1.smallFont, new Vector2(textX, statusY), Game1.textColor);
+            Utility.drawTextWithShadow(spriteBatch, Game1.parseText(_statusText, Game1.smallFont, textWidth), Game1.smallFont, new Vector2(textX, statusY), Game1.textColor);
         }
 
-        public void DrawSlot(SpriteBatch b, ClickableComponent slot, Item item, Item ghostItem)
+        public void DrawSlot(SpriteBatch spriteBatch, ClickableComponent slot, Item item, Item ghostItem)
         {
             // The slot frame is part of the art, so only the contents are drawn (moving with the art when it shakes)
             Vector2 position = new Vector2(slot.bounds.X, slot.bounds.Y) + _shakeOffset;
 
             if (item is not null)
             {
-                item.drawInMenu(b, position, 1f);
+                item.drawInMenu(spriteBatch, position, 1f);
                 return;
             }
 
             // Empty slots show the ghost when the other slot is filled, without its own stack number or shadow
-            ghostItem?.drawInMenu(b, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
+            ghostItem?.drawInMenu(spriteBatch, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
 
             if (SpliceHelper.HasOutput(_machine) is false)
             {
-                DrawRequiredCount(b, position);
+                DrawRequiredCount(spriteBatch, position);
             }
         }
 
-        public void DrawRequiredCount(SpriteBatch b, Vector2 slotPosition)
+        public void DrawRequiredCount(SpriteBatch spriteBatch, Vector2 slotPosition)
         {
             int requiredCount = BlendManager.REQUIRED_STACK_PER_SLOT;
             float digitsWidth = Utility.getWidthOfTinyDigitString(requiredCount, REQUIRED_COUNT_SCALE);
 
             Vector2 digitsPosition = slotPosition + new Vector2(SLOT_SIZE - digitsWidth + REQUIRED_COUNT_SCALE, SLOT_SIZE - (6f * REQUIRED_COUNT_SCALE) + 1f);
-            Utility.drawTinyDigits(requiredCount, b, digitsPosition, REQUIRED_COUNT_SCALE, REQUIRED_COUNT_LAYER_DEPTH, Color.White * GHOST_ITEM_TRANSPARENCY);
+            Utility.drawTinyDigits(requiredCount, spriteBatch, digitsPosition, REQUIRED_COUNT_SCALE, REQUIRED_COUNT_LAYER_DEPTH, Color.White * GHOST_ITEM_TRANSPARENCY);
         }
 
         // A running splice shows its seeds faded, and they become collectable once it finishes
-        public void DrawOutputSlot(SpriteBatch b)
+        public void DrawOutputSlot(SpriteBatch spriteBatch)
         {
             Vector2 position = new Vector2(_outputSlot.bounds.X, _outputSlot.bounds.Y) + _shakeOffset;
 
@@ -632,11 +614,11 @@ namespace CropTraits.Framework.UI.Menus
 
             if (SpliceHelper.IsReady(_machine))
             {
-                seeds.drawInMenu(b, position, 1f);
+                seeds.drawInMenu(spriteBatch, position, 1f);
                 return;
             }
 
-            seeds.drawInMenu(b, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
+            seeds.drawInMenu(spriteBatch, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
         }
     }
 }

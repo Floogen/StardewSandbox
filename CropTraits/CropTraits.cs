@@ -37,7 +37,6 @@ namespace CropTraits
         public static IManifest manifest;
         public static IMonitor monitor;
         public static IModHelper modHelper;
-        public static Multiplayer multiplayer;
 
         // Managers
         public static AssetManager assetManager;
@@ -49,11 +48,10 @@ namespace CropTraits
 
         public override void Entry(IModHelper helper)
         {
-            // Set up the monitor, helper and multiplayer
+            // Set up the monitor and helper
             manifest = ModManifest;
             monitor = Monitor;
             modHelper = helper;
-            multiplayer = helper.Reflection.GetField<Multiplayer>(typeof(Game1), "multiplayer").GetValue();
 
             // Create managers
             assetManager = new AssetManager(monitor, helper);

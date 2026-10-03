@@ -1,6 +1,6 @@
 namespace CropTraits.Framework.Traits
 {
-    /// Currently only given when a crossbreed rolls no traits, never by mutation
+    // Only given when a crossbreed rolls no traits, never by mutation
     public class SeedlessTrait : Trait
     {
         // Stored in every trait key, so this must never change once released

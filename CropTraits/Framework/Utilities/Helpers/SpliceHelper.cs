@@ -30,7 +30,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                 return false;
             }
 
-            // Output without a start (such as from an older version) is treated as finished, so it can always be collected
+            // Output without a start time (such as one missing its modData) is treated as finished, so it can always be collected
             if (TryGetStart(machine, out int startDay, out int startTime) is false)
             {
                 return true;
