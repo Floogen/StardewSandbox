@@ -25,10 +25,10 @@ namespace CropTraits.Framework.UI.Menus
         public const float REQUIRED_COUNT_LAYER_DEPTH = 0.866f;
         public const float REQUIRED_COUNT_SCALE = 3f;
         public const float BUTTON_LAYER_DEPTH = 0.88f;
-        public const double SPLICE_BUTTON_SWAP_INTERVAL_MILLISECONDS = 2000;
+        public const double SPLICE_BUTTON_SWAP_INTERVAL_MILLISECONDS = 1250;
         public const int SHAKE_INTENSITY = 2;
         public const double SHAKE_INTERVAL_MILLISECONDS = 50;
-        public const double RUMBLE_INTERVAL_MILLISECONDS = 500;
+        public const double RUMBLE_INTERVAL_MILLISECONDS = 1250;
 
         // Pixel positions in the spritesheet (before scaling), so these must match the art
         public static readonly Rectangle ART_SOURCE = new Rectangle(0, 0, 116, 85);
@@ -308,7 +308,7 @@ namespace CropTraits.Framework.UI.Menus
             }
 
             _rumbleTimer += time.ElapsedGameTime.TotalMilliseconds;
-            if (_rumbleTimer >= 1250)
+            if (_rumbleTimer >= RUMBLE_INTERVAL_MILLISECONDS)
             {
                 _rumbleTimer = 0;
             }
