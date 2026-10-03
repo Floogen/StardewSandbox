@@ -22,7 +22,8 @@ namespace CropTraits.Framework.Traits
                 return;
             }
 
-            Item extraProduce = ItemRegistry.Create(context.QualifiedHarvestItemId);
+            // A copy of the main harvest keeps its quality, color (flowers) and traits, so the extra stacks with it
+            Item extraProduce = context.HarvestedItem is not null ? context.HarvestedItem.getOne() : ItemRegistry.Create(context.QualifiedHarvestItemId);
             if (context.JunimoHarvester is not null)
             {
                 context.JunimoHarvester.tryToAddItemToHut(extraProduce);

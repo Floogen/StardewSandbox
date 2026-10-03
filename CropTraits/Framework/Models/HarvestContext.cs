@@ -1,3 +1,4 @@
+using StardewValley;
 using StardewValley.Characters;
 
 namespace CropTraits.Framework.Models
@@ -10,6 +11,9 @@ namespace CropTraits.Framework.Models
         public string SeedId { get; set; }
         public string QualifiedHarvestItemId { get; set; }
         public int CreatedItemCount { get; set; }
+
+        // The first produce created (the main harvest), copied for extra harvests so quality and color carry over
+        public Item HarvestedItem { get; set; }
 
         // Set when a Junimo is harvesting, so extra produce goes to its hut like the main harvest
         public JunimoHarvester JunimoHarvester { get; set; }

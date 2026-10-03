@@ -72,6 +72,9 @@ namespace CropTraits.Framework.Managers
             item.modData[CropTraits.TRAITS_MOD_DATA_KEY] = context.TraitKey;
             item.modData[CropTraits.SEED_ID_MOD_DATA_KEY] = context.SeedId;
             context.CreatedItemCount++;
+
+            // Quality is assigned after creation, but the reference is only read once the harvest completes
+            context.HarvestedItem ??= item;
         }
 
         // Called while the harvest context is still active, so anything a trait creates here picks up traits too
