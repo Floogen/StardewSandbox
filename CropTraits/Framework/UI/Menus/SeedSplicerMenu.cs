@@ -20,6 +20,8 @@ namespace CropTraits.Framework.UI.Menus
         public const float ART_LAYER_DEPTH = 0.86f;
         public const float GHOST_ITEM_TRANSPARENCY = 0.4f;
         public const float GHOST_ITEM_LAYER_DEPTH = 0.865f;
+        public const float REQUIRED_COUNT_LAYER_DEPTH = 0.866f;
+        public const float REQUIRED_COUNT_SCALE = 3f;
         public const float BUTTON_LAYER_DEPTH = 0.88f;
         public const double SPLICE_BUTTON_SWAP_INTERVAL_MILLISECONDS = 2000;
         public const int SHAKE_INTENSITY = 2;
@@ -172,6 +174,13 @@ namespace CropTraits.Framework.UI.Menus
             if (CanHighlight(candidate) is false)
             {
                 Game1.playSound("cancel");
+
+                bool hasOpenSlot = SpliceHelper.HasOutput(_machine) is false && (_firstItem is null || _secondItem is null);
+                if (hasOpenSlot && CropTraits.blendManager.IsOnlyShortOfStack(candidate, _firstItem ?? _secondItem))
+                {
+                    _statusText = TranslationHelper.Get("menu.status.short_stack", new { count = BlendManager.REQUIRED_STACK_PER_SLOT, name = candidate.DisplayName, held = candidate.Stack });
+                }
+
                 return;
             }
 
@@ -393,7 +402,7 @@ namespace CropTraits.Framework.UI.Menus
             else if (_firstItem is null && _secondItem is null)
             {
                 bool hasEligibleItem = CropTraits.blendManager.HasEligibleItem(Game1.player.Items);
-                _statusText = hasEligibleItem ? TranslationHelper.Get("menu.status.empty") : TranslationHelper.Get("menu.status.no_eligible", new { count = BlendManager.REQUIRED_STACK_PER_SLOT });
+                _statusText = hasEligibleItem ? TranslationHelper.Get("menu.status.empty", new { count = BlendManager.REQUIRED_STACK_PER_SLOT }) : TranslationHelper.Get("menu.status.no_eligible", new { count = BlendManager.REQUIRED_STACK_PER_SLOT });
             }
             else if (_firstItem is null || _secondItem is null)
             {
@@ -542,8 +551,22 @@ namespace CropTraits.Framework.UI.Menus
                 return;
             }
 
-            // Empty slots show the ghost when the other slot is filled, without a stack number or shadow
+            // Empty slots show the ghost when the other slot is filled, without its own stack number or shadow
             ghostItem?.drawInMenu(b, position, 1f, GHOST_ITEM_TRANSPARENCY, GHOST_ITEM_LAYER_DEPTH, StackDrawType.Hide, Color.Gray, false);
+
+            if (SpliceHelper.HasOutput(_machine) is false)
+            {
+                DrawRequiredCount(b, position);
+            }
+        }
+
+        public void DrawRequiredCount(SpriteBatch b, Vector2 slotPosition)
+        {
+            int requiredCount = BlendManager.REQUIRED_STACK_PER_SLOT;
+            float digitsWidth = Utility.getWidthOfTinyDigitString(requiredCount, REQUIRED_COUNT_SCALE);
+
+            Vector2 digitsPosition = slotPosition + new Vector2(SLOT_SIZE - digitsWidth + REQUIRED_COUNT_SCALE, SLOT_SIZE - (6f * REQUIRED_COUNT_SCALE) + 1f);
+            Utility.drawTinyDigits(requiredCount, b, digitsPosition, REQUIRED_COUNT_SCALE, REQUIRED_COUNT_LAYER_DEPTH, Color.White * GHOST_ITEM_TRANSPARENCY);
         }
 
         // A running splice shows its seeds faded, and they become collectable once it finishes

@@ -83,7 +83,17 @@ namespace CropTraits.Framework.Managers
         public bool CanPlace(Item candidate, Item otherParent)
         {
             // Stacks too small to splice are never eligible, so they aren't offered at all
-            if (candidate is null || IsPropagationBlocked(candidate) || HasEnoughForSlot(candidate) is false)
+            return HasEnoughForSlot(candidate) && CanPlaceIgnoringStack(candidate, otherParent);
+        }
+
+        public bool IsOnlyShortOfStack(Item candidate, Item otherParent)
+        {
+            return candidate is not null && HasEnoughForSlot(candidate) is false && CanPlaceIgnoringStack(candidate, otherParent);
+        }
+
+        public bool CanPlaceIgnoringStack(Item candidate, Item otherParent)
+        {
+            if (candidate is null || IsPropagationBlocked(candidate))
             {
                 return false;
             }

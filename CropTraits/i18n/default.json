@@ -16,14 +16,14 @@
   // Seed Splicer menu
   "menu.title": "Seed Splicer",
   "menu.button.splice": "Splice",
-  "menu.status.empty": "Place two crops of the same type.",
+  "menu.status.empty": "Place {{count}} of the same crop in each slot.",
   "menu.status.needs_second": "Add a second crop of the same type.",
   "menu.status.needs_traits": "At least one crop needs a trait.",
   "menu.status.needs_stack": "Each slot needs at least {{count}} crops.",
   "menu.status.ready_crossbreed": "Ready to crossbreed.",
-  "menu.status.ready_crossbreed_identical": "Ready to crossbreed. There is a {{chance}}% chance for a trait to increase its tier.",
+  "menu.status.ready_crossbreed_identical": "Ready to crossbreed.\n\nThere is a {{chance}}% chance for a trait to increase its tier.",
   "menu.status.max_tier": "The traits are already at their max tier.",
-  "menu.status.ready_dilute": "Ready to dilute. {{chance}}% chance to remove a trait, otherwise reverts to baseline.",
+  "menu.status.ready_dilute": "Ready to dilute.\n\nThere is a {{chance}}% chance to remove a trait, otherwise it will revert to the baseline.",
   "menu.status.ready_dilute_single": "Ready to dilute. With only one trait, this reverts to baseline.",
   "menu.status.created": "Created {{count}} {{name}}.",
   "menu.status.splicing": "Splicing... {{percent}}% complete.",
@@ -32,6 +32,7 @@
   "menu.status.upgraded": "A trait grew stronger: {{traits}}!",
   "menu.status.upgraded_multiple": "Traits grew stronger: {{traits}}!",
   "menu.status.no_eligible": "You need at least {{count}} of a crop to splice.",
+  "menu.status.short_stack": "Needs at least {{count}} {{name}}. You have {{held}}.",
 
   // Traits
   "trait.swift.name": "Swift",
