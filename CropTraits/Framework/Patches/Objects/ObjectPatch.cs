@@ -70,7 +70,14 @@ namespace CropTraits.Framework.Patches.Objects
                 return;
             }
 
-            scaleSize *= ProduceScaleHelper.GetScale(__instance);
+            float produceScale = ProduceScaleHelper.GetScale(__instance);
+            if (produceScale == 1f)
+            {
+                return;
+            }
+
+            ProduceScaleHelper.BeginMenuDraw(__instance, scaleSize);
+            scaleSize *= produceScale;
         }
 
         private static void DrawInMenuPostfix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float transparency, float layerDepth, StackDrawType drawStackNumber, float __state)
@@ -80,6 +87,7 @@ namespace CropTraits.Framework.Patches.Objects
                 return;
             }
 
+            ProduceScaleHelper.EndMenuDraw(__instance);
             MutationBadgeHelper.DrawBadge(__instance, spriteBatch, location, __state, transparency, layerDepth, drawStackNumber);
         }
 

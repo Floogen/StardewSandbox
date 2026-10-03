@@ -22,6 +22,7 @@ namespace CropTraits.Framework.Patches.Objects
             harmony.Patch(AccessTools.Method(_item, nameof(Item.canStackWith), new[] { typeof(ISalable) }), postfix: new HarmonyMethod(GetType(), nameof(CanStackWithPostfix)));
             harmony.Patch(GetImplementationForObjects(nameof(Item.getExtraSpaceNeededForTooltipSpecialIcons)), postfix: new HarmonyMethod(GetType(), nameof(GetExtraSpaceNeededForTooltipSpecialIconsPostfix)));
             harmony.Patch(GetImplementationForObjects(nameof(Item.drawTooltip)), postfix: new HarmonyMethod(GetType(), nameof(DrawTooltipPostfix)));
+            harmony.Patch(AccessTools.Method(_item, nameof(Item.DrawMenuIcons)), prefix: new HarmonyMethod(GetType(), nameof(DrawMenuIconsPrefix)));
         }
 
         private MethodInfo GetImplementationForObjects(string methodName)
@@ -46,6 +47,14 @@ namespace CropTraits.Framework.Patches.Objects
         private static void DrawTooltipPostfix(Item __instance, SpriteBatch spriteBatch, ref int x, ref int y, SpriteFont font, float alpha)
         {
             TraitTooltipHelper.DrawTraits(__instance, spriteBatch, x, ref y, font, alpha);
+        }
+
+        private static void DrawMenuIconsPrefix(Item __instance, ref float __2)
+        {
+            if (ProduceScaleHelper.TryGetSlotScale(__instance, out float slotScaleSize))
+            {
+                __2 = slotScaleSize;
+            }
         }
 
         // Vanilla ignores modData, so items with different trait keys or seed IDs must stay apart

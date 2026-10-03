@@ -23,14 +23,24 @@ namespace CropTraits.Framework.Patches.Objects
             harmony.Patch(AccessTools.Method(_coloredObject, nameof(ColoredObject.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(DrawInMenuPrefix)), postfix: new HarmonyMethod(GetType(), nameof(DrawInMenuPostfix)));
         }
 
-        private static void DrawInMenuPrefix(ColoredObject __instance, ref float scaleSize)
+        private static void DrawInMenuPrefix(ColoredObject __instance, ref float scaleSize, out float __state)
         {
-            scaleSize *= ProduceScaleHelper.GetScale(__instance);
+            __state = scaleSize;
+
+            float produceScale = ProduceScaleHelper.GetScale(__instance);
+            if (produceScale == 1f)
+            {
+                return;
+            }
+
+            ProduceScaleHelper.BeginMenuDraw(__instance, scaleSize);
+            scaleSize *= produceScale;
         }
 
-        private static void DrawInMenuPostfix(ColoredObject __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber)
+        private static void DrawInMenuPostfix(ColoredObject __instance, SpriteBatch spriteBatch, Vector2 location, float transparency, float layerDepth, StackDrawType drawStackNumber, float __state)
         {
-            MutationBadgeHelper.DrawBadge(__instance, spriteBatch, location, scaleSize, transparency, layerDepth, drawStackNumber);
+            ProduceScaleHelper.EndMenuDraw(__instance);
+            MutationBadgeHelper.DrawBadge(__instance, spriteBatch, location, __state, transparency, layerDepth, drawStackNumber);
         }
 
         // Colored crops (flowers) are constructed directly rather than through ItemRegistry
