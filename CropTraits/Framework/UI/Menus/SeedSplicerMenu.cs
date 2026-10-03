@@ -2,9 +2,11 @@ using CropTraits.Framework.Managers;
 using CropTraits.Framework.Models;
 using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Audio;
 using StardewValley.Menus;
 
 namespace CropTraits.Framework.UI.Menus
@@ -26,6 +28,7 @@ namespace CropTraits.Framework.UI.Menus
         public const double SPLICE_BUTTON_SWAP_INTERVAL_MILLISECONDS = 2000;
         public const int SHAKE_INTENSITY = 2;
         public const double SHAKE_INTERVAL_MILLISECONDS = 50;
+        public const double RUMBLE_INTERVAL_MILLISECONDS = 500;
 
         // Pixel positions in the spritesheet (before scaling), so these must match the art
         public static readonly Rectangle ART_SOURCE = new Rectangle(0, 0, 116, 85);
@@ -43,6 +46,8 @@ namespace CropTraits.Framework.UI.Menus
         private readonly System.Random _shakeRandom = new System.Random();
         private Vector2 _shakeOffset;
         private double _shakeTimer;
+        private double _rumbleTimer;
+        private ICue _rumbleCue;
         private Vector2 _artPosition;
         private Rectangle _textBoxBounds;
         private Rectangle _inventoryBoxBounds;
@@ -267,7 +272,10 @@ namespace CropTraits.Framework.UI.Menus
 
         public void UpdateShake(GameTime time)
         {
-            if (SpliceHelper.IsSplicing(_machine) is false)
+            bool isSplicing = SpliceHelper.IsSplicing(_machine);
+            UpdateRumble(time, isSplicing);
+
+            if (isSplicing is false)
             {
                 _shakeOffset = Vector2.Zero;
                 _shakeTimer = 0;
@@ -283,6 +291,34 @@ namespace CropTraits.Framework.UI.Menus
             // A long frame only produces one new offset rather than catching up
             _shakeTimer %= SHAKE_INTERVAL_MILLISECONDS;
             _shakeOffset = new Vector2(_shakeRandom.Next(-SHAKE_INTENSITY, SHAKE_INTENSITY + 1), _shakeRandom.Next(-SHAKE_INTENSITY, SHAKE_INTENSITY + 1));
+        }
+
+        public void UpdateRumble(GameTime time, bool isSplicing)
+        {
+            if (isSplicing is false)
+            {
+                StopRumble();
+                return;
+            }
+
+            // Starting at zero plays the first rumble right away, then the timer counts up to the next one
+            if (_rumbleTimer <= 0)
+            {
+                Game1.playSound("ticket_machine_whir", out _rumbleCue);
+            }
+
+            _rumbleTimer += time.ElapsedGameTime.TotalMilliseconds;
+            if (_rumbleTimer >= 1250)
+            {
+                _rumbleTimer = 0;
+            }
+        }
+
+        public void StopRumble()
+        {
+            _rumbleCue?.Stop(AudioStopOptions.Immediate);
+            _rumbleCue = null;
+            _rumbleTimer = 0;
         }
 
         // The result is decided now, but the seeds wait in the machine until the splice finishes
@@ -479,12 +515,14 @@ namespace CropTraits.Framework.UI.Menus
 
         protected override void cleanupBeforeExit()
         {
+            StopRumble();
             ReturnAllItems();
             base.cleanupBeforeExit();
         }
 
         public override void emergencyShutDown()
         {
+            StopRumble();
             ReturnAllItems();
             base.emergencyShutDown();
         }
