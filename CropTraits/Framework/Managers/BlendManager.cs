@@ -113,9 +113,9 @@ namespace CropTraits.Framework.Managers
             return GetSeedId(otherParent) == candidateSeedId && (HasTraits(candidate) || HasTraits(otherParent));
         }
 
-        public bool HasEligibleItem(IEnumerable<Item> items)
+        public bool HasEligibleItem(IEnumerable<Item> items, Item otherParent)
         {
-            return items.Any(item => CanPlace(item, null));
+            return items.Any(item => CanPlace(item, otherParent));
         }
 
         public bool CanBlend(Item firstParent, Item secondParent)

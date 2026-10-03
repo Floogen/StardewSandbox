@@ -427,7 +427,7 @@ namespace CropTraits.Framework.UI.Menus
             }
             else if (_firstItem is null && _secondItem is null)
             {
-                bool hasEligibleItem = CropTraits.blendManager.HasEligibleItem(Game1.player.Items);
+                bool hasEligibleItem = CropTraits.blendManager.HasEligibleItem(Game1.player.Items, null);
                 _statusText = hasEligibleItem ? TranslationHelper.Get("menu.status.empty", new { count = BlendManager.REQUIRED_STACK_PER_SLOT }) : TranslationHelper.Get("menu.status.no_eligible", new { count = BlendManager.REQUIRED_STACK_PER_SLOT });
             }
             else if (_firstItem is null || _secondItem is null)
@@ -458,12 +458,25 @@ namespace CropTraits.Framework.UI.Menus
         public string GetNeedsSecondStatus()
         {
             Item placedItem = _firstItem ?? _secondItem;
-            if (CropTraits.blendManager.HasTraits(placedItem))
+            bool isPlacedTraited = CropTraits.blendManager.HasTraits(placedItem);
+
+            if (CropTraits.blendManager.HasEligibleItem(Game1.player.Items, placedItem) is false)
+            {
+                string noMatchKey = isPlacedTraited ? "menu.status.no_match" : "menu.status.no_traited_match";
+                return TranslationHelper.Get(noMatchKey, new { count = BlendManager.REQUIRED_STACK_PER_SLOT, name = GetCropName(placedItem) });
+            }
+
+            if (isPlacedTraited)
             {
                 return TranslationHelper.Get("menu.status.needs_second");
             }
 
             return TranslationHelper.Get("menu.status.needs_traited", new { name = placedItem.DisplayName });
+        }
+
+        public string GetCropName(Item item)
+        {
+            return ItemRegistry.GetData(item.QualifiedItemId)?.DisplayName ?? item.DisplayName;
         }
 
         public string GetMachineStatus()
