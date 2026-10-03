@@ -442,7 +442,7 @@ namespace CropTraits.Framework.UI.Menus
             }
             else if (_firstItem is null || _secondItem is null)
             {
-                _statusText = TranslationHelper.Get("menu.status.needs_second");
+                _statusText = GetNeedsSecondStatus();
             }
             else if (CropTraits.blendManager.HasTraits(_firstItem) is false && CropTraits.blendManager.HasTraits(_secondItem) is false)
             {
@@ -470,6 +470,18 @@ namespace CropTraits.Framework.UI.Menus
             {
                 _statusText = GetDiluteStatus();
             }
+        }
+
+        // A plain crop can only be diluted, so the second crop has to carry a trait
+        public string GetNeedsSecondStatus()
+        {
+            Item placedItem = _firstItem ?? _secondItem;
+            if (CropTraits.blendManager.HasTraits(placedItem))
+            {
+                return TranslationHelper.Get("menu.status.needs_second");
+            }
+
+            return TranslationHelper.Get("menu.status.needs_traited", new { name = placedItem.DisplayName });
         }
 
         public string GetMachineStatus()
