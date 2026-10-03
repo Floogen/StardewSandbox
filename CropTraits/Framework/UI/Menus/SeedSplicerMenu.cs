@@ -341,6 +341,16 @@ namespace CropTraits.Framework.UI.Menus
             {
                 _statusText = TranslationHelper.Get("menu.status.needs_stack", new { count = BlendManager.REQUIRED_STACK_PER_SLOT });
             }
+            else if (CropTraits.blendManager.IsFullyMaxedIdenticalPair(_firstItem, _secondItem))
+            {
+                _statusText = TranslationHelper.Get("menu.status.max_tier");
+            }
+            else if (CropTraits.blendManager.IsIdenticalPair(_firstItem, _secondItem))
+            {
+                // A tier upgrade is the only thing an identical pair can gain, so its odds are shown like dilution's
+                int upgradeChance = (int)System.Math.Round(CropTraits.blendManager.GetAnyTierUpgradeChance(_firstItem, _secondItem) * 100);
+                _statusText = TranslationHelper.Get("menu.status.ready_crossbreed_identical", new { chance = upgradeChance });
+            }
             else if (CropTraits.blendManager.HasTraits(_firstItem) && CropTraits.blendManager.HasTraits(_secondItem))
             {
                 _statusText = TranslationHelper.Get("menu.status.ready_crossbreed");

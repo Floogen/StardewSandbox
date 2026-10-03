@@ -41,6 +41,11 @@ namespace CropTraits.Framework.Managers
                 .ToList();
         }
 
+        public int GetMaxTier(string traitId)
+        {
+            return TryGetTrait(traitId, out Trait trait) ? trait.MaxTier : 1;
+        }
+
         public bool TryGetTrait(string traitId, out Trait trait)
         {
             trait = null;
@@ -210,10 +215,12 @@ namespace CropTraits.Framework.Managers
             return value.ToString();
         }
 
+        // Finds every concrete Trait subclass in this assembly, so a new trait only needs its class
         private Dictionary<string, Trait> DiscoverTraits()
         {
             Dictionary<string, Trait> traits = new();
 
+            // Sorted by type name so duplicate IDs always resolve the same way
             IEnumerable<Type> traitTypes = typeof(Trait).Assembly.GetTypes()
                 .Where(type => type.IsSubclassOf(typeof(Trait)) && type.IsAbstract is false)
                 .OrderBy(type => type.FullName, StringComparer.Ordinal);

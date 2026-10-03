@@ -123,8 +123,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                     continue;
                 }
 
-                int maxTier = CropTraits.traitManager.TryGetTrait(trait.Key, out Trait definition) ? definition.MaxTier : 1;
-                if (trait.Value >= maxTier)
+                if (trait.Value >= CropTraits.traitManager.GetMaxTier(trait.Key))
                 {
                     continue;
                 }

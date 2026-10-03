@@ -122,7 +122,43 @@ namespace CropTraits.Framework.Managers
             }
 
             // Two untraited parents have nothing to blend
-            return HasTraits(firstParent) || HasTraits(secondParent);
+            if (HasTraits(firstParent) is false && HasTraits(secondParent) is false)
+            {
+                return false;
+            }
+
+            return IsFullyMaxedIdenticalPair(firstParent, secondParent) is false;
+        }
+
+        // Both parents carry the same traits at the same tiers, so a tier upgrade is the only possible change
+        public bool IsIdenticalPair(Item firstParent, Item secondParent)
+        {
+            if (HasTraits(firstParent) is false || HasTraits(secondParent) is false)
+            {
+                return false;
+            }
+
+            return TraitModDataHelper.GetTraitKey(firstParent.modData) == TraitModDataHelper.GetTraitKey(secondParent.modData);
+        }
+
+        // With every trait at max tier, an identical pair can't change at all, so splicing would only waste the crops
+        public bool IsFullyMaxedIdenticalPair(Item firstParent, Item secondParent)
+        {
+            return IsIdenticalPair(firstParent, secondParent) && GetUpgradeableTraitCount(TraitModDataHelper.GetTraits(firstParent.modData)) == 0;
+        }
+
+        public int GetUpgradeableTraitCount(TraitSet traits)
+        {
+            return traits.Entries.Count(trait => trait.Value < CropTraits.traitManager.GetMaxTier(trait.Key));
+        }
+
+        // Each upgradeable trait rolls on its own, so this is the chance that at least one increases its tier
+        public double GetAnyTierUpgradeChance(Item firstParent, Item secondParent)
+        {
+            int upgradeableCount = GetUpgradeableTraitCount(TraitModDataHelper.GetTraits(firstParent.modData));
+            double upgradeChance = CrossbreedHelper.GetTierUpgradeChance(firstParent.Quality, secondParent.Quality);
+
+            return 1 - Math.Pow(1 - upgradeChance, upgradeableCount);
         }
 
         public BlendOutcome Blend(string seedId, Item firstItem, Item secondItem)
