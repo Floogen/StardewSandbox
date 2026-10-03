@@ -1,6 +1,10 @@
+using CropTraits.Framework.Utilities.Helpers;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using System.Reflection;
 
 namespace CropTraits.Framework.Patches.Objects
 {
@@ -16,6 +20,32 @@ namespace CropTraits.Framework.Patches.Objects
         public override void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_item, nameof(Item.canStackWith), new[] { typeof(ISalable) }), postfix: new HarmonyMethod(GetType(), nameof(CanStackWithPostfix)));
+            harmony.Patch(GetImplementationForObjects(nameof(Item.getExtraSpaceNeededForTooltipSpecialIcons)), postfix: new HarmonyMethod(GetType(), nameof(GetExtraSpaceNeededForTooltipSpecialIconsPostfix)));
+            harmony.Patch(GetImplementationForObjects(nameof(Item.drawTooltip)), postfix: new HarmonyMethod(GetType(), nameof(DrawTooltipPostfix)));
+        }
+
+        private MethodInfo GetImplementationForObjects(string methodName)
+        {
+            MethodInfo method = AccessTools.Method(typeof(StardewValley.Object), methodName);
+            return AccessTools.DeclaredMethod(method.DeclaringType, methodName);
+        }
+
+        private static void GetExtraSpaceNeededForTooltipSpecialIconsPostfix(Item __instance, SpriteFont font, int minWidth, int startingHeight, ref Point __result)
+        {
+            int traitHeight = TraitTooltipHelper.GetHeight(__instance, font);
+            if (traitHeight == 0)
+            {
+                return;
+            }
+
+            int width = __result.X != 0 ? __result.X : minWidth;
+            int height = __result.Y != 0 ? __result.Y : startingHeight;
+            __result = new Point(width, height + traitHeight);
+        }
+
+        private static void DrawTooltipPostfix(Item __instance, SpriteBatch spriteBatch, ref int x, ref int y, SpriteFont font, float alpha)
+        {
+            TraitTooltipHelper.DrawTraits(__instance, spriteBatch, x, ref y, font, alpha);
         }
 
         // Vanilla ignores modData, so items with different trait keys or seed IDs must stay apart

@@ -10,7 +10,7 @@
   "item.name.seedless": "Seedless {{name}}",
 
   // Tooltips
-  "tooltip.traits": "Traits: {{traits}}",
+  "tooltip.traits_label": "Traits:",
   "tooltip.growth_days": "With its traits, takes {{days}} days to mature.",
 
   // Seed Splicer menu

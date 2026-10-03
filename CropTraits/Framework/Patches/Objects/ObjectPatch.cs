@@ -61,8 +61,10 @@ namespace CropTraits.Framework.Patches.Objects
             __result = TranslationHelper.Get("item.name.hybrid", new { name = __result });
         }
 
-        private static void DrawInMenuPrefix(Object __instance, ref float scaleSize)
+        private static void DrawInMenuPrefix(Object __instance, ref float scaleSize, out float __state)
         {
+            __state = scaleSize;
+
             if (__instance is ColoredObject)
             {
                 return;
@@ -71,31 +73,27 @@ namespace CropTraits.Framework.Patches.Objects
             scaleSize *= ProduceScaleHelper.GetScale(__instance);
         }
 
-        private static void DrawInMenuPostfix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber)
+        private static void DrawInMenuPostfix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float transparency, float layerDepth, StackDrawType drawStackNumber, float __state)
         {
             if (__instance is ColoredObject)
             {
                 return;
             }
 
-            MutationBadgeHelper.DrawBadge(__instance, spriteBatch, location, scaleSize, transparency, layerDepth, drawStackNumber);
+            MutationBadgeHelper.DrawBadge(__instance, spriteBatch, location, __state, transparency, layerDepth, drawStackNumber);
         }
 
         private static void GetDescriptionPostfix(Object __instance, ref string __result)
         {
-            string label = CropTraits.traitManager.GetLabel(TraitModDataHelper.GetTraitKey(__instance.modData));
-            if (string.IsNullOrEmpty(label))
+            if (TraitModDataHelper.HasTraits(__instance.modData) is false)
             {
                 return;
             }
 
-            string traitLine = Game1.parseText(TranslationHelper.Get("tooltip.traits", new { traits = label }), Game1.smallFont, DESCRIPTION_WIDTH);
-            __result = $"{__result}{System.Environment.NewLine}{System.Environment.NewLine}{traitLine}";
-
             string growthLine = GetGrowthLine(__instance);
             if (string.IsNullOrEmpty(growthLine) is false)
             {
-                __result = $"{__result}{System.Environment.NewLine}{growthLine}";
+                __result = $"{__result}{System.Environment.NewLine}{System.Environment.NewLine}{growthLine}";
             }
         }
 
