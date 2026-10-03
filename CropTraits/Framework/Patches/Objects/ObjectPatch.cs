@@ -3,6 +3,8 @@ using CropTraits.Framework.Traits;
 using CropTraits.Framework.UI.Menus;
 using CropTraits.Framework.Utilities.Helpers;
 using HarmonyLib;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.GameData.Crops;
@@ -24,6 +26,7 @@ namespace CropTraits.Framework.Patches.Objects
         {
             harmony.Patch(AccessTools.PropertyGetter(_object, nameof(Object.DisplayName)), postfix: new HarmonyMethod(GetType(), nameof(DisplayNamePostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.getDescription), null), postfix: new HarmonyMethod(GetType(), nameof(GetDescriptionPostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(DrawInMenuPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.sellToStorePrice), null), postfix: new HarmonyMethod(GetType(), nameof(SellToStorePricePostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.checkForAction), null), prefix: new HarmonyMethod(GetType(), nameof(CheckForActionPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.OutputSeedMaker), null), prefix: new HarmonyMethod(GetType(), nameof(OutputSeedMakerPrefix)), postfix: new HarmonyMethod(GetType(), nameof(OutputSeedMakerPostfix)));
@@ -55,6 +58,11 @@ namespace CropTraits.Framework.Patches.Objects
             }
 
             __result = TranslationHelper.Get("item.name.hybrid", new { name = __result });
+        }
+
+        private static void DrawInMenuPostfix(Object __instance, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber)
+        {
+            MutationBadgeHelper.DrawBadge(__instance, spriteBatch, location, scaleSize, transparency, layerDepth, drawStackNumber);
         }
 
         private static void GetDescriptionPostfix(Object __instance, ref string __result)

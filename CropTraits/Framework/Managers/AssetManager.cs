@@ -21,6 +21,7 @@ namespace CropTraits.Framework.Managers
 
         // Positions in the spritesheet
         public static readonly Rectangle MUTAGENIC_FERTILIZER_DIRT_SOURCE = new Rectangle(32, 16, 16, 16);
+        public static readonly Rectangle MUTATION_BADGE_SOURCE = new Rectangle(16, 9, 7, 7);
 
         public const int SEED_SPLICER_PRICE = 500;
         public const int MUTAGENIC_FERTILIZER_PRICE = 50;
