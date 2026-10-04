@@ -4,6 +4,8 @@
   "item.seed_splicer.description": "Crossbreeds two crops of the same type into new seeds, or dilutes a traited crop with a plain one.",
   "item.mutagenic_fertilizer.name": "Mutagenic Fertilizer",
   "item.mutagenic_fertilizer.description": "Raises the chance that a crop planted in this soil mutates.",
+  "item.journal.name": "Field Notes",
+  "item.journal.description": "A notebook for recording the various crop traits you have discovered.",
 
   // Traited item names
   "item.name.hybrid": "{{name}} (Hybrid)",
@@ -14,6 +16,12 @@
   "tooltip.growth_days": "With its traits, takes {{days}} days to mature.",
   "tooltip.new_trait": "New!",
   "tooltip.mutation_hidden": "Any mutation shows once it's fully grown.",
+
+  "journal.cover.title": "Field Notes",
+  "journal.page.overview.title": "Overview",
+  "journal.overview.traits": "Traits discovered: {{count}} / {{total}}",
+  "journal.overview.combinations": "Combinations discovered: {{count}}",
+  "journal.overview.blends": "Pairs crossbred: {{count}}",
 
   // Seed Splicer menu
   "menu.title": "Seed Splicer",

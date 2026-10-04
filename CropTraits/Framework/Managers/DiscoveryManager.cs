@@ -98,15 +98,23 @@ namespace CropTraits.Framework.Managers
                 return;
             }
 
+            bool hasNewDiscovery = false;
             foreach (KeyValuePair<string, int> trait in traits.Entries)
             {
                 if (Data.Traits.TryGetValue(trait.Key, out TraitDiscoveryData discovery) is false)
                 {
                     discovery = new TraitDiscoveryData { FirstSeedId = seedId, FirstDiscoveredDay = Game1.Date.TotalDays };
                     Data.Traits[trait.Key] = discovery;
+                    hasNewDiscovery = true;
                 }
 
-                discovery.TiersSeen.Add(trait.Value);
+                hasNewDiscovery |= discovery.TiersSeen.Add(trait.Value);
+            }
+
+            // Inventory changes call this constantly, so the journal is only marked stale when something was actually new
+            if (hasNewDiscovery)
+            {
+                CropTraits.journalBuilder?.QueueRefresh();
             }
         }
 
@@ -119,6 +127,8 @@ namespace CropTraits.Framework.Managers
             {
                 Data.Combinations.Add(combinationKey);
             }
+
+            CropTraits.journalBuilder?.QueueRefresh();
 
             if (Context.IsMainPlayer is false)
             {

@@ -27,6 +27,8 @@ namespace CropTraits.Framework.Managers
         public const int MUTAGENIC_FERTILIZER_PRICE = 50;
         public const int FERTILIZER_CATEGORY = -19;
 
+        public const string PARCHMENT_BOOK_ID_FIELD = "PeacefulEnd.Parchment/CustomFields/BookId";
+
         public AssetManager(IMonitor monitor, IModHelper helper) : base(monitor, helper)
         {
 
@@ -75,6 +77,23 @@ namespace CropTraits.Framework.Managers
                         Price = MUTAGENIC_FERTILIZER_PRICE,
                         Texture = SPRITE_SHEET_TEXTURE_PATH,
                         SpriteIndex = 2
+                    };
+
+                    data[CropTraits.JOURNAL_ID] = new ObjectData
+                    {
+                        Name = CropTraits.JOURNAL_ID,
+                        DisplayName = TranslationHelper.Get("item.journal.name"),
+                        Description = TranslationHelper.Get("item.journal.description"),
+                        Type = "Basic",
+                        Category = 0,
+                        Price = 0,
+                        Edibility = StardewValley.Object.inedible,
+                        Texture = SPRITE_SHEET_TEXTURE_PATH,
+                        SpriteIndex = 6,
+                        CustomFields = new Dictionary<string, string>
+                        {
+                            { PARCHMENT_BOOK_ID_FIELD, CropTraits.JOURNAL_ID }
+                        }
                     };
                 });
             }
