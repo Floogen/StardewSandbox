@@ -11,7 +11,7 @@
     {
       "UniqueID": "PeacefulEnd.Parchment.Core",
       "IsRequired": true,
-      "MinimumVersion": "1.12.1"
+      "MinimumVersion": "1.13.0"
     }
   ]
 }
