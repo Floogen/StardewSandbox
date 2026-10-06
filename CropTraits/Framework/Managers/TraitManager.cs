@@ -217,7 +217,7 @@ namespace CropTraits.Framework.Managers
                 .Select(trait => GetTierLabel(trait.Key, trait.Value)));
         }
 
-        private static string ToRoman(int value)
+        public static string ToRoman(int value)
         {
             if (value >= 1 && value <= ROMAN_NUMERALS.Length)
             {

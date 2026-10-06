@@ -9,5 +9,8 @@ namespace CropTraits.Framework.Models.Data
         public string SecondParentKey { get; set; }
 
         public string ResultTraitKey { get; set; }
+
+        // The day the pair was first crossbred, kept when the pair is crossbred again. Entries from before this was added have 0
+        public int FirstSplicedDay { get; set; }
     }
 }

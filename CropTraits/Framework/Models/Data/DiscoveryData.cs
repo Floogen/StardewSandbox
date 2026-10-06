@@ -10,5 +10,8 @@ namespace CropTraits.Framework.Models.Data
 
         // Keyed by the pair key used for blend seeding
         public Dictionary<string, BlendJournalEntryData> BlendJournal { get; set; } = new();
+
+        // Keyed by seed ID, since crops are identified by their seed everywhere else
+        public Dictionary<string, CropDiscoveryData> Crops { get; set; } = new();
     }
 }

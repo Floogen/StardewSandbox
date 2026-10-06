@@ -26,6 +26,25 @@ namespace CropTraits.Framework.Managers
         public void Load()
         {
             Data = Context.IsMainPlayer ? helper.Data.ReadSaveData<DiscoveryData>(SAVE_DATA_KEY) ?? new DiscoveryData() : new DiscoveryData();
+            BackfillCropRecords();
+        }
+
+        private void BackfillCropRecords()
+        {
+            foreach (BlendJournalEntryData entry in Data.BlendJournal.Values)
+            {
+                if (BlendParent.TryParseSortKey(entry.FirstParentKey, out TraitSet firstTraits, out _))
+                {
+                    RecordCropTraits(entry.SeedId, firstTraits);
+                }
+
+                if (BlendParent.TryParseSortKey(entry.SecondParentKey, out TraitSet secondTraits, out _))
+                {
+                    RecordCropTraits(entry.SeedId, secondTraits);
+                }
+
+                RecordCropTraits(entry.SeedId, TraitSet.FromKey(entry.ResultTraitKey));
+            }
         }
 
         public void Save()
@@ -92,13 +111,7 @@ namespace CropTraits.Framework.Managers
                 return;
             }
 
-            if (Context.IsMainPlayer is false)
-            {
-                SendReport(new DiscoveryReportData { TraitKey = traits.ToKey(), SeedId = seedId });
-                return;
-            }
-
-            bool hasNewDiscovery = false;
+            bool hasNewDiscovery = RecordCropTraits(seedId, traits);
             foreach (KeyValuePair<string, int> trait in traits.Entries)
             {
                 if (Data.Traits.TryGetValue(trait.Key, out TraitDiscoveryData discovery) is false)
@@ -111,15 +124,57 @@ namespace CropTraits.Framework.Managers
                 hasNewDiscovery |= discovery.TiersSeen.Add(trait.Value);
             }
 
-            // Inventory changes call this constantly, so the journal is only marked stale when something was actually new
-            if (hasNewDiscovery)
+            // Inventory changes call this constantly, so the journal is only marked stale and the host only told when something was actually new
+            if (hasNewDiscovery is false)
             {
-                CropTraits.journalBuilder?.QueueRefresh();
+                return;
             }
+
+            CropTraits.journalBuilder?.QueueRefresh();
+
+            if (Context.IsMainPlayer is false)
+            {
+                SendReport(new DiscoveryReportData { TraitKey = traits.ToKey(), SeedId = seedId });
+            }
+        }
+
+        // Returns whether any trait or tier was new for this crop
+        private bool RecordCropTraits(string seedId, TraitSet traits)
+        {
+            if (string.IsNullOrEmpty(seedId) || traits is null || traits.Count == 0)
+            {
+                return false;
+            }
+
+            if (Data.Crops.TryGetValue(seedId, out CropDiscoveryData crop) is false)
+            {
+                crop = new CropDiscoveryData();
+                Data.Crops[seedId] = crop;
+            }
+
+            bool hasNewTier = false;
+            foreach (KeyValuePair<string, int> trait in traits.Entries)
+            {
+                if (crop.TraitTiers.TryGetValue(trait.Key, out HashSet<int> tiers) is false)
+                {
+                    tiers = new HashSet<int>();
+                    crop.TraitTiers[trait.Key] = tiers;
+                }
+
+                hasNewTier |= tiers.Add(trait.Value);
+            }
+
+            return hasNewTier;
         }
 
         public void RecordBlend(string pairKey, BlendJournalEntryData entry, IEnumerable<string> fusedCombinationKeys)
         {
+            // A pair crossbred again keeps the day it was first crossbred
+            if (Data.BlendJournal.TryGetValue(pairKey, out BlendJournalEntryData existingEntry) && existingEntry.FirstSplicedDay > 0)
+            {
+                entry.FirstSplicedDay = existingEntry.FirstSplicedDay;
+            }
+
             // Farmhands also keep a copy for the session, so the Seed Splicer can preview their own results right away
             Data.BlendJournal[pairKey] = entry;
 

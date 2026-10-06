@@ -236,7 +236,8 @@ namespace CropTraits.Framework.Managers
                 FirstParentKey = first.SortKey,
                 SecondParentKey = second.SortKey,
                 // The fixed result is recorded, so the journal stays accurate for the pair even after a lucky upgrade
-                ResultTraitKey = result.FixedTraits.ToKey()
+                ResultTraitKey = result.FixedTraits.ToKey(),
+                FirstSplicedDay = Game1.Date.TotalDays
             };
 
             CropTraits.discoveryManager.RecordBlend(pairKey, journalEntry, result.FusedCombinationKeys);

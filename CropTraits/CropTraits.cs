@@ -159,7 +159,11 @@ namespace CropTraits
                 return;
             }
 
-            journalBuilder.OpenBook();
+            // Always force the book to rebuild when using the command
+            if (journalBuilder.Build().TryOpen(out string error) is false)
+            {
+                monitor.Log($"Couldn't open the journal: {error}.", LogLevel.Warn);
+            }
         }
 
         private void OnAssetsInvalidated(object sender, AssetsInvalidatedEventArgs e)
@@ -228,7 +232,7 @@ namespace CropTraits
         public static void ShowDiscoveries(string command, string[] args)
         {
             DiscoveryData data = discoveryManager.Data;
-            monitor.Log($"Traits: {data.Traits.Count}, combinations: {data.Combinations.Count}, journal entries: {data.BlendJournal.Count}", LogLevel.Info);
+            monitor.Log($"Traits: {data.Traits.Count}, crops: {data.Crops.Count}, combinations: {data.Combinations.Count}, journal entries: {data.BlendJournal.Count}", LogLevel.Info);
 
             foreach (KeyValuePair<string, TraitDiscoveryData> trait in data.Traits.OrderBy(trait => trait.Key, StringComparer.Ordinal))
             {
