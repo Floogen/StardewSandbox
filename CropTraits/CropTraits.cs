@@ -218,6 +218,9 @@ namespace CropTraits
                 }
             }
 
+            // Changing an item already in the inventory fires no inventory event, so it's recorded here
+            discoveryManager.RecordItem(heldItem);
+
             monitor.Log($"Held item is now {heldItem.DisplayName}.", LogLevel.Info);
         }
 

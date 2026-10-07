@@ -27,6 +27,31 @@ namespace CropTraits.Framework.Managers
         {
             Data = Context.IsMainPlayer ? helper.Data.ReadSaveData<DiscoveryData>(SAVE_DATA_KEY) ?? new DiscoveryData() : new DiscoveryData();
             BackfillCropRecords();
+            RecordPlayerInventory(Game1.player);
+        }
+
+        public void RecordPlayerInventory(Farmer who)
+        {
+            if (who is null)
+            {
+                return;
+            }
+
+            foreach (Item item in who.Items)
+            {
+                RecordItem(item);
+            }
+        }
+
+        public void RecordItem(Item item)
+        {
+            TraitSet traits = TraitModDataHelper.GetTraits(item?.modData);
+            if (traits.Count == 0)
+            {
+                return;
+            }
+
+            RecordTraits(traits, GetDiscoverySeedId(item));
         }
 
         private void BackfillCropRecords()
@@ -69,13 +94,16 @@ namespace CropTraits.Framework.Managers
 
             foreach (Item item in e.Added)
             {
-                TraitSet traits = TraitModDataHelper.GetTraits(item?.modData);
-                if (traits.Count == 0)
-                {
-                    continue;
-                }
+                RecordItem(item);
+            }
 
-                RecordTraits(traits, GetDiscoverySeedId(item));
+            // Items merging into a stack already held are reported as a size change rather than an addition
+            foreach (ItemStackSizeChange change in e.QuantityChanged)
+            {
+                if (change.NewSize > change.OldSize)
+                {
+                    RecordItem(change.Item);
+                }
             }
         }
 
