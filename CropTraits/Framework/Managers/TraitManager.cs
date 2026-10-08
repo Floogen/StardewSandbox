@@ -3,6 +3,7 @@ using CropTraits.Framework.Models.Data;
 using CropTraits.Framework.Traits;
 using CropTraits.Framework.Utilities.Helpers;
 using StardewModdingAPI;
+using StardewValley.GameData.Crops;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,13 +97,19 @@ namespace CropTraits.Framework.Managers
             return scale;
         }
 
-        public Trait RollTrait(Random random, IReadOnlyDictionary<string, int> weightBonuses)
+        // Traits that can't apply to the crop are left out entirely, so they never take a share of the roll
+        public Trait RollTrait(Random random, IReadOnlyDictionary<string, int> weightBonuses, CropData cropData)
         {
             List<(Trait Trait, int Weight)> weightedTraits = new();
             int totalWeight = 0;
 
             foreach (Trait trait in _rollableTraits)
             {
+                if (trait.CanApplyTo(cropData) is false)
+                {
+                    continue;
+                }
+
                 int bonus = weightBonuses is null ? 0 : weightBonuses.GetValueOrDefault(trait.Id);
                 int weight = trait.Weight + bonus;
                 if (weight <= 0)

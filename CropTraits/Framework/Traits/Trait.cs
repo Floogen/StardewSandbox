@@ -53,6 +53,15 @@ namespace CropTraits.Framework.Traits
         public virtual bool CanBeRolled => true;
 
         /// <summary>
+        /// Whether mutation can roll this trait for the given crop type, so traits that would do nothing on it (such as extra regrowth on a crop that already regrows) are skipped.
+        /// Checked per crop type rather than per location. The crop data is null when it's missing (such as a crop from a removed mod), so traits that depend on it should return false.
+        /// </summary>
+        public virtual bool CanApplyTo(CropData cropData)
+        {
+            return true;
+        }
+
+        /// <summary>
         /// If this is rejected by the Seed Maker and Seed Splicer.
         /// </summary>
         public virtual bool BlocksPropagation => false;

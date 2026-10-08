@@ -93,7 +93,7 @@ namespace CropTraits.Framework.Managers
                 return false;
             }
 
-            Trait rolledTrait = CropTraits.traitManager.RollTrait(random, NeighborInfluenceHelper.GetWeightBonuses(tile, traitSnapshot));
+            Trait rolledTrait = CropTraits.traitManager.RollTrait(random, NeighborInfluenceHelper.GetWeightBonuses(tile, traitSnapshot), dirt.crop.GetData());
             if (rolledTrait is null)
             {
                 return true;
