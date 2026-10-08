@@ -24,7 +24,9 @@ namespace CropTraits.Framework.Utilities.Helpers
 
             List<string> fusedCombinationKeys = ApplyCombinations(firstRemaining, secondRemaining, resultTraits, combinations, random);
             ApplySharedTraits(firstRemaining, secondRemaining, resultTraits, random);
-            ApplyUniqueTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, random);
+            bool isFirstAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(firstParent.Traits);
+            bool isSecondAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(secondParent.Traits);
+            ApplyUniqueTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, isFirstAlwaysInherited, isSecondAlwaysInherited, random);
 
             // Crossbreeds that roll nothing become Seedless
             if (resultTraits.Count == 0)
@@ -151,10 +153,10 @@ namespace CropTraits.Framework.Utilities.Helpers
             return BASE_TIER_UPGRADE_CHANCE * Math.Pow(TIER_UPGRADE_QUALITY_MULTIPLIER, averageQualityStep);
         }
 
-        public static void ApplyUniqueTraits(TraitSet firstRemaining, TraitSet secondRemaining, TraitSet resultTraits, int firstQuality, int secondQuality, Random random)
+        public static void ApplyUniqueTraits(TraitSet firstRemaining, TraitSet secondRemaining, TraitSet resultTraits, int firstQuality, int secondQuality, bool isFirstAlwaysInherited, bool isSecondAlwaysInherited, Random random)
         {
-            List<KeyValuePair<string, int>> candidates = GetSurvivingTraits(firstRemaining, firstQuality, random)
-                .Concat(GetSurvivingTraits(secondRemaining, secondQuality, random))
+            List<KeyValuePair<string, int>> candidates = GetSurvivingTraits(firstRemaining, firstQuality, isFirstAlwaysInherited, random)
+                .Concat(GetSurvivingTraits(secondRemaining, secondQuality, isSecondAlwaysInherited, random))
                 .OrderBy(trait => random.Next())
                 .ToList();
 
@@ -194,13 +196,13 @@ namespace CropTraits.Framework.Utilities.Helpers
             resultTraits.Set(traitId, tier);
         }
 
-        // ToList forces each parent's rolls to happen in full before the next parent's
-        public static List<KeyValuePair<string, int>> GetSurvivingTraits(TraitSet remainingTraits, int quality, Random random)
+        // ToList forces each parent's rolls to happen in full before the next parent's. The roll comes first so traits like Heirloom keep the draws the same
+        public static List<KeyValuePair<string, int>> GetSurvivingTraits(TraitSet remainingTraits, int quality, bool isAlwaysInherited, Random random)
         {
             double inheritChance = Math.Min(UNIQUE_INHERIT_CHANCE + QualityHelper.GetBonus(quality), 1.0);
 
             return remainingTraits.Entries
-                .Where(trait => random.NextDouble() < inheritChance)
+                .Where(trait => random.NextDouble() < inheritChance || isAlwaysInherited)
                 .ToList();
         }
 

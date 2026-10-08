@@ -2,7 +2,10 @@ using CropTraits.Framework.Models;
 using CropTraits.Framework.Models.Data;
 using CropTraits.Framework.Traits;
 using CropTraits.Framework.Utilities.Helpers;
+using Microsoft.Xna.Framework;
 using StardewModdingAPI;
+using StardewValley;
+using StardewValley.Buffs;
 using StardewValley.GameData.Crops;
 using System;
 using System.Collections.Generic;
@@ -199,6 +202,95 @@ namespace CropTraits.Framework.Managers
         public bool WithersWhenLeftReady(TraitSet traits)
         {
             return Resolve(traits).Any(entry => entry.Trait.WithersWhenLeftReady);
+        }
+
+        public bool GlowsAtNight(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.GlowsAtNight);
+        }
+
+        public bool GuaranteesDilutionSplit(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.GuaranteesDilutionSplit);
+        }
+
+        public bool AlwaysPassesOnTraits(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.AlwaysPassesOnTraits);
+        }
+
+        public Color GetTint(TraitSet traits, string seedId)
+        {
+            Color tint = Color.White;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                tint = trait.ModifyTint(tint, seedId, tier);
+            }
+
+            return tint;
+        }
+
+        public double GetGiantCropBonusChance(TraitSet traits)
+        {
+            double chance = 0;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                chance = trait.ModifyGiantCropChance(chance, tier);
+            }
+
+            return Math.Clamp(chance, 0, 1);
+        }
+
+        public double GetGiantCropYieldMultiplier(TraitSet traits)
+        {
+            double multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = trait.ModifyGiantCropYield(multiplier, tier);
+            }
+
+            return Math.Max(multiplier, 0);
+        }
+
+        public bool IsIgnoredByCrows(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.IsIgnoredByCrows);
+        }
+
+        public bool ProtectsNeighborsFromCrows(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.ProtectsNeighborsFromCrows);
+        }
+
+        public bool IgnoresScarecrows(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.IgnoresScarecrows);
+        }
+
+        public double GetFoodRestorationMultiplier(TraitSet traits)
+        {
+            double multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = trait.ModifyFoodRestoration(multiplier, tier);
+            }
+
+            return Math.Max(multiplier, 0);
+        }
+
+        public List<Buff> GetFoodBuffs(TraitSet traits)
+        {
+            List<Buff> buffs = new();
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                Buff buff = trait.GetFoodBuff(tier);
+                if (buff is not null)
+                {
+                    buffs.Add(buff);
+                }
+            }
+
+            return buffs;
         }
 
         public bool GrowsInEverySeason(TraitSet traits)

@@ -1,5 +1,7 @@
 using CropTraits.Framework.Models;
+using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.Buffs;
 using StardewValley.GameData.Crops;
 using System;
 using System.Collections.Generic;
@@ -97,6 +99,36 @@ namespace CropTraits.Framework.Traits
         public virtual bool GrowsInEverySeason => false;
 
         /// <summary>
+        /// If crows never eat the crop. A crow that picks it leaves without eating anything.
+        /// </summary>
+        public virtual bool IsIgnoredByCrows => false;
+
+        /// <summary>
+        /// If the crop protects the eight tiles around it from crows, like a tiny scarecrow.
+        /// </summary>
+        public virtual bool ProtectsNeighborsFromCrows => false;
+
+        /// <summary>
+        /// If scarecrows (and protective neighbors) can't keep crows away from the crop.
+        /// </summary>
+        public virtual bool IgnoresScarecrows => false;
+
+        /// <summary>
+        /// If the crop gives off a soft glow at night once the trait is visible (after maturity for mutations).
+        /// </summary>
+        public virtual bool GlowsAtNight => false;
+
+        /// <summary>
+        /// If diluting the crop in the Seed Splicer always splits off one trait instead of sometimes wiping them all.
+        /// </summary>
+        public virtual bool GuaranteesDilutionSplit => false;
+
+        /// <summary>
+        /// If the crop's traits always carry over when crossbred, skipping the inherit roll (the trait cap and conflicts still apply).
+        /// </summary>
+        public virtual bool AlwaysPassesOnTraits => false;
+
+        /// <summary>
         /// Adjusts the growth phase lengths. The last entry is the final phase and must be left alone.
         /// Called after planting, whenever the phases are rebuilt from crop data and when a seed's tooltip estimates its growth time, so it should only change the list it's given.
         /// </summary>
@@ -177,6 +209,55 @@ namespace CropTraits.Framework.Traits
         public virtual double ModifySellPrice(double multiplier, int tier)
         {
             return multiplier;
+        }
+
+        /// <summary>
+        /// Adjusts the color the crop and its produce are tinted with (white is no tint). Called every frame they're drawn, so it should stay cheap.
+        /// </summary>
+        public virtual Color ModifyTint(Color tint, string seedId, int tier)
+        {
+            return tint;
+        }
+
+        /// <summary>
+        /// Adds to the nightly chance that the crop's grid turns into a giant crop, on top of the game's own roll. The highest bonus in the grid is used.
+        /// </summary>
+        public virtual double ModifyGiantCropChance(double chance, int tier)
+        {
+            return chance;
+        }
+
+        /// <summary>
+        /// Adjusts how much produce a giant crop with this trait drops when broken (1 is normal).
+        /// </summary>
+        public virtual double ModifyGiantCropYield(double multiplier, int tier)
+        {
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Adjusts how much energy and health the produce restores when eaten (1 is normal).
+        /// </summary>
+        public virtual double ModifyFoodRestoration(double multiplier, int tier)
+        {
+            return multiplier;
+        }
+
+        /// <summary>
+        /// A buff given when the produce is eaten, or null for none. Reusing the same buff ID refreshes it instead of stacking.
+        /// </summary>
+        public virtual Buff GetFoodBuff(int tier)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Changes an artisan good as a machine makes it from this produce (such as raising its quality).
+        /// Only called for outputs made from the produce itself, like wine or jelly.
+        /// </summary>
+        public virtual void ModifyArtisanOutput(Item output, int tier)
+        {
+
         }
 
         /// <summary>

@@ -53,6 +53,7 @@ namespace CropTraits
         // Managers
         public static AssetManager assetManager;
         public static BlendManager blendManager;
+        public static CropLightManager cropLightManager;
         public static DiscoveryManager discoveryManager;
         public static HarvestManager harvestManager;
         public static MutationManager mutationManager;
@@ -75,6 +76,7 @@ namespace CropTraits
             // Create managers
             assetManager = new AssetManager(monitor, helper);
             blendManager = new BlendManager(monitor, helper);
+            cropLightManager = new CropLightManager(monitor, helper);
             discoveryManager = new DiscoveryManager(monitor, helper);
             harvestManager = new HarvestManager(monitor, helper);
             mutationManager = new MutationManager(monitor, helper);
@@ -92,6 +94,8 @@ namespace CropTraits
                 new HoeDirtPatch(monitor, modHelper).Apply(harmony);
                 new CropPatch(monitor, modHelper).Apply(harmony);
                 new GameLocationPatch(monitor, modHelper).Apply(harmony);
+                new FarmPatch(monitor, modHelper).Apply(harmony);
+                new GiantCropPatch(monitor, modHelper).Apply(harmony);
                 new ItemRegistryPatch(monitor, modHelper).Apply(harmony);
                 new ColoredObjectPatch(monitor, modHelper).Apply(harmony);
                 new ObjectPatch(monitor, modHelper).Apply(harmony);
@@ -122,12 +126,14 @@ namespace CropTraits
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => traitViewManager.Reset();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => journalBuilder?.Reset();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => nightlyGrowthManager.Reset();
+            helper.Events.GameLoop.ReturnedToTitle += (sender, args) => cropLightManager.Reset();
             helper.Events.GameLoop.UpdateTicked += (sender, args) => journalBuilder?.UpdateQueuedRefresh();
             helper.Events.Input.ButtonsChanged += traitViewManager.OnButtonsChanged;
             helper.Events.Input.ButtonsChanged += OnButtonsChanged;
             helper.Events.Display.RenderedWorld += traitViewManager.OnRenderedWorld;
             helper.Events.Display.RenderedHud += traitViewManager.OnRenderedHud;
             helper.Events.GameLoop.UpdateTicked += mutationSparkleManager.OnUpdateTicked;
+            helper.Events.GameLoop.UpdateTicked += cropLightManager.OnUpdateTicked;
             helper.Events.Player.InventoryChanged += (sender, args) => discoveryManager.RecordInventoryChanges(args);
             helper.Events.Multiplayer.ModMessageReceived += (sender, args) => discoveryManager.HandleModMessage(args);
 

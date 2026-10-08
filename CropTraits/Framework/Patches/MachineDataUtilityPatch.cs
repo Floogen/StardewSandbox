@@ -1,4 +1,5 @@
 using CropTraits.Framework.Models;
+using CropTraits.Framework.Traits;
 using CropTraits.Framework.Utilities.Helpers;
 using HarmonyLib;
 using StardewModdingAPI;
@@ -54,6 +55,12 @@ namespace CropTraits.Framework.Patches
             if (priceTraits.Count > 0)
             {
                 TraitModDataHelper.SetTraits(__result.modData, priceTraits);
+            }
+
+            // Traits like Vintage change the artisan good itself as it's made
+            foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(inputTraits))
+            {
+                trait.ModifyArtisanOutput(__result, tier);
             }
         }
 

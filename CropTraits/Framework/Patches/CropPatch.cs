@@ -1,11 +1,14 @@
 using CropTraits.Framework.Models;
+using CropTraits.Framework.Utilities.Helpers;
 using HarmonyLib;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Characters;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -14,7 +17,18 @@ namespace CropTraits.Framework.Patches
     public class CropPatch : PatchTemplate
     {
         private readonly System.Type _crop = typeof(Crop);
-        private static readonly MethodInfo _clampMethod = AccessTools.Method(typeof(MathHelper), nameof(MathHelper.Clamp), new[] { typeof(int), typeof(int), typeof(int) });
+        private static readonly MethodInfo _createItemMethod = ItemRegistryPatch.GetCreateMethod();
+
+        // The load matching each store, so a local can be read back without Harmony's LoadLocal helper (not in every Harmony version)
+        private static readonly Dictionary<OpCode, OpCode> _loadOpCodesByStoreOpCode = new()
+        {
+            { OpCodes.Stloc_0, OpCodes.Ldloc_0 },
+            { OpCodes.Stloc_1, OpCodes.Ldloc_1 },
+            { OpCodes.Stloc_2, OpCodes.Ldloc_2 },
+            { OpCodes.Stloc_3, OpCodes.Ldloc_3 },
+            { OpCodes.Stloc_S, OpCodes.Ldloc_S },
+            { OpCodes.Stloc, OpCodes.Ldloc }
+        };
 
         public CropPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
@@ -23,9 +37,28 @@ namespace CropTraits.Framework.Patches
 
         public override void Apply(Harmony harmony)
         {
-            harmony.Patch(AccessTools.Method(_crop, nameof(Crop.harvest), null), prefix: new HarmonyMethod(GetType(), nameof(HarvestPrefix)), postfix: new HarmonyMethod(GetType(), nameof(HarvestPostfix)), transpiler: new HarmonyMethod(GetType(), nameof(HarvestTranspiler)), finalizer: new HarmonyMethod(GetType(), nameof(HarvestFinalizer)));
+            harmony.Patch(AccessTools.Method(_crop, nameof(Crop.harvest), null), prefix: new HarmonyMethod(GetType(), nameof(HarvestPrefix)), postfix: new HarmonyMethod(GetType(), nameof(HarvestPostfix)), transpiler: new HarmonyMethod(GetType(), nameof(HarvestTranspiler)) { priority = Priority.Last }, finalizer: new HarmonyMethod(GetType(), nameof(HarvestFinalizer)));
             harmony.Patch(AccessTools.Method(_crop, nameof(Crop.newDay), null), prefix: new HarmonyMethod(GetType(), nameof(NewDayPrefix)), postfix: new HarmonyMethod(GetType(), nameof(NewDayPostfix)));
             harmony.Patch(AccessTools.Method(_crop, nameof(Crop.IsInSeason), new[] { typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(IsInSeasonPostfix)));
+            harmony.Patch(AccessTools.Method(_crop, nameof(Crop.TryGrowGiantCrop), null), prefix: new HarmonyMethod(GetType(), nameof(TryGrowGiantCropPrefix)), postfix: new HarmonyMethod(GetType(), nameof(TryGrowGiantCropPostfix)));
+            harmony.Patch(AccessTools.Method(_crop, nameof(Crop.draw), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
+        }
+
+        // The grid is captured first, since the game removes the crops that form the giant crop
+        private static void TryGrowGiantCropPrefix(Crop __instance, bool checkPreconditions, out Dictionary<Vector2, TileTraitState> __state)
+        {
+            __state = GiantCropHelper.CaptureGrid(__instance, checkPreconditions);
+        }
+
+        private static void TryGrowGiantCropPostfix(Crop __instance, bool checkPreconditions, Dictionary<Vector2, TileTraitState> __state, ref bool __result)
+        {
+            GiantCropHelper.HandleGrowthAttempt(__instance, checkPreconditions, __state, ref __result);
+        }
+
+        // Traits like Variegated tint the crop sprite (the colored overlay on flowers keeps its own color)
+        private static void DrawPrefix(Crop __instance, ref Color toTint)
+        {
+            toTint = CropAppearanceHelper.Multiply(toTint, CropAppearanceHelper.GetCropTint(__instance));
         }
 
         // The state argument is changed directly, so a crop can grow as if watered without changing how its soil looks
@@ -60,26 +93,48 @@ namespace CropTraits.Framework.Patches
             CropTraits.harvestManager.TryRegrow(__instance, soil, ref __result);
         }
 
-        // Adjusts the quality right after the game picks and clamps it, before the harvest is copied for the player or a Junimo
+        /// <summary>
+        /// Adjusts the quality right before the harvest item is created, so the change carries into every copy given to the player or a Junimo.
+        /// The quality local is found by what it's used for (the quality passed to ItemRegistry.Create) rather than by how the game picks it.
+        /// Running last with the adjustment after the final store means other mods that change the quality are applied first, then traits adjust their result.
+        /// </summary>
         private static IEnumerable<CodeInstruction> HarvestTranspiler(IEnumerable<CodeInstruction> instructions)
         {
-            CodeMatcher matcher = new CodeMatcher(instructions).MatchEndForward(new CodeMatch(instruction => instruction.Calls(_clampMethod)), new CodeMatch(instruction => instruction.IsStloc()));
-            if (matcher.IsInvalid || _loadOpCodesByStoreOpCode.TryGetValue(matcher.Opcode, out OpCode loadOpCode) is false)
+            List<CodeInstruction> codes = instructions.ToList();
+
+            // Matches "ItemRegistry.Create(indexOfHarvest.Value, 1, cropQuality)", where the quality is loaded just before the default allowNull argument
+            int qualityLoadIndex = -1;
+            for (int index = 2; index < codes.Count; index++)
+            {
+                if (codes[index].Calls(_createItemMethod) && codes[index - 2].IsLdloc())
+                {
+                    qualityLoadIndex = index - 2;
+                    break;
+                }
+            }
+
+            int qualityStoreIndex = qualityLoadIndex < 0 ? -1 : codes.FindLastIndex(qualityLoadIndex, code => IsStoreToLocal(code, codes[qualityLoadIndex]));
+            if (qualityStoreIndex < 0)
             {
                 _monitor.Log("Couldn't find the harvest quality in Crop.harvest, so traits like Erratic won't change harvest quality.", LogLevel.Warn);
-                return instructions;
+                return codes;
             }
 
             // The quality is read and written back through the same local the game stores it in
-            CodeInstruction qualityStore = matcher.Instruction;
-            CodeInstruction loadQuality = new CodeInstruction(loadOpCode, qualityStore.operand);
+            CodeInstruction qualityStore = codes[qualityStoreIndex];
+            CodeInstruction loadQuality = new CodeInstruction(codes[qualityLoadIndex].opcode, codes[qualityLoadIndex].operand);
             CodeInstruction storeQuality = new CodeInstruction(qualityStore.opcode, qualityStore.operand);
 
             // Labels move to the new first instruction, so jumps into this spot still run the adjustment
-            CodeInstruction nextInstruction = matcher.Advance(1).Instruction;
-            matcher.Insert(loadQuality.WithLabels(nextInstruction.ExtractLabels()), new CodeInstruction(OpCodes.Ldarg_0), CodeInstruction.Call(typeof(CropPatch), nameof(ModifyHarvestQuality)), storeQuality);
+            loadQuality.WithLabels(codes[qualityStoreIndex + 1].ExtractLabels());
+            codes.InsertRange(qualityStoreIndex + 1, new[] { loadQuality, new CodeInstruction(OpCodes.Ldarg_0), CodeInstruction.Call(typeof(CropPatch), nameof(ModifyHarvestQuality)), storeQuality });
 
-            return matcher.InstructionEnumeration();
+            return codes;
+        }
+
+        public static bool IsStoreToLocal(CodeInstruction store, CodeInstruction load)
+        {
+            return _loadOpCodesByStoreOpCode.TryGetValue(store.opcode, out OpCode loadOpCode) && loadOpCode == load.opcode && Equals(store.operand, load.operand);
         }
 
         public static int ModifyHarvestQuality(int quality, Crop crop)

@@ -7,8 +7,13 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Buffs;
 using StardewValley.GameData.Crops;
 using StardewValley.Objects;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace CropTraits.Framework.Patches.Objects
 {
@@ -17,6 +22,7 @@ namespace CropTraits.Framework.Patches.Objects
         public const int DESCRIPTION_WIDTH = 272;
 
         private readonly System.Type _object = typeof(Object);
+        private static readonly MethodInfo _colorWhiteGetter = AccessTools.PropertyGetter(typeof(Color), nameof(Color.White));
 
         public ObjectPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
@@ -31,6 +37,58 @@ namespace CropTraits.Framework.Patches.Objects
             harmony.Patch(AccessTools.Method(_object, nameof(Object.sellToStorePrice), null), postfix: new HarmonyMethod(GetType(), nameof(SellToStorePricePostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.checkForAction), null), prefix: new HarmonyMethod(GetType(), nameof(CheckForActionPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.OutputSeedMaker), null), prefix: new HarmonyMethod(GetType(), nameof(OutputSeedMakerPrefix)), postfix: new HarmonyMethod(GetType(), nameof(OutputSeedMakerPostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.staminaRecoveredOnConsumption), null), postfix: new HarmonyMethod(GetType(), nameof(StaminaRecoveredOnConsumptionPostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.healthRecoveredOnConsumption), null), prefix: new HarmonyMethod(GetType(), nameof(HealthRecoveredOnConsumptionPrefix)), postfix: new HarmonyMethod(GetType(), nameof(HealthRecoveredOnConsumptionPostfix)), finalizer: new HarmonyMethod(GetType(), nameof(HealthRecoveredOnConsumptionFinalizer)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.GetFoodOrDrinkBuffs), null), postfix: new HarmonyMethod(GetType(), nameof(GetFoodOrDrinkBuffsPostfix)));
+            harmony.Patch(AccessTools.Method(_object, nameof(Object.draw), new[] { typeof(SpriteBatch), typeof(int), typeof(int), typeof(float), typeof(float) }), transpiler: new HarmonyMethod(GetType(), nameof(DrawTranspiler)));
+        }
+
+        // Swaps the item sprite's Color.White (the last one before the last draw, after the shadow) for the produce's tint
+        private static IEnumerable<CodeInstruction> DrawTranspiler(IEnumerable<CodeInstruction> instructions)
+        {
+            List<CodeInstruction> codes = instructions.ToList();
+
+            int lastDrawIndex = codes.FindLastIndex(code => code.operand is MethodInfo method && method.DeclaringType == typeof(SpriteBatch) && method.Name == nameof(SpriteBatch.Draw));
+            int whiteIndex = lastDrawIndex < 0 ? -1 : codes.FindLastIndex(lastDrawIndex, code => code.Calls(_colorWhiteGetter));
+            if (whiteIndex < 0)
+            {
+                _monitor.Log("Couldn't find the item color in Object.draw, so traits like Variegated won't tint produce placed in the world.", LogLevel.Warn);
+                return codes;
+            }
+
+            // Labels move to the new first instruction, so jumps into this spot still load the tint
+            CodeInstruction whiteInstruction = codes[whiteIndex];
+            codes[whiteIndex] = new CodeInstruction(OpCodes.Ldarg_0).WithLabels(whiteInstruction.ExtractLabels()).WithBlocks(whiteInstruction.ExtractBlocks());
+            codes.Insert(whiteIndex + 1, CodeInstruction.Call(typeof(CropAppearanceHelper), nameof(CropAppearanceHelper.GetItemTint)));
+
+            return codes;
+        }
+
+        // Food traits like Nourishing change the energy restored, which the tooltip reads too
+        private static void StaminaRecoveredOnConsumptionPostfix(Object __instance, ref int __result)
+        {
+            __result = FoodHelper.ApplyEnergyTraits(__instance, __result);
+        }
+
+        // Health may be based on the energy value, so energy isn't adjusted while health is being worked out
+        private static void HealthRecoveredOnConsumptionPrefix()
+        {
+            FoodHelper.BeginHealthCalculation();
+        }
+
+        private static void HealthRecoveredOnConsumptionPostfix(Object __instance, ref int __result)
+        {
+            __result = FoodHelper.ApplyRestorationTraits(__instance, __result);
+        }
+
+        private static void HealthRecoveredOnConsumptionFinalizer()
+        {
+            FoodHelper.EndHealthCalculation();
+        }
+
+        private static void GetFoodOrDrinkBuffsPostfix(Object __instance, ref IEnumerable<Buff> __result)
+        {
+            __result = FoodHelper.AddTraitBuffs(__instance, __result);
         }
 
         // Seeds and produce get a short tag (e.g. "Parsnip Seeds (Hybrid)") since the tooltip lists the traits, while artisan goods name their price traits
@@ -61,7 +119,7 @@ namespace CropTraits.Framework.Patches.Objects
             __result = TranslationHelper.Get("item.name.hybrid", new { name = __result });
         }
 
-        private static void DrawInMenuPrefix(Object __instance, ref float scaleSize, out float __state)
+        private static void DrawInMenuPrefix(Object __instance, ref float scaleSize, ref Color color, out float __state)
         {
             __state = scaleSize;
 
@@ -69,6 +127,9 @@ namespace CropTraits.Framework.Patches.Objects
             {
                 return;
             }
+
+            // Traits like Variegated tint the produce icon
+            color = CropAppearanceHelper.Multiply(color, CropAppearanceHelper.GetItemTint(__instance));
 
             float produceScale = ProduceScaleHelper.GetScale(__instance);
             if (produceScale == 1f)

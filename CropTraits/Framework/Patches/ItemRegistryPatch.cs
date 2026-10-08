@@ -21,11 +21,11 @@ namespace CropTraits.Framework.Patches
         }
 
         // Create has a generic Create<T> overload with the same parameters, so the non-generic one is selected explicitly (Create<T> calls it internally)
-        private MethodInfo GetCreateMethod()
+        public static MethodInfo GetCreateMethod()
         {
             System.Type[] parameterTypes = { typeof(string), typeof(int), typeof(int), typeof(bool) };
 
-            return AccessTools.GetDeclaredMethods(_itemRegistry).First(method => method.Name == nameof(ItemRegistry.Create) && method.IsGenericMethodDefinition is false && method.GetParameters().Select(parameter => parameter.ParameterType).SequenceEqual(parameterTypes));
+            return AccessTools.GetDeclaredMethods(typeof(ItemRegistry)).First(method => method.Name == nameof(ItemRegistry.Create) && method.IsGenericMethodDefinition is false && method.GetParameters().Select(parameter => parameter.ParameterType).SequenceEqual(parameterTypes));
         }
 
         // Produce created during a traited harvest picks up the crop's traits

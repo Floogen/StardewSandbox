@@ -13,11 +13,18 @@ namespace CropTraits.Framework.Utilities.Helpers
         /// <summary>
         /// Dilution either splits off exactly one trait (picked evenly) or wipes every trait, giving plain seeds.
         /// A split is the rare outcome, so crossbreeding stays the precise way to shed traits and dilution is the gamble.
-        /// Stable offers no protection here.
+        /// Stable offers no protection here, while traits like Resilient guarantee the split (the split trait is still picked evenly, Resilient included).
         /// </summary>
         public static TraitSet Dilute(TraitSet parentTraits, int parentQuality, Random random)
         {
-            if (parentTraits.Count == 0 || random.NextDouble() >= GetSplitChance(parentQuality))
+            if (parentTraits.Count == 0)
+            {
+                return new TraitSet();
+            }
+
+            // Rolled first so the draws stay the same whether or not the split is guaranteed
+            bool isSplit = random.NextDouble() < GetSplitChance(parentQuality) || CropTraits.traitManager.GuaranteesDilutionSplit(parentTraits);
+            if (isSplit is false)
             {
                 return new TraitSet();
             }

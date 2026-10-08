@@ -1,3 +1,4 @@
+using CropTraits.Framework.Utilities.Helpers;
 using System;
 
 namespace CropTraits.Framework.Traits
@@ -9,23 +10,13 @@ namespace CropTraits.Framework.Traits
 
         public const double STEP_UP_CHANCE = 0.5;
 
-        // Quality steps in order, since iridium skips a value
-        public static readonly int[] QUALITY_STEPS = { StardewValley.Object.lowQuality, StardewValley.Object.medQuality, StardewValley.Object.highQuality, StardewValley.Object.bestQuality };
-
         public override string Id => ID;
         public override int MaxTier => 1;
         public override TraitRarity Rarity => TraitRarity.Uncommon;
 
         public override int ModifyHarvestQuality(int quality, Random random, int tier)
         {
-            int stepIndex = Array.IndexOf(QUALITY_STEPS, quality);
-            if (stepIndex < 0)
-            {
-                return quality;
-            }
-
-            int shiftedIndex = random.NextDouble() < STEP_UP_CHANCE ? stepIndex + 1 : stepIndex - 1;
-            return QUALITY_STEPS[Math.Clamp(shiftedIndex, 0, QUALITY_STEPS.Length - 1)];
+            return QualityHelper.ShiftQuality(quality, random.NextDouble() < STEP_UP_CHANCE ? 1 : -1);
         }
 
         public override string GetTierDetails(int tier)
