@@ -320,26 +320,6 @@ namespace CropTraits.Framework.Managers
             return nights;
         }
 
-        // A combination trait in the set already holds this trait, so the trait can't rejoin the set
-        public bool IsAbsorbedBy(string traitId, TraitSet traits)
-        {
-            return Resolve(traits).Any(entry => entry.Trait is CombinationTrait combinationTrait && combinationTrait.IsComposedOf(traitId));
-        }
-
-        // Removes the traits a combination trait is made from, returning true if any were removed
-        public bool RemoveAbsorbedTraits(string traitId, TraitSet traits)
-        {
-            if (TryGetTrait(traitId, out Trait trait) is false || trait is not CombinationTrait combinationTrait)
-            {
-                return false;
-            }
-
-            bool isFirstRemoved = traits.Remove(combinationTrait.FirstTraitId);
-            bool isSecondRemoved = traits.Remove(combinationTrait.SecondTraitId);
-
-            return isFirstRemoved || isSecondRemoved;
-        }
-
         public bool IsPriceTrait(string traitId)
         {
             return TryGetTrait(traitId, out Trait trait) && trait.IsPriceTrait;

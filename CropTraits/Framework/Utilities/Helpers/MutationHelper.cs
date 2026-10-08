@@ -70,12 +70,6 @@ namespace CropTraits.Framework.Utilities.Helpers
                 return;
             }
 
-            // A combination trait already holds the rolled trait, so the roll is consumed
-            if (CropTraits.traitManager.IsAbsorbedBy(rolledTrait.Id, traits))
-            {
-                return;
-            }
-
             // Rolling an existing trait upgrades it or consumes the roll at max tier
             int currentTier = traits.GetTier(rolledTrait.Id);
             if (currentTier > 0)

@@ -135,7 +135,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                     continue;
                 }
 
-                CrossbreedHelper.PlaceTrait(candidate.Key, candidate.Value, traits);
+                traits.Set(candidate.Key, candidate.Value);
             }
 
             if (traits.Count == 0)

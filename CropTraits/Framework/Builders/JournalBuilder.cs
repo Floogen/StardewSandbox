@@ -311,7 +311,7 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph("Some [link=trait][underline]traits[/underline][/link] can be mixed into a unique trait, called a combination trait.\n\nWhen two crossbred crops each carry part of a required trait combination, there's a chance they combine into a single trait.\n\n[bounce][bold]Hint:[/bold][/bounce] Each half must come from a different parent. A crop that has both parts won't fuse on its own.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
 
             page = CreateNumberedPage(book, chapterId, 2, hideNumber: true);
-            page.AddParagraph("A combination trait replaces the two traits that compose it. This can be helpful to bypass the three trait limit.\n\nOnce a crop has a combination trait, it can't regain the component traits.\n\nSome combination traits can even turn a harmful trait into something useful!\n\nEvery combination you fuse is recorded in these notes.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph("A combination trait replaces the two traits that compose it. This can be helpful to bypass the three trait limit.\n\nA crop with a combination trait can still regain the traits it was made from. Their effects can stack with the combination's.\n\nSome combination traits can also turn a harmful trait into something useful!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
         }
 
         // The index lists only names, two columns per page, and each discovered (or revealed) trait opens its own page with the details

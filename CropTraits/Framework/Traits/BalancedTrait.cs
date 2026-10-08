@@ -8,7 +8,8 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Balanced";
 
-        private static readonly string[] CONFLICTS = { RainLovingTrait.ID, LateBloomerTrait.ID, ParasiticTrait.ID };
+        // Swift and Sluggish are included since a crop can regain the traits it was fused from
+        private static readonly string[] CONFLICTS = { SwiftTrait.ID, SluggishTrait.ID, RainLovingTrait.ID, LateBloomerTrait.ID, ParasiticTrait.ID };
 
         public override string Id => ID;
         public override string FirstTraitId => SwiftTrait.ID;

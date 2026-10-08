@@ -2,7 +2,7 @@ namespace CropTraits.Framework.Traits
 {
     /// <summary>
     /// A trait the Seed Splicer fuses from two other traits, each carried by a different parent.
-    /// Combination traits are single tier, never rolled by mutation and replace the traits they're made from.
+    /// Combination traits are single tier and never rolled by mutation. Fusing consumes the pair, though the crop can regain either trait later (their effects stack).
     /// </summary>
     public abstract class CombinationTrait : Trait
     {
