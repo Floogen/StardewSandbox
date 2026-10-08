@@ -75,12 +75,17 @@ namespace CropTraits.Framework.Managers
             }
         }
 
-        public double GetPriceMultiplier(TraitSet traits)
+        // Artisan goods also get each trait's artisan only adjustment
+        public double GetPriceMultiplier(TraitSet traits, bool isArtisanGood)
         {
             double multiplier = 1;
             foreach ((Trait trait, int tier) in Resolve(traits))
             {
                 multiplier = trait.ModifySellPrice(multiplier, tier);
+                if (isArtisanGood)
+                {
+                    multiplier = trait.ModifyArtisanSellPrice(multiplier, tier);
+                }
             }
 
             return Math.Max(multiplier, MIN_PRICE_MULTIPLIER);

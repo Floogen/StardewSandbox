@@ -138,7 +138,10 @@ namespace CropTraits.Framework.Patches.Objects
                 return;
             }
 
-            double multiplier = CropTraits.traitManager.GetPriceMultiplier(traits);
+            // Seeds are already excluded, so a traited item without a seed ID is an artisan good
+            bool isArtisanGood = __instance.modData.ContainsKey(CropTraits.SEED_ID_MOD_DATA_KEY) is false;
+
+            double multiplier = CropTraits.traitManager.GetPriceMultiplier(traits, isArtisanGood);
             if (multiplier == 1)
             {
                 return;

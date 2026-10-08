@@ -126,6 +126,15 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
+        /// Adjusts the sell price multiplier for artisan goods only, applied after ModifySellPrice.
+        /// The trait must also be a price trait (IsPriceTrait), otherwise it never carries into artisan goods.
+        /// </summary>
+        public virtual double ModifyArtisanSellPrice(double multiplier, int tier)
+        {
+            return multiplier;
+        }
+
+        /// <summary>
         /// What a single tier does, shown on the trait's Field Notes page. An empty string skips the line.
         /// </summary>
         public virtual string GetTierDetails(int tier)
