@@ -179,10 +179,10 @@ namespace CropTraits.Framework.Builders
 
             IPageBuilder overviewPage = book.AddPage("overview", FRONT_CHAPTER_ID);
             overviewPage.AddTitle(TranslationHelper.Get("journal.page.overview.title")).Alignment("Center").Spacing(32);
-            overviewPage.AddParagraph("� " + TranslationHelper.Get("journal.overview.traits", new { count = discoveries.Traits.Count, total = CropTraits.traitManager.Traits.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
-            overviewPage.AddParagraph("� " + TranslationHelper.Get("journal.overview.crops", new { count = discoveredCropCount, total = cropCount })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
-            overviewPage.AddParagraph("� " + TranslationHelper.Get("journal.overview.combinations", new { count = discoveries.Combinations.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
-            overviewPage.AddParagraph("� " + TranslationHelper.Get("journal.overview.blends", new { count = discoveries.BlendJournal.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(32);
+            overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.traits", new { count = discoveries.Traits.Count, total = CropTraits.traitManager.Traits.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
+            overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.crops", new { count = discoveredCropCount, total = cropCount })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
+            overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.combinations", new { count = discoveries.Combinations.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
+            overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.blends", new { count = discoveries.BlendJournal.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(32);
 
             IPageBuilder contentPage = book.AddPage("contents", FRONT_CHAPTER_ID);
             contentPage.AddTitle("Contents").Alignment("Center").Spacing(32);
@@ -311,7 +311,7 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph("Some [link=trait][underline]traits[/underline][/link] can be mixed into a unique trait, called a combination trait.\n\nWhen two crossbred crops each carry part of a required trait combination, there's a chance they combine into a single trait.\n\n[bounce][bold]Hint:[/bold][/bounce] Each half must come from a different parent. A crop that has both parts won't fuse on its own.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
 
             page = CreateNumberedPage(book, chapterId, 2, hideNumber: true);
-            page.AddParagraph("A combination trait replaces the two traits that compose it. This can be helpful to bypass the three trait limit.\n\nSome combination traits can even turn a harmful trait into something useful!\n\nEvery combination you fuse is recorded in these notes, so you will never forget a pairing.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph("A combination trait replaces the two traits that compose it. This can be helpful to bypass the three trait limit.\n\nOnce a crop has a combination trait, it can't regain the component traits.\n\nSome combination traits can even turn a harmful trait into something useful!\n\nEvery combination you fuse is recorded in these notes.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
         }
 
         // The index lists only names, two columns per page, and each discovered (or revealed) trait opens its own page with the details

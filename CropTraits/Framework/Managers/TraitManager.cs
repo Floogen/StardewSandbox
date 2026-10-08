@@ -32,7 +32,7 @@ namespace CropTraits.Framework.Managers
         public void LoadDefinitions()
         {
             _traits = DiscoverTraits();
-            _combinations = GetDefaultCombinations();
+            _combinations = BuildCombinations();
 
             // Sorted by ID so weighted rolls are deterministic for a given seed
             _rollableTraits = _traits.Values
@@ -174,6 +174,26 @@ namespace CropTraits.Framework.Managers
             return Resolve(traits).Any(entry => entry.Trait.BlocksMutationReplacement);
         }
 
+        // A combination trait in the set already holds this trait, so the trait can't rejoin the set
+        public bool IsAbsorbedBy(string traitId, TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait is CombinationTrait combinationTrait && combinationTrait.IsComposedOf(traitId));
+        }
+
+        // Removes the traits a combination trait is made from, returning true if any were removed
+        public bool RemoveAbsorbedTraits(string traitId, TraitSet traits)
+        {
+            if (TryGetTrait(traitId, out Trait trait) is false || trait is not CombinationTrait combinationTrait)
+            {
+                return false;
+            }
+
+            bool isFirstRemoved = traits.Remove(combinationTrait.FirstTraitId);
+            bool isSecondRemoved = traits.Remove(combinationTrait.SecondTraitId);
+
+            return isFirstRemoved || isSecondRemoved;
+        }
+
         public bool IsPriceTrait(string traitId)
         {
             return TryGetTrait(traitId, out Trait trait) && trait.IsPriceTrait;
@@ -258,10 +278,39 @@ namespace CropTraits.Framework.Managers
             return traits;
         }
 
-        // TODO: Define combination traits
-        private static List<CombinationData> GetDefaultCombinations()
+        // Each combination trait declares its own pair, so a new combination only needs its class
+        private List<CombinationData> BuildCombinations()
         {
-            return new List<CombinationData>();
+            List<CombinationData> combinations = new();
+
+            IEnumerable<CombinationTrait> combinationTraits = _traits.Values
+                .OfType<CombinationTrait>()
+                .OrderBy(trait => trait.Id, StringComparer.Ordinal);
+
+            foreach (CombinationTrait combinationTrait in combinationTraits)
+            {
+                if (IsValidCombination(combinationTrait) is false)
+                {
+                    monitor.Log($"Skipped combination trait {combinationTrait.Id} since its pair ({combinationTrait.FirstTraitId} + {combinationTrait.SecondTraitId}) is missing, repeated or includes itself", LogLevel.Warn);
+                    continue;
+                }
+
+                combinations.Add(new CombinationData { FirstTraitId = combinationTrait.FirstTraitId, SecondTraitId = combinationTrait.SecondTraitId, ResultTraitId = combinationTrait.Id, Chance = combinationTrait.FusionChance });
+            }
+
+            return combinations;
+        }
+
+        private bool IsValidCombination(CombinationTrait combinationTrait)
+        {
+            string firstTraitId = combinationTrait.FirstTraitId;
+            string secondTraitId = combinationTrait.SecondTraitId;
+            if (_traits.ContainsKey(firstTraitId ?? string.Empty) is false || _traits.ContainsKey(secondTraitId ?? string.Empty) is false)
+            {
+                return false;
+            }
+
+            return firstTraitId != secondTraitId && combinationTrait.IsComposedOf(combinationTrait.Id) is false;
         }
     }
 }

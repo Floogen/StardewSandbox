@@ -90,7 +90,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                 int secondTier = secondRemaining.GetTier(traitId);
                 RemoveFromBoth(traitId, firstRemaining, secondRemaining);
 
-                if (resultTraits.Count >= TraitManager.MAX_TRAITS || CropTraits.traitManager.HasConflictWithAny(traitId, resultTraits.Ids))
+                if (CanPlaceTrait(traitId, resultTraits) is false)
                 {
                     continue;
                 }
@@ -107,7 +107,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                     resultTier = random.NextDouble() < HIGHER_TIER_CHANCE ? Math.Max(firstTier, secondTier) : Math.Min(firstTier, secondTier);
                 }
 
-                resultTraits.Set(traitId, Math.Max(resultTier, resultTraits.GetTier(traitId)));
+                PlaceTrait(traitId, Math.Max(resultTier, resultTraits.GetTier(traitId)), resultTraits);
             }
         }
 
@@ -158,21 +158,40 @@ namespace CropTraits.Framework.Utilities.Helpers
                 .OrderBy(trait => random.Next())
                 .ToList();
 
-            // First placed wins, so a later conflicting trait is skipped
+            // First placed wins, so a later conflicting trait is skipped (the cap is checked per candidate since a combination trait can free a slot)
             foreach (KeyValuePair<string, int> candidate in candidates)
             {
-                if (resultTraits.Count >= TraitManager.MAX_TRAITS)
-                {
-                    return;
-                }
-
-                if (resultTraits.Has(candidate.Key) || CropTraits.traitManager.HasConflictWithAny(candidate.Key, resultTraits.Ids))
+                if (resultTraits.Has(candidate.Key) || CanPlaceTrait(candidate.Key, resultTraits) is false)
                 {
                     continue;
                 }
 
-                resultTraits.Set(candidate.Key, candidate.Value);
+                PlaceTrait(candidate.Key, candidate.Value, resultTraits);
             }
+        }
+
+        /// <summary>
+        /// Checks the trait cap, conflicts and combination rules for a trait joining the result.
+        /// A trait held by a combination trait in the result is skipped, while a combination trait is checked as if its parts were already removed.
+        /// </summary>
+        public static bool CanPlaceTrait(string traitId, TraitSet resultTraits)
+        {
+            if (CropTraits.traitManager.IsAbsorbedBy(traitId, resultTraits))
+            {
+                return false;
+            }
+
+            TraitSet remainingTraits = resultTraits.Clone();
+            CropTraits.traitManager.RemoveAbsorbedTraits(traitId, remainingTraits);
+
+            return remainingTraits.Count < TraitManager.MAX_TRAITS && CropTraits.traitManager.HasConflictWithAny(traitId, remainingTraits.Ids) is false;
+        }
+
+        // A combination trait replaces any of its parts already placed
+        public static void PlaceTrait(string traitId, int tier, TraitSet resultTraits)
+        {
+            CropTraits.traitManager.RemoveAbsorbedTraits(traitId, resultTraits);
+            resultTraits.Set(traitId, tier);
         }
 
         // ToList forces each parent's rolls to happen in full before the next parent's
