@@ -12,8 +12,13 @@ namespace CropTraits.Framework.Traits
         public override string Id => ID;
         public override TraitRarity Rarity => TraitRarity.Rare;
 
-        public override double ModifyMutationChance(double chance, int tier)
+        public override double ModifyMutationChance(double chance, int tier, bool isFirstRoll)
         {
+            if (isFirstRoll is false)
+            {
+                return chance;
+            }
+
             return chance + (MUTATION_BONUS_PER_TIER * tier);
         }
 

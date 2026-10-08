@@ -201,6 +201,22 @@ namespace CropTraits.Framework.Managers
             return Resolve(traits).Any(entry => entry.Trait.WithersWhenLeftReady);
         }
 
+        public bool GrowsInEverySeason(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.GrowsInEverySeason);
+        }
+
+        public int GetExtraRegrowths(TraitSet traits)
+        {
+            int regrowths = 0;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                regrowths = Math.Max(regrowths, trait.GetExtraRegrowths(tier));
+            }
+
+            return regrowths;
+        }
+
         public int GetOutOfSeasonNights(TraitSet traits)
         {
             int nights = 0;

@@ -14,17 +14,13 @@ namespace CropTraits.Framework.Utilities.Helpers
         public const double BASE_MUTATION_CHANCE = 0.05;
         public const double REPLACE_CHANCE_UNDER_CAP = 0.25;
 
-        // Neighbors never affect the chance, only which trait is rolled, and traits like Volatile only affect the first roll
+        // Neighbors never affect the chance, only which trait is rolled. Traits decide which rolls they affect (Volatile only boosts the first)
         public static double GetChance(TraitSet traits, bool isFirstRoll)
         {
             double chance = BASE_MUTATION_CHANCE;
-
-            if (isFirstRoll)
+            foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(traits))
             {
-                foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(traits))
-                {
-                    chance = trait.ModifyMutationChance(chance, tier);
-                }
+                chance = trait.ModifyMutationChance(chance, tier, isFirstRoll);
             }
 
             return Math.Clamp(chance, 0, 1);

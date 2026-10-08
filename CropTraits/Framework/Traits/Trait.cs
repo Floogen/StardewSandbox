@@ -92,6 +92,11 @@ namespace CropTraits.Framework.Traits
         public virtual bool WithersWhenLeftReady => false;
 
         /// <summary>
+        /// If the crop can be planted and keeps growing outdoors in every season, winter included.
+        /// </summary>
+        public virtual bool GrowsInEverySeason => false;
+
+        /// <summary>
         /// Adjusts the growth phase lengths. The last entry is the final phase and must be left alone.
         /// Called after planting, whenever the phases are rebuilt from crop data and when a seed's tooltip estimates its growth time, so it should only change the list it's given.
         /// </summary>
@@ -101,9 +106,9 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
-        /// Adjusts the chance that the crop mutates the night after planting (the nightly Mutagenic Fertilizer rolls are unaffected).
+        /// Adjusts the chance that the crop mutates. The first roll is the night after planting, later ones are Mutagenic Fertilizer's nightly rolls.
         /// </summary>
-        public virtual double ModifyMutationChance(double chance, int tier)
+        public virtual double ModifyMutationChance(double chance, int tier, bool isFirstRoll)
         {
             return chance;
         }
@@ -122,6 +127,23 @@ namespace CropTraits.Framework.Traits
         public virtual void OnHarvestCompleted(HarvestContext context, int xTile, int yTile, GameLocation location, int tier)
         {
 
+        }
+
+        /// <summary>
+        /// Adjusts the harvest quality right after the game picks it, so the change carries into every copy the harvest makes.
+        /// The result is clamped to the crop's own quality limits afterward.
+        /// </summary>
+        public virtual int ModifyHarvestQuality(int quality, Random random, int tier)
+        {
+            return quality;
+        }
+
+        /// <summary>
+        /// How many times a single harvest crop grows back after being harvested. The highest value among the crop's traits is used.
+        /// </summary>
+        public virtual int GetExtraRegrowths(int tier)
+        {
+            return 0;
         }
 
         /// <summary>

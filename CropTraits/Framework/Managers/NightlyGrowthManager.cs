@@ -174,7 +174,7 @@ namespace CropTraits.Framework.Managers
             crop.updateDrawMath(crop.tilePosition);
         }
 
-        // Traits like Hardy keep an outdoor crop alive for a few nights after its season ends
+        // Traits like Adaptive keep an outdoor crop in season all year, while traits like Hardy keep it alive for a few nights after its season ends
         public bool ExtendsSeason(Crop crop, GameLocation location)
         {
             if (location is null || location.IsOutdoors is false)
@@ -188,7 +188,13 @@ namespace CropTraits.Framework.Managers
                 return false;
             }
 
-            int allowedNights = CropTraits.traitManager.GetOutOfSeasonNights(TraitModDataHelper.GetTraits(dirt.modData));
+            TraitSet traits = TraitModDataHelper.GetTraits(dirt.modData);
+            if (CropTraits.traitManager.GrowsInEverySeason(traits))
+            {
+                return true;
+            }
+
+            int allowedNights = CropTraits.traitManager.GetOutOfSeasonNights(traits);
             return allowedNights > 0 && NightlyGrowthHelper.GetOutOfSeasonNights(dirt) <= allowedNights;
         }
 

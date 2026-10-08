@@ -3,6 +3,7 @@ using CropTraits.Framework.Traits;
 using StardewValley;
 using StardewValley.GameData.Crops;
 using StardewValley.TerrainFeatures;
+using System;
 using System.Collections.Generic;
 
 namespace CropTraits.Framework.Utilities.Helpers
@@ -114,6 +115,25 @@ namespace CropTraits.Framework.Utilities.Helpers
             }
 
             return totalDays;
+        }
+
+        // Sends a crop back to the growth stage halfway through, so it regrows in about half its growth time using its normal sprites
+        public static void ResetToHalfwayGrowth(Crop crop)
+        {
+            int totalDays = GetGrowthDays(crop.phaseDays);
+            int elapsedDays = totalDays - Math.Max((int)Math.Ceiling(totalDays / 2.0), 1);
+
+            int phase = 0;
+            while (phase < crop.phaseDays.Count - 2 && elapsedDays >= crop.phaseDays[phase])
+            {
+                elapsedDays -= crop.phaseDays[phase];
+                phase++;
+            }
+
+            crop.fullyGrown.Value = false;
+            crop.currentPhase.Value = phase;
+            crop.dayOfCurrentPhase.Value = Math.Max(elapsedDays, 0);
+            crop.updateDrawMath(crop.tilePosition);
         }
 
         public static void RemoveGrowthDays(IList<int> phaseDays, int daysToRemove)

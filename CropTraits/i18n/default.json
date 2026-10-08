@@ -115,5 +115,15 @@
   "trait.ephemeral.name": "Ephemeral",
   "trait.ephemeral.description": "Excellent quality, but withers if not harvested right away.",
   "trait.balanced.name": "Balanced",
-  "trait.balanced.description": "Grows at a steady pace that nothing can change."
+  "trait.balanced.description": "Grows at a steady pace that nothing can change.",
+  "trait.resprouting.name": "Resprouting",
+  "trait.resprouting.description": "Grows back after being harvested.",
+  "trait.erratic.name": "Erratic",
+  "trait.erratic.description": "Harvest quality varies more.",
+  "trait.chaotic.name": "Chaotic",
+  "trait.chaotic.description": "Harvests are either the best or the worst quality.",
+  "trait.temperamental.name": "Temperamental",
+  "trait.temperamental.description": "Much more likely to mutate.",
+  "trait.adaptive.name": "Adaptive",
+  "trait.adaptive.description": "Grows in every season, even winter."
 }

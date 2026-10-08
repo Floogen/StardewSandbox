@@ -22,7 +22,8 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
 
         public override void Apply(Harmony harmony)
         {
-            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.plant), new[] { typeof(string), typeof(Farmer), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(PlantPostfix)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.plant), new[] { typeof(string), typeof(Farmer), typeof(bool) }), prefix: new HarmonyMethod(GetType(), nameof(PlantPrefix)), postfix: new HarmonyMethod(GetType(), nameof(PlantPostfix)), finalizer: new HarmonyMethod(GetType(), nameof(EndSeasonCheckFinalizer)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.canPlantThisSeedHere), null), prefix: new HarmonyMethod(GetType(), nameof(CanPlantThisSeedHerePrefix)), finalizer: new HarmonyMethod(GetType(), nameof(EndSeasonCheckFinalizer)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerQualityBoostLevel), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerQualityBoostLevelPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerSpeedBoost), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerSpeedBoostPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerWaterRetentionChance), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerWaterRetentionChancePostfix)));
@@ -42,6 +43,30 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
         private static IEnumerable<CodeInstruction> DrawOptimizedTranspiler(IEnumerable<CodeInstruction> instructions)
         {
             return FertilizerHelper.ReplaceFertilizerTexture(instructions, _monitor, $"{nameof(HoeDirt)}.{nameof(HoeDirt.DrawOptimized)}", true);
+        }
+
+        // Seeds that grow in every season skip the season check (the held seed carries the traits)
+        private static void PlantPrefix(string itemId, Farmer who, bool isFertilizer)
+        {
+            if (isFertilizer is false)
+            {
+                PlantingHelper.BeginSeasonCheck(who?.ActiveObject, itemId);
+            }
+        }
+
+        // Used for the placement highlight, which only ever checks the local player's held seed
+        private static void CanPlantThisSeedHerePrefix(string itemId, bool isFertilizer)
+        {
+            if (isFertilizer is false)
+            {
+                PlantingHelper.BeginSeasonCheck(Game1.player?.ActiveObject, itemId);
+            }
+        }
+
+        // A finalizer so the season check always ends, even if the game throws
+        private static void EndSeasonCheckFinalizer()
+        {
+            PlantingHelper.EndSeasonCheck();
         }
 
         private static void PlantPostfix(HoeDirt __instance, string itemId, Farmer who, bool isFertilizer, bool __result)
@@ -69,6 +94,7 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
             __instance.modData.Remove(CropTraits.PLANTER_ID_MOD_DATA_KEY);
             __instance.modData.Remove(MutationManager.HAS_MUTATED_MOD_DATA_KEY);
             __instance.modData.Remove(NightlyGrowthManager.OUT_OF_SEASON_NIGHTS_MOD_DATA_KEY);
+            __instance.modData.Remove(HarvestManager.REGROWTHS_USED_MOD_DATA_KEY);
 
             if (who is not null)
             {

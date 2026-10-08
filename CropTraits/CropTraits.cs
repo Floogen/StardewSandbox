@@ -91,6 +91,7 @@ namespace CropTraits
                 // Apply patches
                 new HoeDirtPatch(monitor, modHelper).Apply(harmony);
                 new CropPatch(monitor, modHelper).Apply(harmony);
+                new GameLocationPatch(monitor, modHelper).Apply(harmony);
                 new ItemRegistryPatch(monitor, modHelper).Apply(harmony);
                 new ColoredObjectPatch(monitor, modHelper).Apply(harmony);
                 new ObjectPatch(monitor, modHelper).Apply(harmony);
