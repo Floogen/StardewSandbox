@@ -126,5 +126,25 @@ namespace CropTraits.Framework.Utilities.Helpers
             lines.Add(currentLine);
             return lines;
         }
+
+        // Plain text trait list
+        public static string GetTraitsText(TraitSet traits)
+        {
+            if (traits is null || traits.Count == 0)
+            {
+                return string.Empty;
+            }
+
+            return $"{TranslationHelper.Get("tooltip.traits_label")} {CropTraits.traitManager.GetLabel(traits.ToKey())}";
+        }
+
+        // An item's own description followed by its traits
+        public static string GetDescriptionWithTraits(Item item)
+        {
+            string description = ItemRegistry.GetDataOrErrorItem(item.QualifiedItemId).Description;
+            string traitsText = GetTraitsText(TraitModDataHelper.GetTraits(item.modData));
+
+            return string.IsNullOrEmpty(traitsText) ? description : $"{description}\n\n{traitsText}";
+        }
     }
 }
