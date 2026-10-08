@@ -376,7 +376,7 @@ namespace CropTraits.Framework.Builders
                     page.AddTitle(TranslationHelper.Get("journal.page.traits.title")).Alignment("Center").Spacing(24);
                 }
 
-                IElementBuilder grid = page.AddGrid(196, 40, TRAIT_INDEX_COLUMNS).CellSpacing(8, 0).Alignment("Center");
+                IElementBuilder grid = page.AddGrid(212, 40, TRAIT_INDEX_COLUMNS).CellSpacing(8, 12).Alignment("Center");
                 foreach (Trait trait in traitPages[pageIndex])
                 {
                     AddTraitIndexEntry(grid, trait, linkedTraitIds);
