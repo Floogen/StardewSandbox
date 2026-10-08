@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewValley;
 using StardewValley.GameData.BigCraftables;
 using StardewValley.GameData.Objects;
+using StardewValley.GameData.Shops;
 using System.Collections.Generic;
 
 namespace CropTraits.Framework.Managers
@@ -13,6 +15,10 @@ namespace CropTraits.Framework.Managers
     {
         public const string BIG_CRAFTABLES_DATA_PATH = "Data/BigCraftables";
         public const string OBJECTS_DATA_PATH = "Data/Objects";
+        public const string SHOPS_DATA_PATH = "Data/Shops";
+
+        public const string PIERRE_SHOP_ID = "SeedShop";
+        public const string MUTAGENIC_FERTILIZER_SHOP_CONDITION = "PLAYER_FARMING_LEVEL Current 5";
 
         public const string SPRITE_SHEET_TEXTURE_PATH = "Mods/PeacefulEnd.CropTraits/Spritesheet";
         public const string SPRITE_SHEET_FILE_PATH = "Framework/Assets/Spritesheet.png";
@@ -25,6 +31,7 @@ namespace CropTraits.Framework.Managers
 
         public const int SEED_SPLICER_PRICE = 500;
         public const int MUTAGENIC_FERTILIZER_PRICE = 50;
+        public const int MUTAGENIC_FERTILIZER_SHOP_PRICE = 150;
         public const int FERTILIZER_CATEGORY = -19;
 
         public const string PARCHMENT_BOOK_ID_FIELD = "PeacefulEnd.Parchment/CustomFields/BookId";
@@ -97,6 +104,60 @@ namespace CropTraits.Framework.Managers
                     };
                 });
             }
+            else if (e.NameWithoutLocale.IsEquivalentTo(SHOPS_DATA_PATH))
+            {
+                e.Edit(asset =>
+                {
+                    IDictionary<string, ShopData> data = asset.AsDictionary<string, ShopData>().Data;
+                    if (data.TryGetValue(PIERRE_SHOP_ID, out ShopData pierreShop) is false)
+                    {
+                        monitor.Log($"Couldn't find the {PIERRE_SHOP_ID} shop, so Mutagenic Fertilizer won't be sold by Pierre.", LogLevel.Warn);
+                        return;
+                    }
+
+                    AddMutagenicFertilizerToShop(pierreShop);
+                });
+            }
+        }
+
+        private void AddMutagenicFertilizerToShop(ShopData shop)
+        {
+            shop.Items ??= new List<ShopItemData>();
+
+            // Skip if another edit (or an earlier pass) already added it
+            if (shop.Items.Exists(item => item.Id == CropTraits.MUTAGENIC_FERTILIZER_ID))
+            {
+                return;
+            }
+
+            ShopItemData shopItem = new ShopItemData
+            {
+                Id = CropTraits.MUTAGENIC_FERTILIZER_ID,
+                ItemId = CropTraits.MUTAGENIC_FERTILIZER_QUALIFIED_ID,
+                Price = MUTAGENIC_FERTILIZER_SHOP_PRICE,
+                Condition = MUTAGENIC_FERTILIZER_SHOP_CONDITION
+            };
+
+            // Place it after the last fertilizer so it sits with the other soil items (item queries resolve to null and are skipped)
+            int lastFertilizerIndex = shop.Items.FindLastIndex(item => IsFertilizer(item.ItemId));
+            if (lastFertilizerIndex >= 0)
+            {
+                shop.Items.Insert(lastFertilizerIndex + 1, shopItem);
+            }
+            else
+            {
+                shop.Items.Add(shopItem);
+            }
+        }
+
+        private static bool IsFertilizer(string itemId)
+        {
+            if (string.IsNullOrEmpty(itemId))
+            {
+                return false;
+            }
+
+            return ItemRegistry.GetData(itemId)?.Category == FERTILIZER_CATEGORY;
         }
     }
 }

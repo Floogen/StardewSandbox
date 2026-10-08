@@ -230,7 +230,7 @@ namespace CropTraits.Framework.Builders
             page = CreateNumberedPage(book, chapterId, 2);
             page.AddParagraph("Mutagenic Fertilizer can be used to raise the chances of a trait appearing by allowing the crop to roll for mutations every day (until fully grown).").Spacing(176);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
-            page.AddBackground("Image").Item(CropTraits.MUTAGENIC_FERTILIZER_QUALIFIED_ID).Set("Description", TranslationHelper.Get("item.mutagenic_fertilizer.description") + "\n\nThis can be purchased from Pierre. It can also be crafted at level 3 farming.").Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
+            page.AddBackground("Image").Item(CropTraits.MUTAGENIC_FERTILIZER_QUALIFIED_ID).Set("Description", TranslationHelper.Get("item.mutagenic_fertilizer.description") + "\n\nThis can be purchased from Pierre once you reach farming level 5.").Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
             page.AddParagraph("Where you plant a crop also matters. When a plant mutates, it is much more likely to pick up a trait from adjacent crops [highlight]of the same type[/highlight].").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
@@ -242,7 +242,7 @@ namespace CropTraits.Framework.Builders
 
             page = CreateNumberedPage(book, chapterId, 5);
             page.AddHeading("Propagating Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("To reliably propagated the same set of traits, you can utilize the Seed Maker. This machine is craftable at farming level 5.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
+            page.AddParagraph("To reliably propagate the same set of traits, you can utilize the Seed Maker. This machine is craftable at farming level 5.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(SEED_MAKER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -24);
             page.AddParagraph("The Seed Maker will preserve the traits when creating new seeds, allowing for repeated planting of the same germline.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
