@@ -9,12 +9,16 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override bool IsNegative => true;
-        public override int Weight => 12;
         public override bool IsPriceTrait => true;
 
         public override double ModifySellPrice(double multiplier, int tier)
         {
             return multiplier * (1 - (PRICE_PENALTY_PER_TIER * tier));
+        }
+
+        public override string GetTierDetails(int tier)
+        {
+            return $"Sells for {ToPercent(PRICE_PENALTY_PER_TIER * tier)} less";
         }
     }
 }

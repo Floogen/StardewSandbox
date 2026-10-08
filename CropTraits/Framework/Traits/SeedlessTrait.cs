@@ -19,5 +19,10 @@ namespace CropTraits.Framework.Traits
         {
             return multiplier * (1 + PRICE_BONUS);
         }
+
+        public override string GetTierDetails(int tier)
+        {
+            return $"Sells for {ToPercent(PRICE_BONUS)} more";
+        }
     }
 }

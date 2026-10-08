@@ -12,7 +12,7 @@ namespace CropTraits.Framework.Traits
         public const double EXTRA_HARVEST_CHANCE_PER_TIER = 0.10;
 
         public override string Id => ID;
-        public override int Weight => 8;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
 
         // The extra produce is created inside the harvest context, so it picks up the crop's traits too
         public override void OnHarvestCompleted(HarvestContext context, int xTile, int yTile, GameLocation location, int tier)
@@ -31,6 +31,16 @@ namespace CropTraits.Framework.Traits
             }
 
             Game1.createItemDebris(extraProduce, new Vector2((xTile * Game1.tileSize) + (Game1.tileSize / 2), (yTile * Game1.tileSize) + (Game1.tileSize / 2)), -1, location);
+        }
+
+        public override string GetTierDetails(int tier)
+        {
+            return $"{ToPercent(EXTRA_HARVEST_CHANCE_PER_TIER * tier)} chance for an extra harvest";
+        }
+
+        public override string GetNotes()
+        {
+            return "The extra harvest keeps the same quality and traits.";
         }
     }
 }

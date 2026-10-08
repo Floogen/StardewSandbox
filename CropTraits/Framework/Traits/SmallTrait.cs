@@ -11,7 +11,6 @@ namespace CropTraits.Framework.Traits
         public override string Id => ID;
         public override bool IsNegative => true;
         public override int MaxTier => 1;
-        public override int Weight => 12;
         public override bool IsPriceTrait => true;
 
         public override float ModifyProduceScale(float scale, int tier)
@@ -22,6 +21,11 @@ namespace CropTraits.Framework.Traits
         public override double ModifySellPrice(double multiplier, int tier)
         {
             return multiplier * (1 - PRICE_PENALTY);
+        }
+
+        public override string GetTierDetails(int tier)
+        {
+            return $"{ToPercent(SIZE_REDUCTION)} smaller and sells for {ToPercent(PRICE_PENALTY)} less";
         }
     }
 }

@@ -8,6 +8,10 @@ namespace CropTraits.Framework.Traits
 {
     public abstract class Trait
     {
+        public const int COMMON_WEIGHT = 12;
+        public const int UNCOMMON_WEIGHT = 8;
+        public const int RARE_WEIGHT = 4;
+
         /// <summary>
         /// The ID stored in the trait key.
         /// </summary>
@@ -24,9 +28,14 @@ namespace CropTraits.Framework.Traits
         public virtual int MaxTier => 3;
 
         /// <summary>
-        /// How likely the trait is to be rolled during a mutation.
+        /// How often mutation rolls this trait compared to the others. Also sets the default weight.
         /// </summary>
-        public virtual int Weight => 1;
+        public virtual TraitRarity Rarity => TraitRarity.Common;
+
+        /// <summary>
+        /// How likely the trait is to be rolled during a mutation. Defaults to the rarity's weight, so the rarity shown in the Field Notes stays accurate.
+        /// </summary>
+        public virtual int Weight => GetRarityWeight(Rarity);
 
         /// <summary>
         /// The traits this trait cannot coexist with. Conflicts are declared one way and checked in both directions.
@@ -105,6 +114,37 @@ namespace CropTraits.Framework.Traits
         public virtual double ModifySellPrice(double multiplier, int tier)
         {
             return multiplier;
+        }
+
+        /// <summary>
+        /// What a single tier does, shown on the trait's Field Notes page. An empty string skips the line.
+        /// </summary>
+        public virtual string GetTierDetails(int tier)
+        {
+            return string.Empty;
+        }
+
+        /// <summary>
+        /// Extra rules about the trait shown under its tier details. An empty string skips the line.
+        /// </summary>
+        public virtual string GetNotes()
+        {
+            return string.Empty;
+        }
+
+        public static int GetRarityWeight(TraitRarity rarity)
+        {
+            return rarity switch
+            {
+                TraitRarity.Uncommon => UNCOMMON_WEIGHT,
+                TraitRarity.Rare => RARE_WEIGHT,
+                _ => COMMON_WEIGHT
+            };
+        }
+
+        public static string ToPercent(double value)
+        {
+            return $"{Math.Round(value * 100)}%";
         }
     }
 }

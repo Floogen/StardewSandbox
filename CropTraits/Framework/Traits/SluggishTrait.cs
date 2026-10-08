@@ -14,11 +14,20 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override bool IsNegative => true;
-        public override int Weight => 12;
 
         public override void ModifyGrowth(IList<int> phaseDays, CropData cropData, int tier)
         {
             GrowthHelper.AddGrowthDays(phaseDays, (int)Math.Ceiling(GrowthHelper.GetGrowthDays(phaseDays) * SLOWDOWN_PER_TIER * tier));
+        }
+
+        public override string GetTierDetails(int tier)
+        {
+            return $"{ToPercent(SLOWDOWN_PER_TIER * tier)} longer growth time";
+        }
+
+        public override string GetNotes()
+        {
+            return "Rounded up to whole days.";
         }
     }
 }

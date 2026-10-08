@@ -1,3 +1,5 @@
+using CropTraits.Framework.Managers;
+
 namespace CropTraits.Framework.Traits
 {
     // Only protects against mutation, so dilution can still remove traits (including Stable itself)
@@ -8,7 +10,12 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override int MaxTier => 1;
-        public override int Weight => 3;
+        public override TraitRarity Rarity => TraitRarity.Rare;
         public override bool BlocksMutationReplacement => true;
+
+        public override string GetNotes()
+        {
+            return $"Mutations can still add a trait (when the crop has fewer than {TraitManager.MAX_TRAITS}) or raise a tier. Crossbreeding can still remove traits, including Stable.";
+        }
     }
 }

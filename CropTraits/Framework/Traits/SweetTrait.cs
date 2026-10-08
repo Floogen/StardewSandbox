@@ -12,13 +12,18 @@ namespace CropTraits.Framework.Traits
         private static readonly string[] CONFLICTS = { BitterTrait.ID };
 
         public override string Id => ID;
-        public override int Weight => 8;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
         public override bool IsPriceTrait => true;
 
         public override double ModifySellPrice(double multiplier, int tier)
         {
             return multiplier * (1 + (PRICE_BONUS_PER_TIER * tier));
+        }
+
+        public override string GetTierDetails(int tier)
+        {
+            return $"Sells for {ToPercent(PRICE_BONUS_PER_TIER * tier)} more";
         }
     }
 }
