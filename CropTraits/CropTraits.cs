@@ -26,7 +26,6 @@ namespace CropTraits
         public const string MUTAGENIC_FERTILIZER_ID = "PeacefulEnd.CropTraits_MutagenicFertilizer";
         public const string MUTAGENIC_FERTILIZER_QUALIFIED_ID = "(O)" + MUTAGENIC_FERTILIZER_ID;
         public const string JOURNAL_ID = "PeacefulEnd.CropTraits_Journal";
-        public const string JOURNAL_QUALIFIED_ID = "(O)" + JOURNAL_ID;
 
         // Mod IDs
         public const string PARCHMENT_ID = "PeacefulEnd.Parchment.Core";
@@ -192,7 +191,7 @@ namespace CropTraits
                 return;
             }
 
-            ArgUtility.TryGetOptional(args, 0, out string traitKey, out string error, defaultValue: string.Empty);
+            ArgUtility.TryGetOptional(args, 0, out string traitKey, out _, defaultValue: string.Empty);
 
             TraitSet traits = TraitSet.FromKey(traitKey);
             List<string> unknownIds = traits.Ids.Where(traitId => traitManager.TryGetTrait(traitId, out Trait _) is false).ToList();

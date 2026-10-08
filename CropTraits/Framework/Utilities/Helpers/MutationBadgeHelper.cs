@@ -15,7 +15,6 @@ namespace CropTraits.Framework.Utilities.Helpers
         public const float BADGE_LAYER_OFFSET = 0.0001f;
 
         public const float CROP_BADGE_SCALE = 4f;
-        public const float CROP_BADGE_OFFSET_Y = 0f;
         public const float CROP_BADGE_BOB_HEIGHT = 4f;
         public const double CROP_BADGE_BOB_PERIOD_MILLISECONDS = 250.0;
 

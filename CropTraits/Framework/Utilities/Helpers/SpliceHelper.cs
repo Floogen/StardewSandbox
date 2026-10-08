@@ -48,7 +48,7 @@ namespace CropTraits.Framework.Utilities.Helpers
         // Progress for the status line, from 0 to 99 while the splice runs
         public static int GetProgressPercent(Object machine)
         {
-            if (IsReady(machine) || TryGetStart(machine, out int startDay, out int startTime) is false)
+            if (IsReady(machine) || TryGetStart(machine, out _, out int startTime) is false)
             {
                 return 100;
             }

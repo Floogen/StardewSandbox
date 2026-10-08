@@ -11,7 +11,6 @@ namespace CropTraits.Framework.Utilities.Helpers
     // Gathers what Field Notes shows from the crop data and the discovery data
     public static class JournalDataHelper
     {
-        public const int NORMAL_QUALITY = 0;
         public const int SILVER_QUALITY = 1;
         public const int GOLD_QUALITY = 2;
         public const int IRIDIUM_QUALITY = 4;
