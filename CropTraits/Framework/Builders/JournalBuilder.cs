@@ -476,7 +476,14 @@ namespace CropTraits.Framework.Builders
         public List<string> GetTraitDetailLines(Trait trait, DiscoveryData discoveries, List<string> conflictIds, HashSet<string> linkedTraitIds)
         {
             List<string> lines = new();
-            lines.Add(trait.CanBeRolled ? $"Base rarity: {GetRarityText(trait.Rarity)}" : "Only appears through crossbreeding.");
+            if (trait is CombinationTrait combinationTrait)
+            {
+                lines.Add($"Fused from {GetTraitReferenceText(combinationTrait.FirstTraitId, linkedTraitIds)} and {GetTraitReferenceText(combinationTrait.SecondTraitId, linkedTraitIds)} by the Seed Splicer.");
+            }
+            else
+            {
+                lines.Add(trait.CanBeRolled ? $"Base rarity: {GetRarityText(trait.Rarity)}" : "Only appears through crossbreeding.");
+            }
 
             if (trait.IsExclusive)
             {
@@ -484,7 +491,7 @@ namespace CropTraits.Framework.Builders
             }
             else if (conflictIds.Count > 0)
             {
-                lines.Add($"Can't appear with {JoinWithOr(conflictIds.Select(conflictId => GetConflictText(conflictId, linkedTraitIds)).ToList())}.");
+                lines.Add($"Can't appear with {JoinWithOr(conflictIds.Select(conflictId => GetTraitReferenceText(conflictId, linkedTraitIds)).ToList())}.");
             }
 
             if (trait.BlocksPropagation)
@@ -513,16 +520,16 @@ namespace CropTraits.Framework.Builders
             return lines;
         }
 
-        // Traits without a page (undiscovered while revealing is off) are scrambled, so the conflict doesn't spoil them
-        public string GetConflictText(string conflictId, HashSet<string> linkedTraitIds)
+        // Traits without a page (undiscovered while revealing is off) are scrambled, so conflicts and combination recipes don't spoil them
+        public string GetTraitReferenceText(string traitId, HashSet<string> linkedTraitIds)
         {
-            string name = CropTraits.traitManager.GetTraitName(conflictId);
-            if (linkedTraitIds.Contains(conflictId) is false)
+            string name = CropTraits.traitManager.GetTraitName(traitId);
+            if (linkedTraitIds.Contains(traitId) is false)
             {
                 return $"????";
             }
 
-            return GetTraitLinkText(conflictId, name, linkedTraitIds);
+            return GetTraitLinkText(traitId, name, linkedTraitIds);
         }
 
         // Reads "A, B or C" with no comma before the last entry
