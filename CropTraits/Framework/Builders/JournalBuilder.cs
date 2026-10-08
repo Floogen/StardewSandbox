@@ -242,7 +242,7 @@ namespace CropTraits.Framework.Builders
 
             page = CreateNumberedPage(book, chapterId, 5);
             page.AddHeading("Propagating Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("To reliably propagate the same set of traits, you can utilize the Seed Maker. This machine is craftable at farming level 5.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
+            page.AddParagraph("To reliably propagate the same set of traits, you can utilize the Seed Maker. This machine is craftable at farming level 3.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(SEED_MAKER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -24);
             page.AddParagraph("The Seed Maker will preserve the traits when creating new seeds, allowing for repeated planting of the same germline.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
@@ -286,7 +286,7 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph("Got a set of traits that you would like to keep growing? Put its produce into in a Seed Maker!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(138);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -32);
             page.AddBackground("Image").Item(SEED_MAKER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -56);
-            page.AddParagraph("The Seed Maker is craftable starting from farming level 5.\n\n[bounce][bold]Note:[/bold][/bounce] Crops with the [link=trait_seedless][underline]Seedless[/underline][/link] trait are unable to be processed by the Seed Maker.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph("The Seed Maker is craftable starting from farming level 3.\n\n[bounce][bold]Note:[/bold][/bounce] Crops with the [link=trait_seedless][underline]Seedless[/underline][/link] trait are unable to be processed by the Seed Maker.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 2);
             page.AddParagraph("The Seed Splicer lets you mix traits by crossbreeding two crops [highlight]of the same type[/highlight] with different traits.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);

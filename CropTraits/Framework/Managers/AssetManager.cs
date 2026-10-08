@@ -16,6 +16,7 @@ namespace CropTraits.Framework.Managers
         public const string BIG_CRAFTABLES_DATA_PATH = "Data/BigCraftables";
         public const string OBJECTS_DATA_PATH = "Data/Objects";
         public const string SHOPS_DATA_PATH = "Data/Shops";
+        public const string CRAFTING_RECIPES_DATA_PATH = "Data/CraftingRecipes";
 
         public const string PIERRE_SHOP_ID = "SeedShop";
         public const string MUTAGENIC_FERTILIZER_SHOP_CONDITION = "PLAYER_FARMING_LEVEL Current 5";
@@ -117,6 +118,10 @@ namespace CropTraits.Framework.Managers
 
                     AddMutagenicFertilizerToShop(pierreShop);
                 });
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(CRAFTING_RECIPES_DATA_PATH))
+            {
+                e.Edit(asset => CropTraits.recipeManager.EditCraftingRecipes(asset.AsDictionary<string, string>().Data));
             }
         }
 

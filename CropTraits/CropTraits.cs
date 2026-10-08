@@ -57,6 +57,7 @@ namespace CropTraits
         public static HarvestManager harvestManager;
         public static MutationManager mutationManager;
         public static MutationSparkleManager mutationSparkleManager;
+        public static RecipeManager recipeManager;
         public static TraitManager traitManager;
         public static TraitViewManager traitViewManager;
 
@@ -77,6 +78,7 @@ namespace CropTraits
             harvestManager = new HarvestManager(monitor, helper);
             mutationManager = new MutationManager(monitor, helper);
             mutationSparkleManager = new MutationSparkleManager(monitor, helper);
+            recipeManager = new RecipeManager(monitor, helper);
             traitManager = new TraitManager(monitor, helper);
             traitViewManager = new TraitViewManager(monitor, helper);
 
@@ -109,6 +111,7 @@ namespace CropTraits
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += (sender, args) => discoveryManager.Load();
             helper.Events.GameLoop.SaveLoaded += (sender, args) => journalBuilder?.RefreshBook();
+            helper.Events.GameLoop.SaveLoaded += (sender, args) => recipeManager.LearnMissingRecipes();
             helper.Events.GameLoop.Saving += (sender, args) => discoveryManager.Save();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => discoveryManager.Reset();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => traitViewManager.Reset();
