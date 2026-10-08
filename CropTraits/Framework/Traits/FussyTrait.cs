@@ -1,0 +1,24 @@
+namespace CropTraits.Framework.Traits
+{
+    public class FussyTrait : Trait
+    {
+        // Stored in every trait key, so this must never change once released
+        public const string ID = "Fussy";
+
+        public override string Id => ID;
+        public override bool IsNegative => true;
+        public override int MaxTier => 1;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
+        public override bool IgnoresFertilizer => true;
+
+        public override string GetTierDetails(int tier)
+        {
+            return "Ignores all fertilizer";
+        }
+
+        public override string GetNotes()
+        {
+            return "Covers growth speed, water retention, quality and Mutagenic Fertilizer's nightly mutation rolls. Fertilizer can still be applied, but it has no effect.";
+        }
+    }
+}
