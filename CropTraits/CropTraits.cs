@@ -105,7 +105,7 @@ namespace CropTraits
             // Hook into the required events
             helper.Events.Content.AssetRequested += assetManager.OnAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
-            helper.Events.GameLoop.DayEnding += (sender, args) => mutationManager.ResolveAllPendingMutations();
+            helper.Events.GameLoop.DayEnding += (sender, args) => mutationManager.ResolveAllMutationRolls();
             helper.Events.GameLoop.DayStarted += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.TimeChanged += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;

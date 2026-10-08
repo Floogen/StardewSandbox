@@ -12,25 +12,34 @@ namespace CropTraits.Framework.Utilities.Helpers
     public static class MutationHelper
     {
         public const double BASE_MUTATION_CHANCE = 0.05;
-        public const double MUTAGENIC_FERTILIZER_BONUS = 0.10;
         public const double REPLACE_CHANCE_UNDER_CAP = 0.25;
 
-        // Neighbors never affect the chance, only which trait is rolled
-        public static double GetChance(HoeDirt dirt, TraitSet traits)
+        // Neighbors never affect the chance, only which trait is rolled, and traits like Volatile only affect the first roll
+        public static double GetChance(TraitSet traits, bool isFirstRoll)
         {
             double chance = BASE_MUTATION_CHANCE;
 
-            if (HasMutagenicFertilizer(dirt))
+            if (isFirstRoll)
             {
-                chance += MUTAGENIC_FERTILIZER_BONUS;
-            }
-
-            foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(traits))
-            {
-                chance = trait.ModifyMutationChance(chance, tier);
+                foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(traits))
+                {
+                    chance = trait.ModifyMutationChance(chance, tier);
+                }
             }
 
             return Math.Clamp(chance, 0, 1);
+        }
+
+        // Mutagenic Fertilizer adds a roll every night (including when applied after planting) until the crop mutates or matures
+        public static bool CanRollNightly(HoeDirt dirt)
+        {
+            Crop crop = dirt.crop;
+            if (crop is null || crop.dead.Value || PlantedTraitHelper.IsMature(crop))
+            {
+                return false;
+            }
+
+            return HasMutagenicFertilizer(dirt) && dirt.modData.ContainsKey(MutationManager.HAS_MUTATED_MOD_DATA_KEY) is false;
         }
 
         public static bool HasMutagenicFertilizer(HoeDirt dirt)

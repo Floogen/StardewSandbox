@@ -64,6 +64,7 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
             __instance.modData.Remove(CropTraits.TRAITS_MOD_DATA_KEY);
             __instance.modData.Remove(CropTraits.SEED_TRAITS_MOD_DATA_KEY);
             __instance.modData.Remove(CropTraits.PLANTER_ID_MOD_DATA_KEY);
+            __instance.modData.Remove(MutationManager.HAS_MUTATED_MOD_DATA_KEY);
 
             if (who is not null)
             {

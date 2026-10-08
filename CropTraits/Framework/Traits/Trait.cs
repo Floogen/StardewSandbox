@@ -77,7 +77,7 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
-        /// Adjusts the chance that the crop mutates the night after planting.
+        /// Adjusts the chance that the crop mutates the night after planting (the nightly Mutagenic Fertilizer rolls are unaffected).
         /// </summary>
         public virtual double ModifyMutationChance(double chance, int tier)
         {
