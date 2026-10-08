@@ -1,3 +1,4 @@
+using CropTraits.Framework.Models;
 using HarmonyLib;
 using StardewModdingAPI;
 using StardewValley;
@@ -18,6 +19,28 @@ namespace CropTraits.Framework.Patches
         public override void Apply(Harmony harmony)
         {
             harmony.Patch(AccessTools.Method(_crop, nameof(Crop.harvest), null), prefix: new HarmonyMethod(GetType(), nameof(HarvestPrefix)), postfix: new HarmonyMethod(GetType(), nameof(HarvestPostfix)), finalizer: new HarmonyMethod(GetType(), nameof(HarvestFinalizer)));
+            harmony.Patch(AccessTools.Method(_crop, nameof(Crop.newDay), null), prefix: new HarmonyMethod(GetType(), nameof(NewDayPrefix)), postfix: new HarmonyMethod(GetType(), nameof(NewDayPostfix)));
+            harmony.Patch(AccessTools.Method(_crop, nameof(Crop.IsInSeason), new[] { typeof(GameLocation) }), postfix: new HarmonyMethod(GetType(), nameof(IsInSeasonPostfix)));
+        }
+
+        // The state argument is changed directly, so a crop can grow as if watered without changing how its soil looks
+        private static void NewDayPrefix(Crop __instance, ref int state, out CropNightState __state)
+        {
+            __state = CropTraits.nightlyGrowthManager.BeginCropNight(__instance, ref state);
+        }
+
+        private static void NewDayPostfix(Crop __instance, CropNightState __state)
+        {
+            CropTraits.nightlyGrowthManager.EndCropNight(__instance, __state);
+        }
+
+        // Covers every season check the game makes for outdoor crops (the kill in newDay, the winter removal and fertilizer clearing)
+        private static void IsInSeasonPostfix(Crop __instance, GameLocation location, ref bool __result)
+        {
+            if (__result is false && CropTraits.nightlyGrowthManager.ExtendsSeason(__instance, location))
+            {
+                __result = true;
+            }
         }
 
         private static void HarvestPrefix(Crop __instance, HoeDirt soil, JunimoHarvester junimoHarvester)

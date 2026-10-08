@@ -77,6 +77,21 @@ namespace CropTraits.Framework.Traits
         public virtual bool BlocksMutationReplacement => false;
 
         /// <summary>
+        /// If the crop ignores every fertilizer effect: growth speed, water retention, quality and Mutagenic Fertilizer's nightly rolls.
+        /// </summary>
+        public virtual bool IgnoresFertilizer => false;
+
+        /// <summary>
+        /// If the crop ignores growth speed changes from fertilizer, the Agriculturist profession, paddy water and neighboring crops.
+        /// </summary>
+        public virtual bool IgnoresGrowthModifiers => false;
+
+        /// <summary>
+        /// If the crop withers when it's left unharvested through the whole day it was ready.
+        /// </summary>
+        public virtual bool WithersWhenLeftReady => false;
+
+        /// <summary>
         /// Adjusts the growth phase lengths. The last entry is the final phase and must be left alone.
         /// Called after planting, whenever the phases are rebuilt from crop data and when a seed's tooltip estimates its growth time, so it should only change the list it's given.
         /// </summary>
@@ -107,6 +122,23 @@ namespace CropTraits.Framework.Traits
         public virtual void OnHarvestCompleted(HarvestContext context, int xTile, int yTile, GameLocation location, int tier)
         {
 
+        }
+
+        /// <summary>
+        /// Plans tonight's effects at the end of the day (main player only), before the game grows crops overnight.
+        /// Traits are read from a snapshot taken after mutations resolve, so the order crops are visited never changes the result.
+        /// </summary>
+        public virtual void OnDayEnding(NightlyContext context, int tier)
+        {
+
+        }
+
+        /// <summary>
+        /// How many nights an outdoor crop keeps growing after its season ends. The highest value among the crop's traits is used.
+        /// </summary>
+        public virtual int GetOutOfSeasonNights(int tier)
+        {
+            return 0;
         }
 
         /// <summary>

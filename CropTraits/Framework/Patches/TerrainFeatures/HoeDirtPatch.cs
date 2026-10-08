@@ -24,6 +24,9 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
         {
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.plant), new[] { typeof(string), typeof(Farmer), typeof(bool) }), postfix: new HarmonyMethod(GetType(), nameof(PlantPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerQualityBoostLevel), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerQualityBoostLevelPostfix)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerSpeedBoost), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerSpeedBoostPostfix)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerWaterRetentionChance), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerWaterRetentionChancePostfix)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.applySpeedIncreases), null), postfix: new HarmonyMethod(GetType(), nameof(ApplySpeedIncreasesPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerSourceRect), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerSourceRectPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.DrawOptimized), null), transpiler: new HarmonyMethod(GetType(), nameof(DrawOptimizedTranspiler)));
         }
@@ -65,6 +68,7 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
             __instance.modData.Remove(CropTraits.SEED_TRAITS_MOD_DATA_KEY);
             __instance.modData.Remove(CropTraits.PLANTER_ID_MOD_DATA_KEY);
             __instance.modData.Remove(MutationManager.HAS_MUTATED_MOD_DATA_KEY);
+            __instance.modData.Remove(NightlyGrowthManager.OUT_OF_SEASON_NIGHTS_MOD_DATA_KEY);
 
             if (who is not null)
             {
@@ -89,7 +93,8 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
             __instance.modData[CropTraits.TRAITS_MOD_DATA_KEY] = traitKey;
             __instance.modData[CropTraits.SEED_TRAITS_MOD_DATA_KEY] = traitKey;
 
-            GrowthHelper.ApplyGrowthTraits(__instance.crop, TraitSet.FromKey(traitKey));
+            // Vanilla applied its speed boosts before the traits were set, so the phases are rebuilt for traits like Fussy and Balanced that ignore them
+            GrowthHelper.ReapplyGrowthTraits(__instance, TraitSet.FromKey(traitKey), who);
         }
 
         // Quality traits feed into vanilla's harvest quality odds, so they work the same for every crop and for Junimos
@@ -101,9 +106,40 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
                 return;
             }
 
+            // Traits like Fussy drop the fertilizer's levels first, so quality traits like Regal still add theirs
+            if (CropTraits.traitManager.IgnoresFertilizer(traits))
+            {
+                __result = 0;
+            }
+
             foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(traits))
             {
                 __result = trait.ModifyQualityBoostLevel(__result, tier);
+            }
+        }
+
+        private static void GetFertilizerSpeedBoostPostfix(HoeDirt __instance, ref float __result)
+        {
+            if (__result != 0 && CropTraits.traitManager.IgnoresFertilizer(TraitModDataHelper.GetTraits(__instance.modData)))
+            {
+                __result = 0;
+            }
+        }
+
+        private static void GetFertilizerWaterRetentionChancePostfix(HoeDirt __instance, ref float __result)
+        {
+            if (__result != 0 && CropTraits.traitManager.IgnoresFertilizer(TraitModDataHelper.GetTraits(__instance.modData)))
+            {
+                __result = 0;
+            }
+        }
+
+        // Traits like Balanced ignore Speed-Gro, Agriculturist and the paddy bonus, so the phases go back to the crop's data
+        private static void ApplySpeedIncreasesPostfix(HoeDirt __instance)
+        {
+            if (__instance.crop is not null && CropTraits.traitManager.IgnoresGrowthModifiers(TraitModDataHelper.GetTraits(__instance.modData)))
+            {
+                __instance.crop.ResetPhaseDays();
             }
         }
     }

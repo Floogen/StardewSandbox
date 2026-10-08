@@ -57,6 +57,7 @@ namespace CropTraits
         public static HarvestManager harvestManager;
         public static MutationManager mutationManager;
         public static MutationSparkleManager mutationSparkleManager;
+        public static NightlyGrowthManager nightlyGrowthManager;
         public static RecipeManager recipeManager;
         public static TraitManager traitManager;
         public static TraitViewManager traitViewManager;
@@ -78,6 +79,7 @@ namespace CropTraits
             harvestManager = new HarvestManager(monitor, helper);
             mutationManager = new MutationManager(monitor, helper);
             mutationSparkleManager = new MutationSparkleManager(monitor, helper);
+            nightlyGrowthManager = new NightlyGrowthManager(monitor, helper);
             recipeManager = new RecipeManager(monitor, helper);
             traitManager = new TraitManager(monitor, helper);
             traitViewManager = new TraitViewManager(monitor, helper);
@@ -106,7 +108,9 @@ namespace CropTraits
             helper.Events.Content.AssetRequested += assetManager.OnAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
             helper.Events.GameLoop.DayEnding += (sender, args) => mutationManager.ResolveAllMutationRolls();
+            helper.Events.GameLoop.DayEnding += (sender, args) => nightlyGrowthManager.PlanAllNightlyEffects();
             helper.Events.GameLoop.DayStarted += (sender, args) => SpliceHelper.UpdateAllReadyStates();
+            helper.Events.GameLoop.DayStarted += (sender, args) => nightlyGrowthManager.Reset();
             helper.Events.GameLoop.TimeChanged += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += (sender, args) => discoveryManager.Load();
@@ -116,6 +120,7 @@ namespace CropTraits
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => discoveryManager.Reset();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => traitViewManager.Reset();
             helper.Events.GameLoop.ReturnedToTitle += (sender, args) => journalBuilder?.Reset();
+            helper.Events.GameLoop.ReturnedToTitle += (sender, args) => nightlyGrowthManager.Reset();
             helper.Events.GameLoop.UpdateTicked += (sender, args) => journalBuilder?.UpdateQueuedRefresh();
             helper.Events.Input.ButtonsChanged += traitViewManager.OnButtonsChanged;
             helper.Events.Input.ButtonsChanged += OnButtonsChanged;

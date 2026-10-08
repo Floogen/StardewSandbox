@@ -39,6 +39,12 @@ namespace CropTraits.Framework.Utilities.Helpers
                 return false;
             }
 
+            // Traits like Fussy ignore every fertilizer, Mutagenic Fertilizer included
+            if (CropTraits.traitManager.IgnoresFertilizer(TraitModDataHelper.GetTraits(dirt.modData)))
+            {
+                return false;
+            }
+
             return HasMutagenicFertilizer(dirt) && dirt.modData.ContainsKey(MutationManager.HAS_MUTATED_MOD_DATA_KEY) is false;
         }
 

@@ -186,6 +186,32 @@ namespace CropTraits.Framework.Managers
             return Resolve(traits).Any(entry => entry.Trait.BlocksMutationReplacement);
         }
 
+        public bool IgnoresFertilizer(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.IgnoresFertilizer);
+        }
+
+        public bool IgnoresGrowthModifiers(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.IgnoresGrowthModifiers);
+        }
+
+        public bool WithersWhenLeftReady(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.WithersWhenLeftReady);
+        }
+
+        public int GetOutOfSeasonNights(TraitSet traits)
+        {
+            int nights = 0;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                nights = Math.Max(nights, trait.GetOutOfSeasonNights(tier));
+            }
+
+            return nights;
+        }
+
         // A combination trait in the set already holds this trait, so the trait can't rejoin the set
         public bool IsAbsorbedBy(string traitId, TraitSet traits)
         {
