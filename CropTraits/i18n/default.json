@@ -89,5 +89,7 @@
   "trait.volatile.name": "Volatile",
   "trait.volatile.description": "More likely to mutate.",
   "trait.seedless.name": "Seedless",
-  "trait.seedless.description": "Can't be turned into seeds, but sells for more."
+  "trait.seedless.description": "Can't be turned into seeds, but sells for more.",
+  "trait.latebloomer.name": "Late Bloomer",
+  "trait.latebloomer.description": "Grows slower, but with better quality odds."
 }
