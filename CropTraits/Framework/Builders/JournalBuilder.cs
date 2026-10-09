@@ -88,8 +88,8 @@ namespace CropTraits.Framework.Builders
             ApplyNotebookAppearance(book);
 
             // Cover
-            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Crop Traits[/bold]").Font("Dialogue").Position(350, 125).Condition(COVER_STATE_CONDITION);
-            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Guide[/bold]").Font("Dialogue").Position(450, 225).Condition(COVER_STATE_CONDITION);
+            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Crop Traits[/bold]").Font("Dialogue").Alignment("Center").Position(0, 125).Condition(COVER_STATE_CONDITION);
+            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Guide[/bold]").Font("Dialogue").Alignment("Center").Position(0, 225).Condition(COVER_STATE_CONDITION);
 
             // Add bookmark to return to home page
             book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 180, 21, 20).Scale(4).Position(-24, 125)
@@ -293,7 +293,7 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph("Seeds and produce that have traits are marked with a small green badge in the top-right corner. Hover over them to see their traits (negative ones are highlighted in red).").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(132);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 128, 48, 32).Set("DisplayName", cornSeeds.DisplayName).Set("Description", TraitTooltipHelper.GetDescriptionWithTraits(cornSeeds)).Scale(2).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
-            page.AddParagraph($"You can press {GetTraitViewKey()} to show an icon over every crop with traits. Hover over a crop to see its details, then press it again to hide the icons.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph($"You can press [bold]{GetTraitViewKey()}[/bold] to show an icon over every crop with traits. Hover over a crop to see its details, then press it again to hide the icons.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
             page.AddParagraph("Before a crop is fully grown, you will only see the traits it was planted with. Once it has finished growing, any new traits will be marked with \"[bounce][color=ForestGreen]New![/color][/bounce]\".").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0);
@@ -388,7 +388,11 @@ namespace CropTraits.Framework.Builders
                 .ThenBy(trait => CropTraits.traitManager.GetTraitName(trait.Id), StringComparer.CurrentCulture)
                 .ToList();
 
-            List<Trait[]> traitPages = orderedTraits.Chunk(TRAIT_INDEX_COLUMNS * 9).DefaultIfEmpty(Array.Empty<Trait>()).ToList();
+            // First page displays 9 rows, the rest display 10 rows
+            int firstPageSize = TRAIT_INDEX_COLUMNS * 9;
+            List<Trait[]> traitPages = new List<Trait[]> { orderedTraits.Take(firstPageSize).ToArray() };
+            traitPages.AddRange(orderedTraits.Skip(firstPageSize).Chunk(TRAIT_INDEX_COLUMNS * 10));
+
             for (int pageIndex = 0; pageIndex < traitPages.Count; pageIndex++)
             {
                 bool isLastPage = pageIndex == traitPages.Count - 1;
