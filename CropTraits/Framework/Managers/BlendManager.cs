@@ -216,7 +216,8 @@ namespace CropTraits.Framework.Managers
             if (first.Traits.Count == 0 || second.Traits.Count == 0)
             {
                 BlendParent traitedParent = first.Traits.Count == 0 ? second : first;
-                TraitSet dilutedTraits = DilutionHelper.Dilute(traitedParent.Traits, traitedParent.Quality, random);
+                BlendParent plainParent = first.Traits.Count == 0 ? first : second;
+                TraitSet dilutedTraits = DilutionHelper.Dilute(traitedParent.Traits, traitedParent.Quality, plainParent.Quality, random);
 
                 return new BlendOutcome(CreateSeeds(seedId, dilutedTraits, random), new TraitSet());
             }

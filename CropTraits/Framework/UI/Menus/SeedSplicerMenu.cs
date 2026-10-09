@@ -504,10 +504,11 @@ namespace CropTraits.Framework.UI.Menus
             return TranslationHelper.Get("menu.status.splicing", new { percent = SpliceHelper.GetProgressPercent(_machine) });
         }
 
-        // The split chance depends on the traited parent's quality, so showing it is the only way players see that quality matters
+        // The split chance depends on both crops' quality, so showing it is the only way players see that quality matters
         public string GetDiluteStatus()
         {
             Item traitedItem = CropTraits.blendManager.HasTraits(_firstItem) ? _firstItem : _secondItem;
+            Item plainItem = traitedItem == _firstItem ? _secondItem : _firstItem;
 
             // Removing the only trait is the same as a wipe, so a chance would be misleading
             if (TraitModDataHelper.GetTraits(traitedItem.modData).Count <= 1)
@@ -515,7 +516,8 @@ namespace CropTraits.Framework.UI.Menus
                 return TranslationHelper.Get("menu.status.ready_dilute_single");
             }
 
-            int splitChance = (int)System.Math.Round(DilutionHelper.GetSplitChance(traitedItem.Quality) * 100);
+            // Rounded away from zero so half steps like 27.5% show as 28% rather than rounding to even
+            int splitChance = (int)System.Math.Round(DilutionHelper.GetSplitChance(traitedItem.Quality, plainItem.Quality) * 100, System.MidpointRounding.AwayFromZero);
             return TranslationHelper.Get("menu.status.ready_dilute", new { chance = splitChance });
         }
 

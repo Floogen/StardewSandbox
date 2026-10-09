@@ -296,11 +296,12 @@ namespace CropTraits.Framework.Builders
 
             page = CreateNumberedPage(book, chapterId, 3);
             page.AddHeading("Mixing Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("When inputting two crops with traits, they will crossbreed and combine their traits into new seeds.\n\nEvery splice rolls its own result, so the same pair can give different seeds each time. Each result you get is noted here.\n\nWhen both crops share a trait at the same tier, there is a small chance it grows stronger.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph("When inputting two crops with traits, they will crossbreed and combine their traits into new seeds.\n\nEvery splice rolls its own result, so the same pair can give different seeds.\n\nWhen both crops share a trait at the same tier, there is a small chance it grows stronger.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 4, hideNumber: true);
+            page.AddParagraph("[bounce][bold]Hint:[/bold][/bounce] The higher quality the crop, the more likely its traits are inherited!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
             page.AddHeading("Diluting Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("Got a trait you don't want? Splice the crop with a [link=baseline][underline]baseline[/underline][/link] crop of the same type.\n\nThis dilutes it, causing the removal of one of its traits or turning the seeds back to normal.\n\n[bounce][bold]Hint:[/bold][/bounce] The quality of crops you use matters too! Higher quality crops give better odds of keeping traits and making them stronger.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph("Got a trait you don't want? Splice the crop with a [link=baseline][underline]baseline[/underline][/link] crop of the same type.\n\nThis dilutes it, causing the removal of one of its traits or turning the seeds back to normal.\n\n[bounce][bold]Hint:[/bold][/bounce] The quality of both crops matter for preserving traits!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
         }
 
         public void AddCombinationTraitsPages(IBookBuilder book, string chapterId)
