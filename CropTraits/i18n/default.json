@@ -157,5 +157,19 @@
   "trait.heirloom.name": "Heirloom",
   "trait.heirloom.description": "Passes all its traits down when crossbred.",
   "trait.bittersweet.name": "Bittersweet",
-  "trait.bittersweet.description": "Its price changes every day."
+  "trait.bittersweet.description": "Its price changes every day.",
+  "trait.coarse.name": "Coarse",
+  "trait.coarse.description": "Chance for lower quality produce.",
+  "trait.musty.name": "Musty",
+  "trait.musty.description": "Artisan goods made from it sell for less.",
+  "trait.nurturing.name": "Nurturing",
+  "trait.nurturing.description": "Speeds up the growth of nearby crops.",
+  "trait.sunloving.name": "Sun Loving",
+  "trait.sunloving.description": "Grows faster in dry weather, but slower after rain.",
+  "trait.hothouse.name": "Hothouse",
+  "trait.hothouse.description": "Grows faster indoors, but slower outdoors.",
+  "trait.nocturnal.name": "Nocturnal",
+  "trait.nocturnal.description": "Better quality when harvested at night, but worse during the day.",
+  "trait.instructive.name": "Instructive",
+  "trait.instructive.description": "Gives more farming experience when harvested."
 }

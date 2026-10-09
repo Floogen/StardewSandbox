@@ -15,6 +15,9 @@ namespace CropTraits.Framework.Models
         // Steps back a day of growth on nights the crop doesn't grow
         public bool LosesGrowthWhenDry { get; set; }
 
+        // Set once a Nurturing neighbor has given this crop an extra day tonight, so several can't stack
+        public bool IsNurtured { get; set; }
+
         public bool HasEffects => CountsAsWatered || SkipsGrowth || ExtraGrowthDays > 0 || LosesGrowthWhenDry;
     }
 }
