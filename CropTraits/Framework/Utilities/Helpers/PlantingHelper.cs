@@ -43,6 +43,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             dirt.modData.Remove(HarvestManager.REGROWTHS_USED_MOD_DATA_KEY);
             dirt.modData.Remove(SelfSeedingTrait.HAS_SPREAD_MOD_DATA_KEY);
             dirt.modData.Remove(ContagiousTrait.HAS_SPREAD_MOD_DATA_KEY);
+            dirt.modData.Remove(MimicTrait.HAS_COPIED_MOD_DATA_KEY);
         }
 
         /// <summary>

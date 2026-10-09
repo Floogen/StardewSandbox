@@ -318,6 +318,7 @@ namespace CropTraits.Framework.Managers
             return Math.Max(multiplier, 0);
         }
 
+        // Can be negative when traits like Barren outweigh traits like Seedy, so the caller keeps at least one seed
         public int GetExtraSeeds(TraitSet traits, Random random)
         {
             int extraSeeds = 0;
@@ -326,7 +327,41 @@ namespace CropTraits.Framework.Managers
                 extraSeeds += trait.GetExtraSeeds(random, tier);
             }
 
-            return Math.Max(extraSeeds, 0);
+            return extraSeeds;
+        }
+
+        // Each trait changes a shared copy, which is resolved from the original so changes never disturb the loop
+        public TraitSet GetMadeSeedTraits(TraitSet traits, Random random)
+        {
+            TraitSet seedTraits = traits.Clone();
+            foreach ((Trait trait, int tier) in Resolve(traits).ToList())
+            {
+                trait.ModifyMadeSeedTraits(seedTraits, random, tier);
+            }
+
+            return seedTraits;
+        }
+
+        public double GetInheritChanceMultiplier(TraitSet traits)
+        {
+            double multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = trait.ModifyInheritChance(multiplier, tier);
+            }
+
+            return Math.Max(multiplier, 0);
+        }
+
+        public double GetMachineTimeMultiplier(TraitSet traits)
+        {
+            double multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = trait.ModifyMachineTime(multiplier, tier);
+            }
+
+            return Math.Max(multiplier, 0);
         }
 
         public int GetNeighborInfluenceMultiplier(TraitSet traits)

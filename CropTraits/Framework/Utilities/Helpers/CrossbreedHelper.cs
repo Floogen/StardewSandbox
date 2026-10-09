@@ -28,7 +28,11 @@ namespace CropTraits.Framework.Utilities.Helpers
             ApplySharedTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, random);
             bool isFirstAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(firstParent.Traits);
             bool isSecondAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(secondParent.Traits);
-            ApplyUniqueTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, isFirstAlwaysInherited, isSecondAlwaysInherited, random);
+
+            // Read from each parent's full traits, so a trait like Recessive still counts after a fusion consumed it
+            double firstInheritMultiplier = CropTraits.traitManager.GetInheritChanceMultiplier(firstParent.Traits);
+            double secondInheritMultiplier = CropTraits.traitManager.GetInheritChanceMultiplier(secondParent.Traits);
+            ApplyUniqueTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, isFirstAlwaysInherited, isSecondAlwaysInherited, firstInheritMultiplier, secondInheritMultiplier, random);
 
             // Traits like Latent awaken before tier upgrades, so the new trait is treated like any other result
             resultTraits = CropTraits.traitManager.AwakenTraits(resultTraits, cropData, random);
@@ -167,10 +171,10 @@ namespace CropTraits.Framework.Utilities.Helpers
             return Math.Clamp(HIGHER_TIER_CHANCE + qualityShift, 0, 1);
         }
 
-        public static void ApplyUniqueTraits(TraitSet firstRemaining, TraitSet secondRemaining, TraitSet resultTraits, int firstQuality, int secondQuality, bool isFirstAlwaysInherited, bool isSecondAlwaysInherited, Random random)
+        public static void ApplyUniqueTraits(TraitSet firstRemaining, TraitSet secondRemaining, TraitSet resultTraits, int firstQuality, int secondQuality, bool isFirstAlwaysInherited, bool isSecondAlwaysInherited, double firstInheritMultiplier, double secondInheritMultiplier, Random random)
         {
-            List<KeyValuePair<string, int>> firstSurviving = GetSurvivingTraits(firstRemaining, firstQuality, isFirstAlwaysInherited, random);
-            List<KeyValuePair<string, int>> secondSurviving = GetSurvivingTraits(secondRemaining, secondQuality, isSecondAlwaysInherited, random);
+            List<KeyValuePair<string, int>> firstSurviving = GetSurvivingTraits(firstRemaining, firstQuality, isFirstAlwaysInherited, firstInheritMultiplier, random);
+            List<KeyValuePair<string, int>> secondSurviving = GetSurvivingTraits(secondRemaining, secondQuality, isSecondAlwaysInherited, secondInheritMultiplier, random);
             double firstPriority = QualityHelper.GetQualityLead(firstQuality, secondQuality) * QUALITY_LEAD_FAVOR_PER_STEP;
             double secondPriority = QualityHelper.GetQualityLead(secondQuality, firstQuality) * QUALITY_LEAD_FAVOR_PER_STEP;
 
@@ -201,9 +205,10 @@ namespace CropTraits.Framework.Utilities.Helpers
         }
 
         // ToList forces each parent's rolls to happen in full before the next parent's. The roll comes first so traits like Heirloom keep the draws the same
-        public static List<KeyValuePair<string, int>> GetSurvivingTraits(TraitSet remainingTraits, int quality, bool isAlwaysInherited, Random random)
+        // Traits like Recessive scale the chance after the quality bonus, while the roll still happens for every trait so the draws stay the same
+        public static List<KeyValuePair<string, int>> GetSurvivingTraits(TraitSet remainingTraits, int quality, bool isAlwaysInherited, double inheritMultiplier, Random random)
         {
-            double inheritChance = Math.Min(UNIQUE_INHERIT_CHANCE + QualityHelper.GetBonus(quality), 1.0);
+            double inheritChance = Math.Clamp(Math.Min(UNIQUE_INHERIT_CHANCE + QualityHelper.GetBonus(quality), 1.0) * inheritMultiplier, 0, 1);
 
             return remainingTraits.Entries
                 .Where(trait => random.NextDouble() < inheritChance || isAlwaysInherited)

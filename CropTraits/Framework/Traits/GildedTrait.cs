@@ -17,10 +17,15 @@ namespace CropTraits.Framework.Traits
         public override TraitRarity Rarity => TraitRarity.Rare;
         public override int MaxTier => 1;
 
-        // The sale price already includes quality, price traits like Sweet and professions like Tiller, so the doubling builds on all of them
         public override bool TryReplaceMainHarvest(HarvestContext context, Item item, int tier)
         {
-            if (item is not StardewValley.Object produce || Game1.random.NextDouble() >= GILDED_CHANCE)
+            return TryTurnIntoCoins(item, GILDED_CHANCE);
+        }
+
+        // Shared with Fortunate. The sale price already includes quality, price traits like Sweet and professions like Tiller, so the doubling builds on all of them
+        public static bool TryTurnIntoCoins(Item item, double chance)
+        {
+            if (item is not StardewValley.Object produce || Game1.random.NextDouble() >= chance)
             {
                 return false;
             }

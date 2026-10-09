@@ -31,6 +31,17 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerSourceRect), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerSourceRectPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.DrawOptimized), null), transpiler: new HarmonyMethod(GetType(), nameof(DrawOptimizedTranspiler)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.performToolAction), null), prefix: new HarmonyMethod(GetType(), nameof(PerformToolActionPrefix)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.isPassable), null), postfix: new HarmonyMethod(GetType(), nameof(IsPassablePostfix)));
+        }
+
+        // Traits like Trailing let players walk through trellis crops, while traits like Climbing make other crops block the way
+        // The character is read by position (__0), so a renamed game parameter can't break the patch
+        private static void IsPassablePostfix(TerrainFeature __instance, Character __0, ref bool __result)
+        {
+            if (__instance is HoeDirt dirt && dirt.crop is not null)
+            {
+                __result = PassabilityHelper.IsPassable(dirt, __0, __result);
+            }
         }
 
         // The game's lightning hits soil with no tool, so traits like Conductive turn that hit into full growth instead of a dead crop

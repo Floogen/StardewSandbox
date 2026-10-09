@@ -334,10 +334,36 @@ namespace CropTraits.Framework.Traits
 
         /// <summary>
         /// Extra seeds the Seed Maker adds when it turns the produce into its own seeds. The extras from every trait are added together.
+        /// Traits like Barren return a negative number to take seeds away, though the Seed Maker always makes at least one.
         /// </summary>
         public virtual int GetExtraSeeds(Random random, int tier)
         {
             return 0;
+        }
+
+        /// <summary>
+        /// Changes the traits on seeds the Seed Maker makes from the produce (such as Fading dropping a tier). Only called for the real output, never when the machine checks what it accepts.
+        /// The set given is a copy shared by every trait on the produce, so changes from earlier traits are already in it.
+        /// </summary>
+        public virtual void ModifyMadeSeedTraits(TraitSet seedTraits, Random random, int tier)
+        {
+
+        }
+
+        /// <summary>
+        /// Adjusts the chance that each of this parent's own traits carries over when crossbred (1 is normal). Traits shared by both parents always carry over.
+        /// </summary>
+        public virtual double ModifyInheritChance(double multiplier, int tier)
+        {
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Adjusts how long a machine takes when the produce is put in it (1 is normal). Casks are left alone since they age by days instead.
+        /// </summary>
+        public virtual double ModifyMachineTime(double multiplier, int tier)
+        {
+            return multiplier;
         }
 
         /// <summary>

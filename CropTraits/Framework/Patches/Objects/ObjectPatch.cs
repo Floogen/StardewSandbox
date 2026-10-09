@@ -21,6 +21,8 @@ namespace CropTraits.Framework.Patches.Objects
     {
         public const int DESCRIPTION_WIDTH = 272;
         public const int SEED_MAKER_RANDOM_SEED = 2511; // Keeps the extra seed roll apart from the game's own Seed Maker roll
+        public const int MIN_SEED_MAKER_SEEDS = 1;
+        public const int MACHINE_TIME_STEP = 10; // Machines count down in 10 minute steps, so adjusted times are rounded up to one
 
         private readonly System.Type _object = typeof(Object);
         private static readonly MethodInfo _colorWhiteGetter = AccessTools.PropertyGetter(typeof(Color), nameof(Color.White));
@@ -38,6 +40,17 @@ namespace CropTraits.Framework.Patches.Objects
             harmony.Patch(AccessTools.Method(_object, nameof(Object.sellToStorePrice), null), postfix: new HarmonyMethod(GetType(), nameof(SellToStorePricePostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.checkForAction), null), prefix: new HarmonyMethod(GetType(), nameof(CheckForActionPrefix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.OutputSeedMaker), null), prefix: new HarmonyMethod(GetType(), nameof(OutputSeedMakerPrefix)), postfix: new HarmonyMethod(GetType(), nameof(OutputSeedMakerPostfix)));
+
+            // Skipped with a warning if missing, so a changed game method only turns off traits like Ripe instead of every patch after it
+            MethodInfo outputMachineMethod = AccessTools.GetDeclaredMethods(_object).FirstOrDefault(method => method.Name == nameof(Object.OutputMachine));
+            if (outputMachineMethod is null)
+            {
+                _monitor.Log("Couldn't find Object.OutputMachine, so traits like Ripe won't change how long machines take.", LogLevel.Warn);
+            }
+            else
+            {
+                harmony.Patch(outputMachineMethod, prefix: new HarmonyMethod(GetType(), nameof(OutputMachinePrefix)), postfix: new HarmonyMethod(GetType(), nameof(OutputMachinePostfix)));
+            }
             harmony.Patch(AccessTools.Method(_object, nameof(Object.staminaRecoveredOnConsumption), null), postfix: new HarmonyMethod(GetType(), nameof(StaminaRecoveredOnConsumptionPostfix)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.healthRecoveredOnConsumption), null), prefix: new HarmonyMethod(GetType(), nameof(HealthRecoveredOnConsumptionPrefix)), postfix: new HarmonyMethod(GetType(), nameof(HealthRecoveredOnConsumptionPostfix)), finalizer: new HarmonyMethod(GetType(), nameof(HealthRecoveredOnConsumptionFinalizer)));
             harmony.Patch(AccessTools.Method(_object, nameof(Object.GetFoodOrDrinkBuffs), null), postfix: new HarmonyMethod(GetType(), nameof(GetFoodOrDrinkBuffsPostfix)));
@@ -230,6 +243,37 @@ namespace CropTraits.Framework.Patches.Objects
             return false;
         }
 
+        // The held item is captured first, so the postfix can tell a real output (a new held item) from the machine checking what it accepts
+        private static void OutputMachinePrefix(Object __instance, out Object __state)
+        {
+            __state = __instance.heldObject.Value;
+        }
+
+        // Traits like Ripe and Stubborn scale the time the game just set, reading the input the machine keeps from this output
+        private static void OutputMachinePostfix(Object __instance, bool __result, Object __state)
+        {
+            Object heldObject = __instance.heldObject.Value;
+            if (__result is false || heldObject is null || ReferenceEquals(heldObject, __state) || __instance is Cask || __instance.MinutesUntilReady <= 0)
+            {
+                return;
+            }
+
+            Item inputItem = __instance.lastInputItem.Value;
+            if (inputItem is null || TraitModDataHelper.HasTraits(inputItem.modData) is false)
+            {
+                return;
+            }
+
+            double multiplier = CropTraits.traitManager.GetMachineTimeMultiplier(TraitModDataHelper.GetTraits(inputItem.modData));
+            if (multiplier == 1)
+            {
+                return;
+            }
+
+            int adjustedMinutes = (int)System.Math.Ceiling(__instance.MinutesUntilReady * multiplier / MACHINE_TIME_STEP) * MACHINE_TIME_STEP;
+            __instance.MinutesUntilReady = System.Math.Max(adjustedMinutes, MACHINE_TIME_STEP);
+        }
+
         private static bool OutputSeedMakerPrefix(Item inputItem, ref Item __result)
         {
             // Null output makes the machine refuse the item
@@ -263,11 +307,17 @@ namespace CropTraits.Framework.Patches.Objects
 
             __result.modData[CropTraits.TRAITS_MOD_DATA_KEY] = traitKey;
 
-            // Traits like Seedy add seeds, only rolled for the real output so checking what the machine accepts never rolls
+            // Traits like Seedy add seeds and traits like Fading change the seeds' traits, only rolled for the real output so checking what the machine accepts never rolls
             if (probe is false && machine is not null)
             {
                 System.Random random = Utility.CreateRandom(machine.TileLocation.X, machine.TileLocation.Y, Game1.stats.DaysPlayed, Game1.timeOfDay, SEED_MAKER_RANDOM_SEED);
-                __result.Stack += CropTraits.traitManager.GetExtraSeeds(TraitSet.FromKey(traitKey), random);
+                TraitSet produceTraits = TraitSet.FromKey(traitKey);
+
+                // Traits like Barren take seeds away, but the Seed Maker always makes at least one
+                __result.Stack = System.Math.Max(MIN_SEED_MAKER_SEEDS, __result.Stack + CropTraits.traitManager.GetExtraSeeds(produceTraits, random));
+
+                // Seeds that lose every trait become plain seeds, since an empty set removes the key
+                TraitModDataHelper.SetTraits(__result.modData, CropTraits.traitManager.GetMadeSeedTraits(produceTraits, random));
             }
         }
     }
