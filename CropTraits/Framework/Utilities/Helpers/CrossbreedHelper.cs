@@ -2,6 +2,7 @@ using CropTraits.Framework.Managers;
 using CropTraits.Framework.Models;
 using CropTraits.Framework.Models.Data;
 using CropTraits.Framework.Traits;
+using StardewValley.GameData.Crops;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace CropTraits.Framework.Utilities.Helpers
         public const double QUALITY_LEAD_FAVOR_PER_STEP = 0.05;
 
         // Expects parents in canonical order so random draws line up with the same parent whichever slot it was in
-        public static CrossbreedResult Crossbreed(BlendParent firstParent, BlendParent secondParent, IReadOnlyList<CombinationData> combinations, Random random)
+        public static CrossbreedResult Crossbreed(BlendParent firstParent, BlendParent secondParent, IReadOnlyList<CombinationData> combinations, CropData cropData, Random random)
         {
             TraitSet firstRemaining = firstParent.Traits.Clone();
             TraitSet secondRemaining = secondParent.Traits.Clone();
@@ -28,6 +29,9 @@ namespace CropTraits.Framework.Utilities.Helpers
             bool isFirstAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(firstParent.Traits);
             bool isSecondAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(secondParent.Traits);
             ApplyUniqueTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, isFirstAlwaysInherited, isSecondAlwaysInherited, random);
+
+            // Traits like Latent awaken before tier upgrades, so the new trait is treated like any other result
+            resultTraits = CropTraits.traitManager.AwakenTraits(resultTraits, cropData, random);
 
             // Crossbreeds that roll nothing become Seedless
             if (resultTraits.Count == 0)

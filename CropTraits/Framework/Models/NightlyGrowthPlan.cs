@@ -18,6 +18,9 @@ namespace CropTraits.Framework.Models
         // Set once a Nurturing neighbor has given this crop an extra day tonight, so several can't stack
         public bool IsNurtured { get; set; }
 
-        public bool HasEffects => CountsAsWatered || SkipsGrowth || ExtraGrowthDays > 0 || LosesGrowthWhenDry;
+        // Kills the crop overnight, whether or not it grows
+        public bool IsFlattened { get; set; }
+
+        public bool HasEffects => CountsAsWatered || SkipsGrowth || ExtraGrowthDays > 0 || LosesGrowthWhenDry || IsFlattened;
     }
 }

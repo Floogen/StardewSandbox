@@ -134,6 +134,31 @@ namespace CropTraits.Framework.Traits
         public virtual bool AlwaysPassesOnTraits => false;
 
         /// <summary>
+        /// If a crop that normally regrows is removed once it's harvested.
+        /// </summary>
+        public virtual bool IsRemovedAfterHarvest => false;
+
+        /// <summary>
+        /// If the harvest drops one quality step for each full day the crop was left ready.
+        /// </summary>
+        public virtual bool LosesQualityWhenLeftReady => false;
+
+        /// <summary>
+        /// If the crop clears weeds from the eight tiles around it each morning.
+        /// </summary>
+        public virtual bool ClearsNearbyWeeds => false;
+
+        /// <summary>
+        /// If lightning fully grows the crop instead of killing it, with storms on the farm also striking it on their own.
+        /// </summary>
+        public virtual bool IsConductive => false;
+
+        /// <summary>
+        /// If the trait turns into a random positive trait the crop can roll whenever it comes out of the Seed Splicer.
+        /// </summary>
+        public virtual bool AwakensWhenSpliced => false;
+
+        /// <summary>
         /// Adjusts the growth phase lengths. The last entry is the final phase and must be left alone.
         /// Called after planting, whenever the phases are rebuilt from crop data and when a seed's tooltip estimates its growth time, so it should only change the list it's given.
         /// </summary>
@@ -272,6 +297,30 @@ namespace CropTraits.Framework.Traits
         public virtual double ModifyArtisanSellPrice(double multiplier, int tier)
         {
             return multiplier;
+        }
+
+        /// <summary>
+        /// Adjusts the friendship gained when the produce is given as a gift the villager doesn't dislike or hate (1 is normal).
+        /// </summary>
+        public virtual double ModifyGiftFriendship(double multiplier, int tier)
+        {
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Extra seeds the Seed Maker adds when it turns the produce into its own seeds. The extras from every trait are added together.
+        /// </summary>
+        public virtual int GetExtraSeeds(Random random, int tier)
+        {
+            return 0;
+        }
+
+        /// <summary>
+        /// How strongly the crop's traits pull on the mutation roll of the same crop type around it (1 is normal). The highest value among the crop's traits is used.
+        /// </summary>
+        public virtual int GetNeighborInfluenceMultiplier(int tier)
+        {
+            return 1;
         }
 
         /// <summary>

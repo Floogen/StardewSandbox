@@ -1,5 +1,6 @@
 using StardewValley;
 using StardewValley.Characters;
+using StardewValley.TerrainFeatures;
 
 namespace CropTraits.Framework.Models
 {
@@ -14,6 +15,9 @@ namespace CropTraits.Framework.Models
 
         // The first produce created (the main harvest), copied for extra harvests so quality and color carry over
         public Item HarvestedItem { get; set; }
+
+        // The soil the crop grows in, so traits like Fragile can read what it has tracked
+        public HoeDirt Soil { get; set; }
 
         // Set when a Junimo is harvesting, so extra produce goes to its hut like the main harvest
         public JunimoHarvester JunimoHarvester { get; set; }

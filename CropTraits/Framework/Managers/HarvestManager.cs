@@ -51,6 +51,7 @@ namespace CropTraits.Framework.Managers
                 Traits = TraitSet.FromKey(traitKey),
                 SeedId = crop.netSeedIndex.Value,
                 QualifiedHarvestItemId = qualifiedHarvestItemId,
+                Soil = soil,
                 JunimoHarvester = junimoHarvester
             };
         }
@@ -99,6 +100,12 @@ namespace CropTraits.Framework.Managers
                 modifiedQuality = trait.ModifyHarvestQuality(modifiedQuality, random, tier);
             }
 
+            // Traits like Fragile drop a quality step for each full day the crop sat ready
+            if (context.Soil is not null && CropTraits.traitManager.LosesQualityWhenLeftReady(context.Traits))
+            {
+                modifiedQuality = QualityHelper.ShiftQuality(modifiedQuality, -NightlyGrowthHelper.GetDaysLeftReady(context.Soil));
+            }
+
             if (modifiedQuality == quality)
             {
                 return quality;
@@ -138,6 +145,23 @@ namespace CropTraits.Framework.Managers
             isCropRemoved = false;
         }
 
+        // Called from the Crop.harvest postfix after TryRegrow, removing a crop that normally regrows when a trait like Spent says so
+        public void TryRemoveSpentCrop(Crop crop, HoeDirt soil, ref bool isCropRemoved)
+        {
+            HarvestContext context = _activeHarvest;
+            if (isCropRemoved || context is null || context.CreatedItemCount == 0 || soil is null || soil.crop != crop)
+            {
+                return;
+            }
+
+            if (crop.dead.Value || crop.RegrowsAfterHarvest() is false || CropTraits.traitManager.IsRemovedAfterHarvest(context.Traits) is false)
+            {
+                return;
+            }
+
+            isCropRemoved = true;
+        }
+
         public static int GetRegrowthsUsed(HoeDirt soil)
         {
             if (soil.modData.TryGetValue(REGROWTHS_USED_MOD_DATA_KEY, out string value) && int.TryParse(value, out int regrowths))
@@ -156,6 +180,9 @@ namespace CropTraits.Framework.Managers
             {
                 return;
             }
+
+            // A regrowing crop starts counting its ready days again from zero
+            context.Soil?.modData.Remove(NightlyGrowthManager.DAYS_LEFT_READY_MOD_DATA_KEY);
 
             foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(context.Traits))
             {

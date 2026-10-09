@@ -212,17 +212,23 @@ namespace CropTraits.Framework.Managers
             string pairKey = BlendRandomHelper.BuildPairKey(seedId, first, second);
             Random random = BlendRandomHelper.Create(pairKey, ConsumeSpliceAttempt(pairKey));
 
+            // Handle any edge cases where cropData may be null
+            if (Game1.cropData.TryGetValue(seedId, out var cropData) is false)
+            {
+                cropData = new CropData();
+            }
+
             // Dilution is a gamble rather than a recipe, so it isn't recorded in the journal
             if (first.Traits.Count == 0 || second.Traits.Count == 0)
             {
                 BlendParent traitedParent = first.Traits.Count == 0 ? second : first;
                 BlendParent plainParent = first.Traits.Count == 0 ? first : second;
-                TraitSet dilutedTraits = DilutionHelper.Dilute(traitedParent.Traits, traitedParent.Quality, plainParent.Quality, random);
+                TraitSet dilutedTraits = CropTraits.traitManager.AwakenTraits(DilutionHelper.Dilute(traitedParent.Traits, traitedParent.Quality, plainParent.Quality, random), cropData, random);
 
                 return new BlendOutcome(CreateSeeds(seedId, dilutedTraits, random), new TraitSet());
             }
 
-            CrossbreedResult result = CrossbreedHelper.Crossbreed(first, second, CropTraits.traitManager.Combinations, random);
+            CrossbreedResult result = CrossbreedHelper.Crossbreed(first, second, CropTraits.traitManager.Combinations, cropData, random);
 
             BlendJournalEntryData journalEntry = new BlendJournalEntryData
             {

@@ -27,10 +27,12 @@ namespace CropTraits.Framework.Utilities.Helpers
                     continue;
                 }
 
+                // Traits like Dominant make every trait on the neighbor pull harder, still within the cap
+                int influenceMultiplier = CropTraits.traitManager.GetNeighborInfluenceMultiplier(neighborState.Traits);
                 foreach (KeyValuePair<string, int> trait in neighborState.Traits.Entries)
                 {
                     int currentBonus = weightBonuses.GetValueOrDefault(trait.Key);
-                    weightBonuses[trait.Key] = Math.Min(currentBonus + (NEIGHBOR_WEIGHT_BONUS * trait.Value), MAX_NEIGHBOR_BONUS);
+                    weightBonuses[trait.Key] = Math.Min(currentBonus + (NEIGHBOR_WEIGHT_BONUS * trait.Value * influenceMultiplier), MAX_NEIGHBOR_BONUS);
                 }
             }
 

@@ -20,6 +20,7 @@ namespace CropTraits.Framework.Patches.Objects
     public class ObjectPatch : PatchTemplate
     {
         public const int DESCRIPTION_WIDTH = 272;
+        public const int SEED_MAKER_RANDOM_SEED = 2511; // Keeps the extra seed roll apart from the game's own Seed Maker roll
 
         private readonly System.Type _object = typeof(Object);
         private static readonly MethodInfo _colorWhiteGetter = AccessTools.PropertyGetter(typeof(Color), nameof(Color.White));
@@ -241,7 +242,7 @@ namespace CropTraits.Framework.Patches.Objects
             return true;
         }
 
-        private static void OutputSeedMakerPostfix(Item inputItem, Item __result)
+        private static void OutputSeedMakerPostfix(Object machine, Item inputItem, bool probe, Item __result)
         {
             if (__result is null || inputItem is null)
             {
@@ -261,6 +262,13 @@ namespace CropTraits.Framework.Patches.Objects
             }
 
             __result.modData[CropTraits.TRAITS_MOD_DATA_KEY] = traitKey;
+
+            // Traits like Seedy add seeds, only rolled for the real output so checking what the machine accepts never rolls
+            if (probe is false && machine is not null)
+            {
+                System.Random random = Utility.CreateRandom(machine.TileLocation.X, machine.TileLocation.Y, Game1.stats.DaysPlayed, Game1.timeOfDay, SEED_MAKER_RANDOM_SEED);
+                __result.Stack += CropTraits.traitManager.GetExtraSeeds(TraitSet.FromKey(traitKey), random);
+            }
         }
     }
 }

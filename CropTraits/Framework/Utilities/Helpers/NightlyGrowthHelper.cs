@@ -67,6 +67,32 @@ namespace CropTraits.Framework.Utilities.Helpers
             dirt.modData[NightlyGrowthManager.OUT_OF_SEASON_NIGHTS_MOD_DATA_KEY] = (GetOutOfSeasonNights(dirt) + 1).ToString();
         }
 
+        public static int GetDaysLeftReady(HoeDirt dirt)
+        {
+            if (dirt.modData.TryGetValue(NightlyGrowthManager.DAYS_LEFT_READY_MOD_DATA_KEY, out string value) && int.TryParse(value, out int days))
+            {
+                return days;
+            }
+
+            return 0;
+        }
+
+        // Counts each full day a crop with a trait like Fragile sat ready, clearing the count once it's no longer ready
+        public static void CountDayLeftReady(HoeDirt dirt, TraitSet traits, bool wasLeftReady)
+        {
+            if (CropTraits.traitManager.LosesQualityWhenLeftReady(traits) is false || dirt.readyForHarvest() is false)
+            {
+                dirt.modData.Remove(NightlyGrowthManager.DAYS_LEFT_READY_MOD_DATA_KEY);
+                return;
+            }
+
+            // A crop that only became ready tonight hasn't sat through a full day yet
+            if (wasLeftReady)
+            {
+                dirt.modData[NightlyGrowthManager.DAYS_LEFT_READY_MOD_DATA_KEY] = (GetDaysLeftReady(dirt) + 1).ToString();
+            }
+        }
+
         public static void ApplyPlan(Crop crop, CropNightState nightState)
         {
             NightlyGrowthPlan plan = nightState.Plan;

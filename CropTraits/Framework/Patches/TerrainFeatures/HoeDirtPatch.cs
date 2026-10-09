@@ -30,6 +30,20 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.applySpeedIncreases), null), postfix: new HarmonyMethod(GetType(), nameof(ApplySpeedIncreasesPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.GetFertilizerSourceRect), null), postfix: new HarmonyMethod(GetType(), nameof(GetFertilizerSourceRectPostfix)));
             harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.DrawOptimized), null), transpiler: new HarmonyMethod(GetType(), nameof(DrawOptimizedTranspiler)));
+            harmony.Patch(AccessTools.Method(_hoeDirt, nameof(HoeDirt.performToolAction), null), prefix: new HarmonyMethod(GetType(), nameof(PerformToolActionPrefix)));
+        }
+
+        // The game's lightning hits soil with no tool, so traits like Conductive turn that hit into full growth instead of a dead crop
+        private static bool PerformToolActionPrefix(HoeDirt __instance, Tool t, ref bool __result)
+        {
+            if (t is not null || LightningHelper.IsLightningUpdateActive is false || LightningHelper.IsStrikeTarget(__instance, includeReady: true) is false)
+            {
+                return true;
+            }
+
+            LightningHelper.Strike(Game1.getFarm(), __instance.Tile, __instance);
+            __result = false;
+            return false;
         }
 
         private static void GetFertilizerSourceRectPostfix(HoeDirt __instance, ref Rectangle __result)

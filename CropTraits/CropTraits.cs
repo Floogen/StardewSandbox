@@ -3,6 +3,7 @@ using CropTraits.Framework.Managers;
 using CropTraits.Framework.Models;
 using CropTraits.Framework.Models.Data;
 using CropTraits.Framework.Patches;
+using CropTraits.Framework.Patches.Characters;
 using CropTraits.Framework.Patches.Objects;
 using CropTraits.Framework.Patches.TerrainFeatures;
 using CropTraits.Framework.Traits;
@@ -102,6 +103,8 @@ namespace CropTraits
                 new IndoorPotPatch(monitor, modHelper).Apply(harmony);
                 new ItemPatch(monitor, modHelper).Apply(harmony);
                 new MachineDataUtilityPatch(monitor, modHelper).Apply(harmony);
+                new UtilityPatch(monitor, modHelper).Apply(harmony);
+                new NPCPatch(monitor, modHelper).Apply(harmony);
             }
             catch (Exception e)
             {
@@ -116,6 +119,7 @@ namespace CropTraits
             helper.Events.GameLoop.DayEnding += (sender, args) => nightlyGrowthManager.PlanAllNightlyEffects();
             helper.Events.GameLoop.DayStarted += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.DayStarted += (sender, args) => nightlyGrowthManager.Reset();
+            helper.Events.GameLoop.DayStarted += (sender, args) => WeedHelper.ClearAllNearbyWeeds();
             helper.Events.GameLoop.DayStarted += (sender, args) => blendManager.ResetSpliceAttempts();
             helper.Events.GameLoop.TimeChanged += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;

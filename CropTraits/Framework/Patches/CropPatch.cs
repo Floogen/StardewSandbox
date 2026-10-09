@@ -86,11 +86,12 @@ namespace CropTraits.Framework.Patches
             CropTraits.harvestManager.BeginHarvest(__instance, soil, junimoHarvester);
         }
 
-        // A true result tells the caller to remove the crop, so traits like Resprouting flip it to keep the crop planted
+        // A true result tells the caller to remove the crop, so traits like Resprouting flip it to keep the crop planted while traits like Spent flip it to remove a regrowing crop
         private static void HarvestPostfix(Crop __instance, int xTile, int yTile, HoeDirt soil, ref bool __result)
         {
             CropTraits.harvestManager.CompleteHarvest(xTile, yTile, soil?.Location ?? Game1.currentLocation);
             CropTraits.harvestManager.TryRegrow(__instance, soil, ref __result);
+            CropTraits.harvestManager.TryRemoveSpentCrop(__instance, soil, ref __result);
         }
 
         /// <summary>

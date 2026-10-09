@@ -282,6 +282,109 @@ namespace CropTraits.Framework.Managers
             return Resolve(traits).Any(entry => entry.Trait.AlwaysPassesOnTraits);
         }
 
+        public bool IsRemovedAfterHarvest(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.IsRemovedAfterHarvest);
+        }
+
+        public bool LosesQualityWhenLeftReady(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.LosesQualityWhenLeftReady);
+        }
+
+        public bool ClearsNearbyWeeds(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.ClearsNearbyWeeds);
+        }
+
+        public bool IsConductive(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.IsConductive);
+        }
+
+        public double GetGiftFriendshipMultiplier(TraitSet traits)
+        {
+            double multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = trait.ModifyGiftFriendship(multiplier, tier);
+            }
+
+            return Math.Max(multiplier, 0);
+        }
+
+        public int GetExtraSeeds(TraitSet traits, Random random)
+        {
+            int extraSeeds = 0;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                extraSeeds += trait.GetExtraSeeds(random, tier);
+            }
+
+            return Math.Max(extraSeeds, 0);
+        }
+
+        public int GetNeighborInfluenceMultiplier(TraitSet traits)
+        {
+            int multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = Math.Max(multiplier, trait.GetNeighborInfluenceMultiplier(tier));
+            }
+
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Swaps each trait like Latent for a random positive trait the crop can roll, picked by weight from the traits it doesn't already have and wouldn't conflict with.
+        /// A trait with nothing left to awaken into stays as it is. Returns the same set when nothing awakens, otherwise a new one.
+        /// </summary>
+        public TraitSet AwakenTraits(TraitSet traits, CropData cropData, Random random)
+        {
+            List<(Trait Trait, int Tier)> awakeningTraits = Resolve(traits)
+                .Where(entry => entry.Trait.AwakensWhenSpliced)
+                .ToList();
+
+            if (awakeningTraits.Count == 0)
+            {
+                return traits;
+            }
+
+            TraitSet awakenedTraits = traits.Clone();
+            foreach ((Trait awakeningTrait, int tier) in awakeningTraits)
+            {
+                awakenedTraits.Remove(awakeningTrait.Id);
+
+                Trait awakenedTrait = RollAwakenedTrait(awakenedTraits, cropData, random);
+                if (awakenedTrait is null)
+                {
+                    awakenedTraits.Set(awakeningTrait.Id, tier);
+                    continue;
+                }
+
+                awakenedTraits.Set(awakenedTrait.Id, 1);
+            }
+
+            return awakenedTraits;
+        }
+
+        // The rollable traits are in ordinal order, so the pick only depends on the roll
+        public Trait RollAwakenedTrait(TraitSet existingTraits, CropData cropData, Random random)
+        {
+            List<(Trait Trait, int Weight)> candidates = _rollableTraits
+                .Where(trait => trait.Polarity == TraitPolarity.Positive && trait.Weight > 0 && existingTraits.Has(trait.Id) is false && trait.CanApplyTo(cropData))
+                .Where(trait => HasConflictWithAny(trait.Id, existingTraits.Ids) is false)
+                .Select(trait => (trait, trait.Weight))
+                .ToList();
+
+            if (candidates.Count == 0)
+            {
+                return null;
+            }
+
+            return PickWeightedTrait(candidates, random);
+        }
+
         public Color GetTint(TraitSet traits, string seedId)
         {
             Color tint = Color.White;
