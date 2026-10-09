@@ -12,5 +12,8 @@ namespace CropTraits.Framework.Models
 
         // Mature mutated crops twinkle until their first harvest
         public bool ShowMutationSparkles { get; set; } = true;
+
+        // Lets traits like Slimy and Roosting be rolled and spawn monsters, turning both off when false
+        public bool EnableMonsterTraits { get; set; } = true;
     }
 }

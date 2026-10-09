@@ -83,6 +83,32 @@ namespace CropTraits.Framework.Managers
             context.HarvestedItem ??= item;
         }
 
+        public bool IsHarvestActive => _activeHarvest is not null;
+
+        /// <summary>
+        /// Called as an item reaches the player during a harvest (added to the inventory or dropped by a scythe), so traits like Gilded can take the main harvest instead.
+        /// Only the first item matching the harvest is offered. Junimo harvests are left alone since there's no player to pay.
+        /// </summary>
+        public bool TryReplaceMainHarvest(Item item)
+        {
+            HarvestContext context = _activeHarvest;
+            if (context is null || context.IsMainHarvestHandled || context.JunimoHarvester is not null || item is null || item.QualifiedItemId != context.QualifiedHarvestItemId)
+            {
+                return false;
+            }
+
+            context.IsMainHarvestHandled = true;
+            foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(context.Traits))
+            {
+                if (trait.TryReplaceMainHarvest(context, item, tier))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Called from Crop.harvest right after the game picks the quality, so the change carries into every copy the harvest makes
         public int ModifyHarvestQuality(int quality, Crop crop)
         {
@@ -162,6 +188,21 @@ namespace CropTraits.Framework.Managers
             isCropRemoved = true;
         }
 
+        // Called from the Crop.harvest postfix after TryRegrow and TryRemoveSpentCrop, once it's settled that the crop leaves its soil
+        public void CompleteCropRemoval(Crop crop, HoeDirt soil, bool isCropRemoved)
+        {
+            HarvestContext context = _activeHarvest;
+            if (isCropRemoved is false || context is null || context.CreatedItemCount == 0 || soil is null || soil.crop != crop)
+            {
+                return;
+            }
+
+            foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(context.Traits))
+            {
+                trait.OnCropRemovedAfterHarvest(context, tier);
+            }
+        }
+
         public static int GetRegrowthsUsed(HoeDirt soil)
         {
             if (soil.modData.TryGetValue(REGROWTHS_USED_MOD_DATA_KEY, out string value) && int.TryParse(value, out int regrowths))
@@ -176,7 +217,15 @@ namespace CropTraits.Framework.Managers
         public void CompleteHarvest(int xTile, int yTile, GameLocation location)
         {
             HarvestContext context = _activeHarvest;
-            if (context is null || context.CreatedItemCount == 0 || location is null)
+            if (context is null)
+            {
+                return;
+            }
+
+            // Anything created from here on is extra produce, which traits like Gilded never take
+            context.IsMainHarvestHandled = true;
+
+            if (context.CreatedItemCount == 0 || location is null)
             {
                 return;
             }

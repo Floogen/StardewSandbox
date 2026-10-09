@@ -103,12 +103,7 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
             }
 
             // HoeDirt outlives its crop, so leftover state from a previous crop is cleared
-            __instance.modData.Remove(CropTraits.TRAITS_MOD_DATA_KEY);
-            __instance.modData.Remove(CropTraits.SEED_TRAITS_MOD_DATA_KEY);
-            __instance.modData.Remove(CropTraits.PLANTER_ID_MOD_DATA_KEY);
-            __instance.modData.Remove(MutationManager.HAS_MUTATED_MOD_DATA_KEY);
-            __instance.modData.Remove(NightlyGrowthManager.OUT_OF_SEASON_NIGHTS_MOD_DATA_KEY);
-            __instance.modData.Remove(HarvestManager.REGROWTHS_USED_MOD_DATA_KEY);
+            PlantingHelper.ResetCropModData(__instance);
 
             if (who is not null)
             {

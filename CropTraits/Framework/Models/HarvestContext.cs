@@ -21,5 +21,8 @@ namespace CropTraits.Framework.Models
 
         // Set when a Junimo is harvesting, so extra produce goes to its hut like the main harvest
         public JunimoHarvester JunimoHarvester { get; set; }
+
+        // Set once the main harvest has been offered to traits like Gilded, so extra produce is never taken in its place
+        public bool IsMainHarvestHandled { get; set; }
     }
 }

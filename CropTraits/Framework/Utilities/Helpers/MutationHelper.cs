@@ -89,7 +89,8 @@ namespace CropTraits.Framework.Utilities.Helpers
             List<string> conflictingIds = traits.Ids.Where(traitId => CropTraits.traitManager.HasConflict(rolledTrait, traitId)).ToList();
             if (conflictingIds.Count > 0)
             {
-                if (isStable)
+                // Combination traits only come from the Seed Splicer, so a mutation can never replace one
+                if (isStable || conflictingIds.Any(CropTraits.traitManager.IsCombinationTrait))
                 {
                     return;
                 }
@@ -117,9 +118,21 @@ namespace CropTraits.Framework.Utilities.Helpers
             bool shouldReplace = isAtCap || (traits.Count > 0 && random.NextDouble() < REPLACE_CHANCE_UNDER_CAP);
             if (shouldReplace)
             {
-                // Ids are already in ordinal order, so the replaced trait is deterministic for a given seed
-                List<string> traitIds = traits.Ids.ToList();
-                traits.Remove(traitIds[random.Next(traitIds.Count)]);
+                // Ids are already in ordinal order, so the replaced trait is deterministic for a given seed. Combination traits are never picked
+                List<string> replaceableIds = traits.Ids
+                    .Where(traitId => CropTraits.traitManager.IsCombinationTrait(traitId) is false)
+                    .ToList();
+
+                // A full crop holding only combination traits has nothing to give up, so the roll is consumed
+                if (replaceableIds.Count == 0 && isAtCap)
+                {
+                    return;
+                }
+
+                if (replaceableIds.Count > 0)
+                {
+                    traits.Remove(replaceableIds[random.Next(replaceableIds.Count)]);
+                }
             }
 
             traits.Set(rolledTrait.Id, 1);

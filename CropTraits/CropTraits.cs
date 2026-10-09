@@ -57,6 +57,7 @@ namespace CropTraits
         public static CropLightManager cropLightManager;
         public static DiscoveryManager discoveryManager;
         public static HarvestManager harvestManager;
+        public static MorningManager morningManager;
         public static MutationManager mutationManager;
         public static MutationSparkleManager mutationSparkleManager;
         public static NightlyGrowthManager nightlyGrowthManager;
@@ -80,6 +81,7 @@ namespace CropTraits
             cropLightManager = new CropLightManager(monitor, helper);
             discoveryManager = new DiscoveryManager(monitor, helper);
             harvestManager = new HarvestManager(monitor, helper);
+            morningManager = new MorningManager(monitor, helper);
             mutationManager = new MutationManager(monitor, helper);
             mutationSparkleManager = new MutationSparkleManager(monitor, helper);
             nightlyGrowthManager = new NightlyGrowthManager(monitor, helper);
@@ -105,6 +107,8 @@ namespace CropTraits
                 new MachineDataUtilityPatch(monitor, modHelper).Apply(harmony);
                 new UtilityPatch(monitor, modHelper).Apply(harmony);
                 new NPCPatch(monitor, modHelper).Apply(harmony);
+                new FarmerPatch(monitor, modHelper).Apply(harmony);
+                new Game1Patch(monitor, modHelper).Apply(harmony);
             }
             catch (Exception e)
             {
@@ -121,6 +125,7 @@ namespace CropTraits
             helper.Events.GameLoop.DayStarted += (sender, args) => nightlyGrowthManager.Reset();
             helper.Events.GameLoop.DayStarted += (sender, args) => WeedHelper.ClearAllNearbyWeeds();
             helper.Events.GameLoop.DayStarted += (sender, args) => blendManager.ResetSpliceAttempts();
+            helper.Events.GameLoop.DayStarted += (sender, args) => morningManager.ApplyAllMorningEffects();
             helper.Events.GameLoop.TimeChanged += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += (sender, args) => discoveryManager.Load();

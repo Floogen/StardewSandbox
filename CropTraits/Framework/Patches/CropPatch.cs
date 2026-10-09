@@ -92,6 +92,7 @@ namespace CropTraits.Framework.Patches
             CropTraits.harvestManager.CompleteHarvest(xTile, yTile, soil?.Location ?? Game1.currentLocation);
             CropTraits.harvestManager.TryRegrow(__instance, soil, ref __result);
             CropTraits.harvestManager.TryRemoveSpentCrop(__instance, soil, ref __result);
+            CropTraits.harvestManager.CompleteCropRemoval(__instance, soil, __result);
         }
 
         /// <summary>

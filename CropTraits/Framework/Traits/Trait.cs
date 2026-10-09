@@ -192,6 +192,31 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
+        /// Offered the main harvest as it reaches the player (picked by hand or dropped by a scythe). Returning true takes the item so the player never receives it.
+        /// Called at most once per harvest and never for Junimo harvests. Extra produce (from the crop's data or traits like Prolific) is never offered.
+        /// </summary>
+        public virtual bool TryReplaceMainHarvest(HarvestContext context, Item item, int tier)
+        {
+            return false;
+        }
+
+        /// <summary>
+        /// Called once a harvest is going to remove the crop from its soil, after traits like Resprouting and Spent have decided whether it stays.
+        /// </summary>
+        public virtual void OnCropRemovedAfterHarvest(HarvestContext context, int tier)
+        {
+
+        }
+
+        /// <summary>
+        /// Called each morning (main player only) for every living crop with this trait, so anything it spawns is waiting when the day starts.
+        /// </summary>
+        public virtual void OnDayStarted(MorningContext context, int tier)
+        {
+
+        }
+
+        /// <summary>
         /// Adjusts the harvest quality right after the game picks it, so the change carries into every copy the harvest makes.
         /// The result is clamped to the crop's own quality limits afterward.
         /// </summary>
