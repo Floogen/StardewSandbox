@@ -18,10 +18,10 @@ namespace CropTraits.Framework.Utilities.Helpers
             return $"{seedId}|{first.SortKey}+{second.SortKey}";
         }
 
-        // Seeded by the save and the pair only, so a pair always gives the same result within a save
-        public static Random Create(string pairKey)
+        // Seeded by the save, day, player, pair and that pair's attempt today, so each splice rolls fresh but reloading the day replays the same results
+        public static Random Create(string pairKey, int attemptToday)
         {
-            return Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.hash.GetDeterministicHashCode(pairKey));
+            return Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed, Game1.player.UniqueMultiplayerID, Game1.hash.GetDeterministicHashCode(pairKey), attemptToday);
         }
     }
 }

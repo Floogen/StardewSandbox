@@ -2,6 +2,7 @@ using CropTraits.Framework.Models;
 using CropTraits.Framework.Models.Data;
 using CropTraits.Framework.Utilities.Helpers;
 using StardewModdingAPI;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.GameData.Crops;
 using System;
@@ -19,6 +20,9 @@ namespace CropTraits.Framework.Managers
         // Reverse lookup from qualified harvest item ID to the seeds that grow it, rebuilt when Data/Crops changes
         private Dictionary<string, List<string>> _seedIdsByHarvestItem;
 
+        // Splices of each pair so far today, cleared at day start so a reload replays the same results
+        private readonly PerScreen<Dictionary<string, int>> _spliceAttemptsToday = new(() => new Dictionary<string, int>());
+
         /// <summary>Validates Seed Splicer inputs and handles the crossbreeding / dilution.</summary>
         public BlendManager(IMonitor monitor, IModHelper helper) : base(monitor, helper)
         {
@@ -28,6 +32,11 @@ namespace CropTraits.Framework.Managers
         public void InvalidateCropCache()
         {
             _seedIdsByHarvestItem = null;
+        }
+
+        public void ResetSpliceAttempts()
+        {
+            _spliceAttemptsToday.Value.Clear();
         }
 
         public bool HasTraits(Item item)
@@ -165,19 +174,23 @@ namespace CropTraits.Framework.Managers
         // Each upgradeable trait rolls on its own, so this is the chance that at least one increases its tier
         public double GetAnyTierUpgradeChance(Item firstParent, Item secondParent)
         {
-            return GetAnyTierUpgradeChance(firstParent, secondParent, GetUpgradeableTraitCount(TraitModDataHelper.GetTraits(firstParent.modData)));
-        }
-
-        public double GetAnyTierUpgradeChance(Item firstParent, Item secondParent, int upgradeableCount)
-        {
             double upgradeChance = CrossbreedHelper.GetTierUpgradeChance(firstParent.Quality, secondParent.Quality);
 
-            return 1 - Math.Pow(1 - upgradeChance, upgradeableCount);
+            return 1 - Math.Pow(1 - upgradeChance, GetUpgradeableSharedTraitCount(firstParent, secondParent));
         }
 
-        public bool TryGetKnownResult(Item firstItem, Item secondItem, out TraitSet resultTraits)
+        // Matches ApplyTierUpgrades: only traits both parents carry at the same tier, and below max tier, can climb
+        public int GetUpgradeableSharedTraitCount(Item firstParent, Item secondParent)
         {
-            resultTraits = null;
+            TraitSet firstTraits = TraitModDataHelper.GetTraits(firstParent.modData);
+            TraitSet secondTraits = TraitModDataHelper.GetTraits(secondParent.modData);
+
+            return firstTraits.Entries.Count(trait => secondTraits.GetTier(trait.Key) == trait.Value && trait.Value < CropTraits.traitManager.GetMaxTier(trait.Key));
+        }
+
+        // Only crossbreeds are recorded, so a diluted pair never counts as spliced before
+        public bool HasSplicedBefore(Item firstItem, Item secondItem)
+        {
             if (HasTraits(firstItem) is false || HasTraits(secondItem) is false)
             {
                 return false;
@@ -190,65 +203,54 @@ namespace CropTraits.Framework.Managers
             }
 
             (BlendParent first, BlendParent second) = BlendRandomHelper.GetCanonicalOrder(ToBlendParent(firstItem), ToBlendParent(secondItem));
-            string pairKey = BlendRandomHelper.BuildPairKey(seedId, first, second);
-            if (CropTraits.discoveryManager.Data.BlendJournal.TryGetValue(pairKey, out BlendJournalEntryData entry) is false)
-            {
-                return false;
-            }
-
-            resultTraits = TraitSet.FromKey(entry.ResultTraitKey);
-            return true;
-        }
-
-        // Matches ApplyTierUpgrades: only result traits both parents carry at that same tier, and below max tier, can climb
-        public int GetUpgradeableResultTraitCount(TraitSet resultTraits, Item firstParent, Item secondParent)
-        {
-            TraitSet firstTraits = TraitModDataHelper.GetTraits(firstParent.modData);
-            TraitSet secondTraits = TraitModDataHelper.GetTraits(secondParent.modData);
-
-            return resultTraits.Entries.Count(trait => firstTraits.GetTier(trait.Key) == trait.Value && secondTraits.GetTier(trait.Key) == trait.Value && trait.Value < CropTraits.traitManager.GetMaxTier(trait.Key));
+            return CropTraits.discoveryManager.Data.BlendJournal.ContainsKey(BlendRandomHelper.BuildPairKey(seedId, first, second));
         }
 
         public BlendOutcome Blend(string seedId, Item firstItem, Item secondItem)
         {
-            BlendParent firstParent = ToBlendParent(firstItem);
-            BlendParent secondParent = ToBlendParent(secondItem);
+            (BlendParent first, BlendParent second) = BlendRandomHelper.GetCanonicalOrder(ToBlendParent(firstItem), ToBlendParent(secondItem));
+            string pairKey = BlendRandomHelper.BuildPairKey(seedId, first, second);
+            Random random = BlendRandomHelper.Create(pairKey, ConsumeSpliceAttempt(pairKey));
 
-            // Dilution is a gamble rather than a recipe, so it uses true random and isn't recorded in the journal
-            if (firstParent.Traits.Count == 0 || secondParent.Traits.Count == 0)
+            // Dilution is a gamble rather than a recipe, so it isn't recorded in the journal
+            if (first.Traits.Count == 0 || second.Traits.Count == 0)
             {
-                BlendParent traitedParent = firstParent.Traits.Count == 0 ? secondParent : firstParent;
-                TraitSet dilutedTraits = DilutionHelper.Dilute(traitedParent.Traits, traitedParent.Quality, Game1.random);
+                BlendParent traitedParent = first.Traits.Count == 0 ? second : first;
+                TraitSet dilutedTraits = DilutionHelper.Dilute(traitedParent.Traits, traitedParent.Quality, random);
 
-                return new BlendOutcome(CreateSeeds(seedId, dilutedTraits), new TraitSet());
+                return new BlendOutcome(CreateSeeds(seedId, dilutedTraits, random), new TraitSet());
             }
 
-            (BlendParent first, BlendParent second) = BlendRandomHelper.GetCanonicalOrder(firstParent, secondParent);
-            string pairKey = BlendRandomHelper.BuildPairKey(seedId, first, second);
-            Random random = BlendRandomHelper.Create(pairKey);
-
-            // Tier upgrades use the game's random so a rare chance is a real rate per splice
-            CrossbreedResult result = CrossbreedHelper.Crossbreed(first, second, CropTraits.traitManager.Combinations, random, Game1.random);
+            CrossbreedResult result = CrossbreedHelper.Crossbreed(first, second, CropTraits.traitManager.Combinations, random);
 
             BlendJournalEntryData journalEntry = new BlendJournalEntryData
             {
                 SeedId = seedId,
                 FirstParentKey = first.SortKey,
                 SecondParentKey = second.SortKey,
-                // The fixed result is recorded, so the journal stays accurate for the pair even after a lucky upgrade
-                ResultTraitKey = result.FixedTraits.ToKey(),
+                ResultTraitKeys = new List<string> { result.Traits.ToKey() },
                 FirstSplicedDay = Game1.Date.TotalDays
             };
 
             CropTraits.discoveryManager.RecordBlend(pairKey, journalEntry, result.FusedCombinationKeys);
 
-            return new BlendOutcome(CreateSeeds(seedId, result.Traits), GetUpgradedTraits(result.FixedTraits, result.Traits));
+            return new BlendOutcome(CreateSeeds(seedId, result.Traits, random), GetUpgradedTraits(result.BaseTraits, result.Traits));
         }
 
-        // Seed count is truly random, independent of the trait outcome
-        public StardewValley.Object CreateSeeds(string seedId, TraitSet traits)
+        // Returns the attempt number used for this splice, then counts it
+        public int ConsumeSpliceAttempt(string pairKey)
         {
-            int seedCount = Game1.random.Next(MIN_SEED_OUTPUT, MAX_SEED_OUTPUT + 1);
+            Dictionary<string, int> attempts = _spliceAttemptsToday.Value;
+            int attempt = attempts.TryGetValue(pairKey, out int count) ? count : 0;
+            attempts[pairKey] = attempt + 1;
+
+            return attempt;
+        }
+
+        // Drawn last, so the seed count never shifts the trait rolls
+        public StardewValley.Object CreateSeeds(string seedId, TraitSet traits, Random random)
+        {
+            int seedCount = random.Next(MIN_SEED_OUTPUT, MAX_SEED_OUTPUT + 1);
 
             StardewValley.Object seeds = ItemRegistry.Create<StardewValley.Object>(seedId, seedCount);
             TraitModDataHelper.SetTraits(seeds.modData, traits);
@@ -256,12 +258,12 @@ namespace CropTraits.Framework.Managers
             return seeds;
         }
 
-        public TraitSet GetUpgradedTraits(TraitSet fixedTraits, TraitSet resultTraits)
+        public TraitSet GetUpgradedTraits(TraitSet baseTraits, TraitSet resultTraits)
         {
             TraitSet upgradedTraits = new TraitSet();
             foreach (KeyValuePair<string, int> trait in resultTraits.Entries)
             {
-                if (trait.Value > fixedTraits.GetTier(trait.Key))
+                if (trait.Value > baseTraits.GetTier(trait.Key))
                 {
                     upgradedTraits.Set(trait.Key, trait.Value);
                 }

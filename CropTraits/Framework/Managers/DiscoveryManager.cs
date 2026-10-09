@@ -26,6 +26,7 @@ namespace CropTraits.Framework.Managers
         public void Load()
         {
             Data = Context.IsMainPlayer ? helper.Data.ReadSaveData<DiscoveryData>(SAVE_DATA_KEY) ?? new DiscoveryData() : new DiscoveryData();
+            MigrateBlendResults();
             BackfillCropRecords();
             RecordPlayerInventory(Game1.player);
         }
@@ -68,7 +69,25 @@ namespace CropTraits.Framework.Managers
                     RecordCropTraits(entry.SeedId, secondTraits);
                 }
 
-                RecordCropTraits(entry.SeedId, TraitSet.FromKey(entry.ResultTraitKey));
+                foreach (string resultTraitKey in entry.ResultTraitKeys)
+                {
+                    RecordCropTraits(entry.SeedId, TraitSet.FromKey(resultTraitKey));
+                }
+            }
+        }
+
+        // Older saves stored one result per pair, so it becomes the first entry in the result list
+        private void MigrateBlendResults()
+        {
+            foreach (BlendJournalEntryData entry in Data.BlendJournal.Values)
+            {
+                entry.ResultTraitKeys ??= new List<string>();
+                if (string.IsNullOrEmpty(entry.ResultTraitKey) is false && entry.ResultTraitKeys.Contains(entry.ResultTraitKey) is false)
+                {
+                    entry.ResultTraitKeys.Insert(0, entry.ResultTraitKey);
+                }
+
+                entry.ResultTraitKey = null;
             }
         }
 
@@ -197,13 +216,20 @@ namespace CropTraits.Framework.Managers
 
         public void RecordBlend(string pairKey, BlendJournalEntryData entry, IEnumerable<string> fusedCombinationKeys)
         {
-            // A pair crossbred again keeps the day it was first crossbred
-            if (Data.BlendJournal.TryGetValue(pairKey, out BlendJournalEntryData existingEntry) && existingEntry.FirstSplicedDay > 0)
+            entry.ResultTraitKeys ??= new List<string>();
+
+            // A pair crossbred again keeps the day it was first crossbred and adds any result not seen before
+            if (Data.BlendJournal.TryGetValue(pairKey, out BlendJournalEntryData existingEntry))
             {
-                entry.FirstSplicedDay = existingEntry.FirstSplicedDay;
+                if (existingEntry.FirstSplicedDay > 0)
+                {
+                    entry.FirstSplicedDay = existingEntry.FirstSplicedDay;
+                }
+
+                entry.ResultTraitKeys = existingEntry.ResultTraitKeys.Union(entry.ResultTraitKeys).ToList();
             }
 
-            // Farmhands also keep a copy for the session, so the Seed Splicer can preview their own results right away
+            // Farmhands also keep a copy for the session, so the Seed Splicer knows right away which pairs they've made before
             Data.BlendJournal[pairKey] = entry;
 
             foreach (string combinationKey in fusedCombinationKeys)

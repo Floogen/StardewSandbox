@@ -34,7 +34,7 @@
   "journal.crop.traits_heading": "Traits Seen",
   "journal.crop.crossbreeds_heading": "Crossbreeds",
   "journal.crop.none": "None yet.",
-  "journal.crossbreed.entry": "{{first}} ({{firstQuality}})\n+ {{second}} ({{secondQuality}})\n[bold]Results:[/bold] {{result}}",
+  "journal.crossbreed.entry": "{{first}} ({{firstQuality}})\n+ {{second}} ({{secondQuality}})\n[bold]Results:[/bold]\n{{results}}",
   "journal.quality.normal": "Normal",
   "journal.quality.silver": "Silver",
   "journal.quality.gold": "Gold",

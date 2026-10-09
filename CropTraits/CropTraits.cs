@@ -116,6 +116,7 @@ namespace CropTraits
             helper.Events.GameLoop.DayEnding += (sender, args) => nightlyGrowthManager.PlanAllNightlyEffects();
             helper.Events.GameLoop.DayStarted += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.DayStarted += (sender, args) => nightlyGrowthManager.Reset();
+            helper.Events.GameLoop.DayStarted += (sender, args) => blendManager.ResetSpliceAttempts();
             helper.Events.GameLoop.TimeChanged += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.GameLaunched += OnGameLaunched;
             helper.Events.GameLoop.SaveLoaded += (sender, args) => discoveryManager.Load();

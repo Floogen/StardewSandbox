@@ -15,8 +15,8 @@ namespace CropTraits.Framework.Utilities.Helpers
         public const double HIGHER_TIER_CHANCE = 0.35;
         public const double UNIQUE_INHERIT_CHANCE = 0.5;
 
-        // Expects parents in canonical order so random draws line up with the same parent every time
-        public static CrossbreedResult Crossbreed(BlendParent firstParent, BlendParent secondParent, IReadOnlyList<CombinationData> combinations, Random random, Random upgradeRandom)
+        // Expects parents in canonical order so random draws line up with the same parent whichever slot it was in
+        public static CrossbreedResult Crossbreed(BlendParent firstParent, BlendParent secondParent, IReadOnlyList<CombinationData> combinations, Random random)
         {
             TraitSet firstRemaining = firstParent.Traits.Clone();
             TraitSet secondRemaining = secondParent.Traits.Clone();
@@ -34,7 +34,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                 resultTraits.Set(SeedlessTrait.ID, 1);
             }
 
-            TraitSet upgradedTraits = ApplyTierUpgrades(resultTraits, firstParent, secondParent, upgradeRandom);
+            TraitSet upgradedTraits = ApplyTierUpgrades(resultTraits, firstParent, secondParent, random);
 
             return new CrossbreedResult(resultTraits, upgradedTraits, fusedCombinationKeys);
         }
@@ -114,16 +114,15 @@ namespace CropTraits.Framework.Utilities.Helpers
         }
 
         /// <summary>
-        /// Rolls the rare tier upgrade for traits both parents carry at the same tier as the fixed result.
-        /// This uses true random rather than the pair seed, so the chance is a real rate per splice instead of a fixed yes or no for each pair.
-        /// The fixed traits are left untouched, so the tracking keeps note of the pair's fixed result.
+        /// Rolls the rare tier upgrade for traits both parents carry at the same tier as the base result.
+        /// The base traits are left untouched, so the Seed Splicer can tell which traits grew stronger.
         /// </summary>
-        public static TraitSet ApplyTierUpgrades(TraitSet fixedTraits, BlendParent firstParent, BlendParent secondParent, Random upgradeRandom)
+        public static TraitSet ApplyTierUpgrades(TraitSet baseTraits, BlendParent firstParent, BlendParent secondParent, Random random)
         {
-            TraitSet upgradedTraits = fixedTraits.Clone();
+            TraitSet upgradedTraits = baseTraits.Clone();
             double upgradeChance = GetTierUpgradeChance(firstParent.Quality, secondParent.Quality);
 
-            foreach (KeyValuePair<string, int> trait in fixedTraits.Entries)
+            foreach (KeyValuePair<string, int> trait in baseTraits.Entries)
             {
                 // Mismatched tiers and fused or unique traits never climb
                 if (firstParent.Traits.GetTier(trait.Key) != trait.Value || secondParent.Traits.GetTier(trait.Key) != trait.Value)
@@ -136,7 +135,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                     continue;
                 }
 
-                if (upgradeRandom.NextDouble() < upgradeChance)
+                if (random.NextDouble() < upgradeChance)
                 {
                     upgradedTraits.Set(trait.Key, trait.Value + 1);
                 }

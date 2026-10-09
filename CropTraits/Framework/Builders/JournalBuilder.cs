@@ -296,7 +296,7 @@ namespace CropTraits.Framework.Builders
 
             page = CreateNumberedPage(book, chapterId, 3);
             page.AddHeading("Mixing Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("When inputting two crops with traits, they will crossbreed and combine their traits into new seeds.\n\nSplicing a pair you have used before always gives the same output, so a good combination can be repeated.\n\nWhen both crops share a trait at the same tier, there is a small chance it grows stronger.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph("When inputting two crops with traits, they will crossbreed and combine their traits into new seeds.\n\nEvery splice rolls its own result, so the same pair can give different seeds each time. Each result you get is noted here.\n\nWhen both crops share a trait at the same tier, there is a small chance it grows stronger.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 4, hideNumber: true);
             page.AddHeading("Diluting Traits").Alignment("Center").Spacing(16);
@@ -735,7 +735,7 @@ namespace CropTraits.Framework.Builders
                 firstQuality = JournalDataHelper.GetQualityName(firstQuality),
                 second = GetTraitSetLinkText(secondTraits, linkedTraitIds),
                 secondQuality = JournalDataHelper.GetQualityName(secondQuality),
-                result = GetTraitSetLinkText(TraitSet.FromKey(crossbreed.ResultTraitKey), linkedTraitIds)
+                results = string.Join("\n", crossbreed.ResultTraitKeys.Select(resultTraitKey => "- " + GetTraitSetLinkText(TraitSet.FromKey(resultTraitKey), linkedTraitIds)))
             });
         }
 
@@ -754,7 +754,7 @@ namespace CropTraits.Framework.Builders
             BlendParent.TryParseSortKey(crossbreed.FirstParentKey, out TraitSet firstTraits, out _);
             BlendParent.TryParseSortKey(crossbreed.SecondParentKey, out TraitSet secondTraits, out _);
 
-            return firstTraits.Ids.Concat(secondTraits.Ids).Concat(TraitSet.FromKey(crossbreed.ResultTraitKey).Ids);
+            return firstTraits.Ids.Concat(secondTraits.Ids).Concat(crossbreed.ResultTraitKeys.SelectMany(resultTraitKey => TraitSet.FromKey(resultTraitKey).Ids));
         }
 
         // Measuring for overflow sees only an element's own links, so the trait links are repeated on the element itself
