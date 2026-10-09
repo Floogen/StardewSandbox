@@ -10,6 +10,7 @@ using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.BellsAndWhistles;
 using StardewValley.Characters;
+using StardewValley.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,8 +88,8 @@ namespace CropTraits.Framework.Builders
             ApplyNotebookAppearance(book);
 
             // Cover
-            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("Crop Traits").Font("Dialogue").Position(350, 125).Condition(COVER_STATE_CONDITION);
-            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("Guide").Font("Dialogue").Position(450, 225).Condition(COVER_STATE_CONDITION);
+            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Crop Traits[/bold]").Font("Dialogue").Position(350, 125).Condition(COVER_STATE_CONDITION);
+            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Guide[/bold]").Font("Dialogue").Position(450, 225).Condition(COVER_STATE_CONDITION);
 
             // Add bookmark to return to home page
             book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 180, 21, 20).Scale(4).Position(-24, 125)
@@ -182,7 +183,10 @@ namespace CropTraits.Framework.Builders
             overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.traits", new { count = discoveries.Traits.Count, total = CropTraits.traitManager.Traits.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
             overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.crops", new { count = discoveredCropCount, total = cropCount })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
             overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.combinations", new { count = discoveries.Combinations.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
-            overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.blends", new { count = discoveries.BlendJournal.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(32);
+            overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.blends", new { count = discoveries.BlendJournal.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
+
+            overviewPage.AddHeading("-----").Font("Small").Alignment("Center").Spacing(24);
+            overviewPage.AddHeading($"[bounce][bold]Hint:[/bold][/bounce] {GetRandomHint()}").Font("Small").Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(12);
 
             IPageBuilder contentPage = book.AddPage("contents", FRONT_CHAPTER_ID);
             contentPage.AddTitle("Contents").Alignment("Center").Spacing(32);
@@ -196,6 +200,20 @@ namespace CropTraits.Framework.Builders
             contentPage.AddHeading("[link=discovered_crops_hyperlink]Discovered Crops[/link]").Font("Small").Alignment("Center").Spacing(12);
             contentPage.AddHeading("---").Font("Small").Alignment("Center").Spacing(12);
             contentPage.AddHeading("[link=settings_hyperlink]Settings[/link]").Font("Small").Alignment("Center").Spacing(12);
+        }
+
+        public string GetRandomHint()
+        {
+            var randomHints = new List<string>()
+            {
+                "You can go back a page by using [bold]Escape[/bold] key or the controller's [bold]B button[/bold]!",
+                $"You can press [bold]{GetTraitViewKey()}[/bold] to show an icon over every crop with traits.\n\nHover over a crop to see its details, then press it again to hide the icons.",
+                "The higher quality the parent crop, the more likely its [link=trait][underline]traits[/underline][/link] are inherited when using the [link=seed_splicer][underline]Seed Splicer[/underline][/link]!",
+                "Planting adjacent crops that share the same [link=trait][underline]trait[/underline][/link] can be a helpful way to increase their tier!",
+                "Each half of a [link=combination_traits][underline]combination traits[/underline][/link] must come from a different parent. A crop that has both parts won't fuse on its own."
+            };
+
+            return Game1.random.ChooseFrom(randomHints);
         }
 
         public IPageBuilder CreateNumberedPage(IBookBuilder book, string chapterId, int pageNumber, bool hideNumber=false)
@@ -235,7 +253,7 @@ namespace CropTraits.Framework.Builders
 
             page = CreateNumberedPage(book, chapterId, 3);
             page.AddHeading("Trait Details").Alignment("Center").Spacing(16);
-            page.AddParagraph("Some traits have tiers, which strengthens their effect as the rank increases.\n\nMutations that occur for crops with existing traits may increase their rank, where applicable.\n\n[bounce][bold]Hint:[/bold][/bounce] Planting adjacent crops sharing the same tiered trait can be a helpful way to increase their rank!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph("Some traits have tiers, which strengthens their effect as the rank increases.\n\nMutations that occur for crops with existing traits may increase their rank, where applicable.\n\n[bounce][bold]Hint:[/bold][/bounce] Planting adjacent crops that share the same trait can be a helpful way to increase their tier!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 4);
             page.AddParagraph("Seeds and crops can hold up to [highlight]three traits[/highlight].\n\nIf a crop already has three traits, it may result in one of them being replaced when a mutation occurs.\n\nSome traits, called [link=combination_traits][underline]combination traits[/underline][/link], can only be produced by using the [link=seed_splicer][underline]Seed Splicer[/underline][/link].\n\nThis notebook will automatically keep track of all discovered traits.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
@@ -255,10 +273,13 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph("The Seed Splicer lets you mix traits together by crossbreeding two crops [highlight]of the same type[/highlight] but of different germlines.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
         }
 
+        public string GetTraitViewKey()
+        {
+            return CropTraits.modConfig.ToggleTraitViewKeybind.IsBound ? CropTraits.modConfig.ToggleTraitViewKeybind.ToString() : "the trait view key (set it in the config)";
+        }
+
         public void AddSpottingMutationsPages(IBookBuilder book, string chapterId)
         {
-            string traitViewKey = CropTraits.modConfig.ToggleTraitViewKeybind.IsBound ? CropTraits.modConfig.ToggleTraitViewKeybind.ToString() : "the trait view key (set it in the config)";
-
             var cornSeeds = ItemRegistry.Create<StardewValley.Object>("(O)487");
             TraitModDataHelper.SetTraits(cornSeeds.modData, TraitSet.FromKey("Swift:2|Sweet:1"));
 
@@ -272,7 +293,7 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph("Seeds and produce that have traits are marked with a small green badge in the top-right corner. Hover over them to see their traits (negative ones are highlighted in red).").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(132);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 128, 48, 32).Set("DisplayName", cornSeeds.DisplayName).Set("Description", TraitTooltipHelper.GetDescriptionWithTraits(cornSeeds)).Scale(2).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
-            page.AddParagraph($"You can press {traitViewKey} to show an icon over every crop with traits. Hover over a crop to see its details, then press it again to hide the icons.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph($"You can press {GetTraitViewKey()} to show an icon over every crop with traits. Hover over a crop to see its details, then press it again to hide the icons.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
             page.AddParagraph("Before a crop is fully grown, you will only see the traits it was planted with. Once it has finished growing, any new traits will be marked with \"[bounce][color=ForestGreen]New![/color][/bounce]\".").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0);
@@ -309,7 +330,7 @@ namespace CropTraits.Framework.Builders
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
             page.AddTitle("Combination Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("Some [link=trait][underline]traits[/underline][/link] can be mixed into a unique trait, called a combination trait.\n\nWhen two crossbred crops each carry part of a required trait combination, there's a chance they combine into a single trait.\n\n[bounce][bold]Hint:[/bold][/bounce] Each half must come from a different parent. A crop that has both parts won't fuse on its own.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph("Some [link=trait][underline]traits[/underline][/link] can be mixed into a unique trait, called a [link=combination_traits][underline]combination trait[/underline][/link].\n\nWhen two crossbred crops each carry part of a required trait combination, there's a chance they combine into a single trait.\n\n[bounce][bold]Hint:[/bold][/bounce] Each half must come from a different parent. A crop that has both parts won't fuse on its own.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
 
             page = CreateNumberedPage(book, chapterId, 2, hideNumber: true);
             page.AddParagraph("A combination trait replaces the two traits that compose it. This can be helpful to bypass the three trait limit.\n\nA crop with a combination trait can still regain the traits it was made from. Their effects can stack with the combination's.\n\nSome combination traits can also turn a harmful trait into something useful!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
