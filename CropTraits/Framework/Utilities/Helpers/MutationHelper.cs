@@ -85,15 +85,20 @@ namespace CropTraits.Framework.Utilities.Helpers
             // Traits like Stable block displacement and replacement, while adding and upgrading still work
             bool isStable = CropTraits.traitManager.HasMutationReplacementBlocker(traits);
 
-            string conflictingId = traits.Ids.FirstOrDefault(traitId => CropTraits.traitManager.HasConflict(rolledTrait, traitId));
-            if (conflictingId is not null)
+            // A combination trait can share a crop with one of its parts, so the rolled trait may conflict with more than one trait
+            List<string> conflictingIds = traits.Ids.Where(traitId => CropTraits.traitManager.HasConflict(rolledTrait, traitId)).ToList();
+            if (conflictingIds.Count > 0)
             {
                 if (isStable)
                 {
                     return;
                 }
 
-                traits.Remove(conflictingId);
+                foreach (string conflictingId in conflictingIds)
+                {
+                    traits.Remove(conflictingId);
+                }
+
                 traits.Set(rolledTrait.Id, 1);
                 return;
             }
