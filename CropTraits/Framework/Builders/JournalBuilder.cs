@@ -98,7 +98,7 @@ namespace CropTraits.Framework.Builders
             .Condition(READABLE_STATE_CONDITION);
 
             // Add escape handling to go back a page
-            book.OnKeyPress("Escape, ControllerB").Action("PeacefulEnd.Parchment_GoBack").Condition($"PeacefulEnd.Parchment_CanGoBack");
+            book.OnKeyPress("Escape, ControllerB").Action("PeacefulEnd.Parchment_GoBack").Condition($"PeacefulEnd.Parchment_CanGoBack, !PeacefulEnd.Parchment_IsFirstPage");
 
             // Get all relevant crops
             List<JournalCropEntry> crops = JournalDataHelper.GetCrops();
