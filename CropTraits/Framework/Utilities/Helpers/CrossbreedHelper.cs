@@ -14,6 +14,7 @@ namespace CropTraits.Framework.Utilities.Helpers
         public const double TIER_UPGRADE_QUALITY_MULTIPLIER = 2.0;
         public const double HIGHER_TIER_CHANCE = 0.35;
         public const double UNIQUE_INHERIT_CHANCE = 0.5;
+        public const double QUALITY_LEAD_FAVOR_PER_STEP = 0.05;
 
         // Expects parents in canonical order so random draws line up with the same parent whichever slot it was in
         public static CrossbreedResult Crossbreed(BlendParent firstParent, BlendParent secondParent, IReadOnlyList<CombinationData> combinations, Random random)
@@ -23,7 +24,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             TraitSet resultTraits = new TraitSet();
 
             List<string> fusedCombinationKeys = ApplyCombinations(firstRemaining, secondRemaining, resultTraits, combinations, random);
-            ApplySharedTraits(firstRemaining, secondRemaining, resultTraits, random);
+            ApplySharedTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, random);
             bool isFirstAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(firstParent.Traits);
             bool isSecondAlwaysInherited = CropTraits.traitManager.AlwaysPassesOnTraits(secondParent.Traits);
             ApplyUniqueTraits(firstRemaining, secondRemaining, resultTraits, firstParent.Quality, secondParent.Quality, isFirstAlwaysInherited, isSecondAlwaysInherited, random);
@@ -79,7 +80,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             return fusedCombinationKeys;
         }
 
-        public static void ApplySharedTraits(TraitSet firstRemaining, TraitSet secondRemaining, TraitSet resultTraits, Random random)
+        public static void ApplySharedTraits(TraitSet firstRemaining, TraitSet secondRemaining, TraitSet resultTraits, int firstQuality, int secondQuality, Random random)
         {
             // Materialized before removing anything, and already in ordinal order
             List<string> sharedIds = firstRemaining.Ids
@@ -105,8 +106,10 @@ namespace CropTraits.Framework.Utilities.Helpers
                 }
                 else
                 {
-                    // Mismatched tiers lean toward the lower tier to reward matching parents
-                    resultTier = random.NextDouble() < HIGHER_TIER_CHANCE ? Math.Max(firstTier, secondTier) : Math.Min(firstTier, secondTier);
+                    // Mismatched tiers lean toward the lower tier to reward matching parents, shifted toward the higher quality parent's tier
+                    int higherTierQuality = firstTier > secondTier ? firstQuality : secondQuality;
+                    int lowerTierQuality = firstTier > secondTier ? secondQuality : firstQuality;
+                    resultTier = random.NextDouble() < GetHigherTierChance(higherTierQuality, lowerTierQuality) ? Math.Max(firstTier, secondTier) : Math.Min(firstTier, secondTier);
                 }
 
                 resultTraits.Set(traitId, Math.Max(resultTier, resultTraits.GetTier(traitId)));
@@ -152,11 +155,27 @@ namespace CropTraits.Framework.Utilities.Helpers
             return BASE_TIER_UPGRADE_CHANCE * Math.Pow(TIER_UPGRADE_QUALITY_MULTIPLIER, averageQualityStep);
         }
 
+        // Each quality step the higher tier's parent is ahead raises the chance while each step behind lowers it (35% when qualities match)
+        public static double GetHigherTierChance(int higherTierQuality, int lowerTierQuality)
+        {
+            double qualityShift = (QualityHelper.GetQualityStep(higherTierQuality) - QualityHelper.GetQualityStep(lowerTierQuality)) * QUALITY_LEAD_FAVOR_PER_STEP;
+
+            return Math.Clamp(HIGHER_TIER_CHANCE + qualityShift, 0, 1);
+        }
+
         public static void ApplyUniqueTraits(TraitSet firstRemaining, TraitSet secondRemaining, TraitSet resultTraits, int firstQuality, int secondQuality, bool isFirstAlwaysInherited, bool isSecondAlwaysInherited, Random random)
         {
-            List<KeyValuePair<string, int>> candidates = GetSurvivingTraits(firstRemaining, firstQuality, isFirstAlwaysInherited, random)
-                .Concat(GetSurvivingTraits(secondRemaining, secondQuality, isSecondAlwaysInherited, random))
-                .OrderBy(trait => random.Next())
+            List<KeyValuePair<string, int>> firstSurviving = GetSurvivingTraits(firstRemaining, firstQuality, isFirstAlwaysInherited, random);
+            List<KeyValuePair<string, int>> secondSurviving = GetSurvivingTraits(secondRemaining, secondQuality, isSecondAlwaysInherited, random);
+            double firstPriority = QualityHelper.GetQualityLead(firstQuality, secondQuality) * QUALITY_LEAD_FAVOR_PER_STEP;
+            double secondPriority = QualityHelper.GetQualityLead(secondQuality, firstQuality) * QUALITY_LEAD_FAVOR_PER_STEP;
+
+            // The higher quality parent's traits tend to be placed earlier, so they win more conflicts and open slots
+            List<KeyValuePair<string, int>> candidates = firstSurviving
+                .Select(trait => (Trait: trait, SortKey: random.NextDouble() - firstPriority))
+                .Concat(secondSurviving.Select(trait => (Trait: trait, SortKey: random.NextDouble() - secondPriority)))
+                .OrderBy(candidate => candidate.SortKey)
+                .Select(candidate => candidate.Trait)
                 .ToList();
 
             // First placed wins, so a later conflicting trait is skipped

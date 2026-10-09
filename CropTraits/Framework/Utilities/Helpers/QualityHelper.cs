@@ -22,6 +22,12 @@ namespace CropTraits.Framework.Utilities.Helpers
             return GetQualityStep(quality) * BONUS_PER_QUALITY_STEP;
         }
 
+        // How many quality steps one crop is ahead of the other, never negative
+        public static int GetQualityLead(int quality, int otherQuality)
+        {
+            return Math.Max(GetQualityStep(quality) - GetQualityStep(otherQuality), 0);
+        }
+
         // Moves a quality up (positive) or down (negative) by whole steps, staying between normal and iridium
         public static int ShiftQuality(int quality, int steps)
         {
