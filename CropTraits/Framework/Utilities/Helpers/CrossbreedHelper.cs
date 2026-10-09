@@ -46,7 +46,7 @@ namespace CropTraits.Framework.Utilities.Helpers
 
             // Sorting before shuffling keeps results stable even if the definition order changes
             List<CombinationData> eligibleCombinations = combinations
-                .Where(combination => IsSplitAcrossParents(combination, firstRemaining, secondRemaining))
+                .Where(combination => IsSplitAcrossParents(combination, firstRemaining, secondRemaining) && IsCarriedByEitherParent(combination.ResultTraitId, firstRemaining, secondRemaining) is false)
                 .OrderBy(combination => combination.Key, StringComparer.Ordinal)
                 .ToList()
                 .OrderBy(combination => random.Next())
@@ -213,6 +213,12 @@ namespace CropTraits.Framework.Utilities.Helpers
             bool isReverseSplit = IsUniqueTo(combination.SecondTraitId, firstRemaining, secondRemaining) && IsUniqueTo(combination.FirstTraitId, secondRemaining, firstRemaining);
 
             return isForwardSplit || isReverseSplit;
+        }
+
+        // A parent already carrying the result passes it on normally, so its parts aren't consumed to fuse it again
+        public static bool IsCarriedByEitherParent(string traitId, TraitSet firstRemaining, TraitSet secondRemaining)
+        {
+            return firstRemaining.Has(traitId) || secondRemaining.Has(traitId);
         }
 
         public static bool IsUniqueTo(string traitId, TraitSet ownerTraits, TraitSet otherTraits)
