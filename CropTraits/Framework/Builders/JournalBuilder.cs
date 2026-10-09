@@ -90,6 +90,9 @@ namespace CropTraits.Framework.Builders
             // Cover
             book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Crop Traits[/bold]").Font("Dialogue").Alignment("Center").Position(0, 125).Condition(COVER_STATE_CONDITION);
             book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Guide[/bold]").Font("Dialogue").Alignment("Center").Position(0, 225).Condition(COVER_STATE_CONDITION);
+            book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 336, 32, 32).Tint("255 255 255 125").Scale(6).Alignment("Center").VerticalAlignment("Center").Position(0, 125).Condition(COVER_STATE_CONDITION);
+            //book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(29, 181, 19, 17).Scale(6).Alignment("Center").VerticalAlignment("Center").Position(135, 75).Condition(COVER_STATE_CONDITION);
+            //book.AddOverlay("Image").Item(Game1.random.ChooseFrom(Game1.cropData.Values.Where(c => c is not null && c.Seasons.Contains(Game1.season)).ToList()).HarvestItemId).Scale(3).Alignment("Center").VerticalAlignment("Center").Position(145, 75).Condition(COVER_STATE_CONDITION);
 
             // Add bookmark to return to home page
             book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 180, 21, 20).Scale(4).Position(-24, 125)
