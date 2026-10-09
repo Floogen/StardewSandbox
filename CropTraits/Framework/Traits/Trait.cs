@@ -20,9 +20,14 @@ namespace CropTraits.Framework.Traits
         public abstract string Id { get; }
 
         /// <summary>
-        /// If this trait is harmful / useless.
+        /// Whether the trait helps, hurts or does neither. Mutation picks a polarity first using fixed shares, then a trait within it.
         /// </summary>
-        public virtual bool IsNegative => false;
+        public virtual TraitPolarity Polarity => TraitPolarity.Positive;
+
+        /// <summary>
+        /// If this trait is harmful / useless, which shows it in red.
+        /// </summary>
+        public bool IsNegative => Polarity == TraitPolarity.Negative;
 
         /// <summary>
         /// The max tier possible with 10 being the upper most tier.
@@ -30,12 +35,12 @@ namespace CropTraits.Framework.Traits
         public virtual int MaxTier => 3;
 
         /// <summary>
-        /// How often mutation rolls this trait compared to the others. Also sets the default weight.
+        /// How often mutation rolls this trait compared to the other traits of the same polarity. Also sets the default weight.
         /// </summary>
         public virtual TraitRarity Rarity => TraitRarity.Common;
 
         /// <summary>
-        /// How likely the trait is to be rolled during a mutation. Defaults to the rarity's weight, so the rarity shown in the Field Notes stays accurate.
+        /// How likely the trait is to be rolled within its polarity during a mutation. Defaults to the rarity's weight, so the rarity shown in the Field Notes stays accurate.
         /// </summary>
         public virtual int Weight => GetRarityWeight(Rarity);
 

@@ -14,7 +14,7 @@ namespace CropTraits.Framework.Traits
         private static readonly string[] CONFLICTS = { NourishingTrait.ID, HeartyTrait.ID };
 
         public override string Id => ID;
-        public override bool IsNegative => true;
+        public override TraitPolarity Polarity => TraitPolarity.Negative;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
 
         public override bool CanApplyTo(CropData cropData)

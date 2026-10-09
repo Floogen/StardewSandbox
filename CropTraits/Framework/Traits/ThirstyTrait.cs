@@ -12,7 +12,8 @@ namespace CropTraits.Framework.Traits
         private static readonly string[] CONFLICTS = { DroughtTolerantTrait.ID, DeepRootedTrait.ID };
 
         public override string Id => ID;
-        public override bool IsNegative => true;
+        public override TraitPolarity Polarity => TraitPolarity.Negative;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
         public override int MaxTier => 1;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
 

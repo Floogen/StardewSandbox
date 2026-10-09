@@ -12,6 +12,7 @@ namespace CropTraits.Framework.Traits
         private static readonly string[] CONFLICTS = { SwiftTrait.ID, SluggishTrait.ID, RainLovingTrait.ID, LateBloomerTrait.ID, ParasiticTrait.ID };
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override string FirstTraitId => SwiftTrait.ID;
         public override string SecondTraitId => SluggishTrait.ID;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;

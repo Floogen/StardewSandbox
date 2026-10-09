@@ -9,6 +9,7 @@ namespace CropTraits.Framework.Traits
         public const int QUALITY_LEVELS = 3;
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override string FirstTraitId => WitheringTrait.ID;
         public override string SecondTraitId => RegalTrait.ID;
         public override bool WithersWhenLeftReady => true;

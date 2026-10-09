@@ -16,6 +16,14 @@ namespace CropTraits.Framework.Managers
     public class TraitManager : BaseManager
     {
         public const int MAX_TRAITS = 3;
+
+        // Mutation picks a polarity with these shares first, so the balance holds however many traits each polarity has
+        public const double POSITIVE_SHARE = 0.45;
+        public const double NEUTRAL_SHARE = 0.15;
+        public const double NEGATIVE_SHARE = 0.40;
+
+        // Polarities are always rolled in this order, so the roll is deterministic for a given seed
+        private static readonly TraitPolarity[] POLARITY_ORDER = { TraitPolarity.Positive, TraitPolarity.Neutral, TraitPolarity.Negative };
         public const double MIN_PRICE_MULTIPLIER = 0.10;
 
         private static readonly string[] ROMAN_NUMERALS = { "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X" };
@@ -106,10 +114,15 @@ namespace CropTraits.Framework.Managers
         }
 
         // Traits that can't apply to the crop are left out entirely, so they never take a share of the roll
+        /// <summary>
+        /// Picks a polarity using its fixed share, then a trait of that polarity by weight.
+        /// Neighbor bonuses raise a trait's weight within its polarity and scale that polarity's share by the same proportion, so they pull on both rolls.
+        /// A polarity with no traits the crop can roll is left out and the other shares fill its place.
+        /// </summary>
         public Trait RollTrait(Random random, IReadOnlyDictionary<string, int> weightBonuses, CropData cropData)
         {
-            List<(Trait Trait, int Weight)> weightedTraits = new();
-            int totalWeight = 0;
+            Dictionary<TraitPolarity, List<(Trait Trait, int Weight)>> weightedTraitsByPolarity = new();
+            Dictionary<TraitPolarity, int> baseWeightsByPolarity = new();
 
             foreach (Trait trait in _rollableTraits)
             {
@@ -125,16 +138,66 @@ namespace CropTraits.Framework.Managers
                     continue;
                 }
 
+                if (weightedTraitsByPolarity.TryGetValue(trait.Polarity, out List<(Trait Trait, int Weight)> weightedTraits) is false)
+                {
+                    weightedTraits = new();
+                    weightedTraitsByPolarity[trait.Polarity] = weightedTraits;
+                }
+
                 weightedTraits.Add((trait, weight));
-                totalWeight += weight;
+                baseWeightsByPolarity[trait.Polarity] = baseWeightsByPolarity.GetValueOrDefault(trait.Polarity) + Math.Max(trait.Weight, 0);
             }
 
-            if (totalWeight <= 0)
+            List<(TraitPolarity Polarity, double Share)> polarityShares = new();
+            foreach (TraitPolarity polarity in POLARITY_ORDER)
+            {
+                if (weightedTraitsByPolarity.TryGetValue(polarity, out List<(Trait Trait, int Weight)> weightedTraits) is false)
+                {
+                    continue;
+                }
+
+                // A polarity whose traits only have weight from bonuses still gets its base share
+                int totalWeight = weightedTraits.Sum(entry => entry.Weight);
+                int baseWeight = baseWeightsByPolarity.GetValueOrDefault(polarity);
+                double bonusScale = baseWeight > 0 ? (double)totalWeight / baseWeight : 1;
+
+                polarityShares.Add((polarity, GetPolarityShare(polarity) * bonusScale));
+            }
+
+            if (polarityShares.Count == 0)
             {
                 return null;
             }
 
-            int roll = random.Next(totalWeight);
+            double polarityRoll = random.NextDouble() * polarityShares.Sum(entry => entry.Share);
+            TraitPolarity rolledPolarity = polarityShares[^1].Polarity;
+            foreach ((TraitPolarity polarity, double share) in polarityShares)
+            {
+                polarityRoll -= share;
+                if (polarityRoll < 0)
+                {
+                    rolledPolarity = polarity;
+                    break;
+                }
+            }
+
+            return PickWeightedTrait(weightedTraitsByPolarity[rolledPolarity], random);
+        }
+
+        public static double GetPolarityShare(TraitPolarity polarity)
+        {
+            return polarity switch
+            {
+                TraitPolarity.Neutral => NEUTRAL_SHARE,
+                TraitPolarity.Negative => NEGATIVE_SHARE,
+                _ => POSITIVE_SHARE
+            };
+        }
+
+        // The traits are in ordinal order, so the pick only depends on the roll
+        public static Trait PickWeightedTrait(List<(Trait Trait, int Weight)> weightedTraits, Random random)
+        {
+            int roll = random.Next(weightedTraits.Sum(entry => entry.Weight));
             foreach ((Trait trait, int weight) in weightedTraits)
             {
                 roll -= weight;

@@ -12,8 +12,9 @@ namespace CropTraits.Framework.Traits
         public static readonly Color[] TINTS = { new Color(255, 200, 220), new Color(200, 225, 255), new Color(215, 255, 200), new Color(255, 240, 180), new Color(230, 210, 255), new Color(255, 215, 180) };
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override int MaxTier => 1;
-        public override TraitRarity Rarity => TraitRarity.Uncommon;
+        public override TraitRarity Rarity => TraitRarity.Rare;
 
         // Picked by crop type rather than at random, so Variegated produce of the same crop still stacks
         public override Color ModifyTint(Color tint, string seedId, int tier)

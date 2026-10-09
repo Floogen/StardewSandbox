@@ -11,6 +11,7 @@ namespace CropTraits.Framework.Traits
         public const double IRIDIUM_CHANCE = 0.5;
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override string FirstTraitId => ErraticTrait.ID;
         public override string SecondTraitId => VolatileTrait.ID;
 

@@ -12,7 +12,6 @@ namespace CropTraits.Framework.Traits
         public const double EXTRA_HARVEST_CHANCE_PER_TIER = 0.10;
 
         public override string Id => ID;
-        public override TraitRarity Rarity => TraitRarity.Uncommon;
 
         // The extra produce is created inside the harvest context, so it picks up the crop's traits too
         public override void OnHarvestCompleted(HarvestContext context, int xTile, int yTile, GameLocation location, int tier)

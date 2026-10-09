@@ -243,7 +243,7 @@ namespace CropTraits
         {
             foreach (Trait trait in traitManager.Traits.Values.OrderBy(trait => trait.Id, StringComparer.Ordinal))
             {
-                monitor.Log($"{trait.Id}: max tier {trait.MaxTier}, weight {trait.Weight}, negative {trait.IsNegative}, price {trait.IsPriceTrait}, rollable {trait.CanBeRolled}", LogLevel.Info);
+                monitor.Log($"{trait.Id}: max tier {trait.MaxTier}, weight {trait.Weight}, polarity {trait.Polarity}, price {trait.IsPriceTrait}, rollable {trait.CanBeRolled}", LogLevel.Info);
             }
         }
 

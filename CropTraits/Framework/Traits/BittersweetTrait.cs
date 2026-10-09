@@ -15,6 +15,7 @@ namespace CropTraits.Framework.Traits
         public const int PRICE_RANDOM_SEED = 7333; // Keeps the daily price roll apart from other rolls made on the same day
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override string FirstTraitId => BitterTrait.ID;
         public override string SecondTraitId => SweetTrait.ID;
         public override bool IsPriceTrait => true;

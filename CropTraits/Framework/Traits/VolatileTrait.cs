@@ -10,6 +10,7 @@ namespace CropTraits.Framework.Traits
         public const double MUTATION_BONUS_PER_TIER = 0.05;
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override TraitRarity Rarity => TraitRarity.Rare;
 
         public override double ModifyMutationChance(double chance, int tier, bool isFirstRoll)

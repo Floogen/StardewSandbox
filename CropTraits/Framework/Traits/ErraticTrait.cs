@@ -11,6 +11,7 @@ namespace CropTraits.Framework.Traits
         public const double STEP_UP_CHANCE = 0.5;
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override int MaxTier => 1;
         public override TraitRarity Rarity => TraitRarity.Uncommon;
 

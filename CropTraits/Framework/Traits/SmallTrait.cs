@@ -9,7 +9,7 @@ namespace CropTraits.Framework.Traits
         public const double PRICE_PENALTY = 0.15;
 
         public override string Id => ID;
-        public override bool IsNegative => true;
+        public override TraitPolarity Polarity => TraitPolarity.Negative;
         public override int MaxTier => 1;
         public override bool IsPriceTrait => true;
 

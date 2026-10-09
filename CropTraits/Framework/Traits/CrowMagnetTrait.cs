@@ -10,7 +10,7 @@ namespace CropTraits.Framework.Traits
         private static readonly string[] CONFLICTS = { ThornyTrait.ID, GuardianTrait.ID };
 
         public override string Id => ID;
-        public override bool IsNegative => true;
+        public override TraitPolarity Polarity => TraitPolarity.Negative;
         public override int MaxTier => 1;
         public override TraitRarity Rarity => TraitRarity.Uncommon;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;

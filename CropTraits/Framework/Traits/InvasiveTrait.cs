@@ -14,7 +14,8 @@ namespace CropTraits.Framework.Traits
         public const double SPREAD_CHANCE_PER_TIER = 0.05;
 
         public override string Id => ID;
-        public override bool IsNegative => true;
+        public override TraitPolarity Polarity => TraitPolarity.Negative;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
 
         public override void OnDayEnding(NightlyContext context, int tier)
         {

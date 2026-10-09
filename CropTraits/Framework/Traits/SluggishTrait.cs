@@ -13,7 +13,7 @@ namespace CropTraits.Framework.Traits
         public const double SLOWDOWN_PER_TIER = 0.10;
 
         public override string Id => ID;
-        public override bool IsNegative => true;
+        public override TraitPolarity Polarity => TraitPolarity.Negative;
 
         public override void ModifyGrowth(IList<int> phaseDays, CropData cropData, int tier)
         {

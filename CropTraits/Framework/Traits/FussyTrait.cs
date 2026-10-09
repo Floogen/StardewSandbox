@@ -6,7 +6,7 @@ namespace CropTraits.Framework.Traits
         public const string ID = "Fussy";
 
         public override string Id => ID;
-        public override bool IsNegative => true;
+        public override TraitPolarity Polarity => TraitPolarity.Negative;
         public override int MaxTier => 1;
         public override TraitRarity Rarity => TraitRarity.Uncommon;
         public override bool IgnoresFertilizer => true;

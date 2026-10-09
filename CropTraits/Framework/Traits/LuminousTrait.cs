@@ -6,8 +6,9 @@ namespace CropTraits.Framework.Traits
         public const string ID = "Luminous";
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override int MaxTier => 1;
-        public override TraitRarity Rarity => TraitRarity.Uncommon;
+        public override TraitRarity Rarity => TraitRarity.Rare;
         public override bool GlowsAtNight => true;
 
         public override string GetTierDetails(int tier)

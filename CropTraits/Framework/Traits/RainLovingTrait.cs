@@ -10,6 +10,8 @@ namespace CropTraits.Framework.Traits
         public const double DRY_DAY_SKIP_CHANCE = 0.25;
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
         public override int MaxTier => 1;
 
         // Uses the weather of the day that's ending, since that's the day the crop grows from overnight

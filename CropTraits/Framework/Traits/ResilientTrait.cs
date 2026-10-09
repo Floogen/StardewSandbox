@@ -6,6 +6,7 @@ namespace CropTraits.Framework.Traits
         public const string ID = "Resilient";
 
         public override string Id => ID;
+        public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override int MaxTier => 1;
         public override TraitRarity Rarity => TraitRarity.Rare;
         public override bool GuaranteesDilutionSplit => true;
