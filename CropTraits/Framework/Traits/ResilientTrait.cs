@@ -18,7 +18,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "The trait removed is still picked evenly, so Resilient itself can be the one removed.";
+            return "The trait removed is still picked evenly, so Resilient itself can be the one removed. A crop with only one trait still comes out plain.";
         }
     }
 }

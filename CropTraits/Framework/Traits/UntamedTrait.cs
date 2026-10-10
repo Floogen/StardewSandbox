@@ -19,6 +19,11 @@ namespace CropTraits.Framework.Traits
         // Junimos harvest without the player, so they bring the forage home but nobody learns anything
         public override void OnHarvestCompleted(HarvestContext context, int xTile, int yTile, GameLocation location, int tier)
         {
+            if (Game1.random.NextDouble() >= HarvestDropHelper.GetHarvestPaceMultiplier(context))
+            {
+                return;
+            }
+
             string[] forageIds = WildTrait.GetForageIds(location.GetSeason());
             HarvestDropHelper.DropNew(context, forageIds[Game1.random.Next(forageIds.Length)], 1, xTile, yTile, location);
 
@@ -30,12 +35,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Every harvest finds a piece of seasonal forage and gives {FORAGING_EXPERIENCE} Foraging experience";
+            return $"Harvests find a piece of seasonal forage, giving {FORAGING_EXPERIENCE} Foraging experience";
         }
 
         public override string GetNotes()
         {
-            return "The forage matches the season where the crop grows. Junimo harvests still find forage but give no experience.";
+            return $"Always finds forage on crops that take {HarvestDropHelper.FULL_CHANCE_DAYS_PER_HARVEST} or more days per harvest. {HarvestDropHelper.GetHarvestPaceNote()} The forage matches the season where the crop grows. Junimo harvests still find forage but give no experience.";
         }
     }
 }

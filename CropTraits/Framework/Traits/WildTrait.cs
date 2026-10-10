@@ -22,7 +22,7 @@ namespace CropTraits.Framework.Traits
 
         public override void OnHarvestCompleted(HarvestContext context, int xTile, int yTile, GameLocation location, int tier)
         {
-            if (Game1.random.NextDouble() >= FORAGE_CHANCE_PER_TIER * tier)
+            if (Game1.random.NextDouble() >= FORAGE_CHANCE_PER_TIER * tier * HarvestDropHelper.GetHarvestPaceMultiplier(context))
             {
                 return;
             }
@@ -50,7 +50,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "The forage matches the season where the crop grows. It's dropped on top of the normal harvest.";
+            return $"The forage matches the season where the crop grows. It's dropped on top of the normal harvest. {HarvestDropHelper.GetHarvestPaceNote()}";
         }
     }
 }

@@ -12,6 +12,7 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override int MaxTier => 1;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
         public override bool ClearsNearbyWeeds => true;
 

@@ -8,7 +8,7 @@ namespace CropTraits.Framework.Traits
         public const string ID = "Large";
 
         public const float SIZE_INCREASE = 0.10f;
-        public const double PRICE_BONUS = 0.15;
+        public const double PRICE_BONUS = 0.25;
 
         private static readonly string[] CONFLICTS = { SmallTrait.ID };
 

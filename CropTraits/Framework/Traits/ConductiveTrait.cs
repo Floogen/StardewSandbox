@@ -15,7 +15,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Lightning makes it fully grown instead of killing it. Storms also have a {ToPercent(LightningHelper.CONDUCTIVE_STRIKE_CHANCE)} chance every 10 minutes to strike a Conductive crop that isn't ready yet";
+            return $"Lightning makes it fully grown instead of killing it. Storms also have a {LightningHelper.CONDUCTIVE_STRIKE_CHANCE * 100:0.#}% chance every 10 minutes to strike it while it isn't ready yet";
         }
 
         public override string GetNotes()

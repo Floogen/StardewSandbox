@@ -549,7 +549,7 @@ namespace CropTraits.Framework.Builders
 
             if (trait.IsPriceTrait)
             {
-                lines.Add("Price changes carry into artisan goods and stack with other price traits.");
+                lines.Add("Carries into artisan goods made from it, where any price change stacks with other price traits.");
             }
 
             if (discoveryDate is not null && trait.MaxTier > 1)

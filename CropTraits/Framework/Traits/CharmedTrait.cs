@@ -8,7 +8,7 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Charmed";
 
-        public const double FRIENDSHIP_BONUS = 0.20;
+        public const double FRIENDSHIP_BONUS = 0.50;
 
         public override string Id => ID;
         public override string FirstTraitId => CharmingTrait.ID;

@@ -12,7 +12,7 @@ namespace CropTraits.Framework.Traits
 
         public const double SPREAD_CHANCE = 0.20;
 
-        // Spreading always fills the tiles around it, which Solitary needs empty
+        // Spreading always fills the tiles around it, which Solitary wants kept sparse
         private static readonly string[] CONFLICTS = { SolitaryTrait.ID };
 
         public override string Id => ID;

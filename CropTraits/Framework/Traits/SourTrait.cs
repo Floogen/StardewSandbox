@@ -1,5 +1,7 @@
+using CropTraits.Framework.Utilities.Helpers;
 using StardewValley;
 using StardewValley.Buffs;
+using StardewValley.GameData.Crops;
 
 namespace CropTraits.Framework.Traits
 {
@@ -15,6 +17,11 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Negative;
+
+        public override bool CanApplyTo(CropData cropData)
+        {
+            return CropDataHelper.HasEdibleHarvest(cropData);
+        }
 
         public override Buff GetFoodBuff(int tier)
         {
@@ -32,7 +39,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Eating more refreshes the slowdown instead of stacking it.";
+            return "Eating more refreshes the slowdown instead of stacking it. Only appears on crops with edible produce.";
         }
     }
 }

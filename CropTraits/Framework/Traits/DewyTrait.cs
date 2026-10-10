@@ -1,4 +1,5 @@
 using CropTraits.Framework.Models;
+using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.TerrainFeatures;
@@ -21,21 +22,29 @@ namespace CropTraits.Framework.Traits
         // Only ground soil is watered, matching how sprinklers skip garden pots
         public override void OnDayStarted(MorningContext context, int tier)
         {
-            WaterTiles(context, SIDE_OFFSETS);
+            WaterTiles(context, SIDE_OFFSETS, true);
             if (tier >= 2)
             {
-                WaterTiles(context, CORNER_OFFSETS);
+                WaterTiles(context, CORNER_OFFSETS, true);
             }
         }
 
-        public static void WaterTiles(MorningContext context, Vector2[] offsets)
+        // Skipping other Dewy crops stops a field planted from Dewy seeds from watering itself
+        public static void WaterTiles(MorningContext context, Vector2[] offsets, bool skipsDewyCrops)
         {
             foreach (Vector2 offset in offsets)
             {
-                if (context.Location.terrainFeatures.TryGetValue(context.Tile + offset, out TerrainFeature feature) && feature is HoeDirt dirt && dirt.state.Value != HoeDirt.watered)
+                if (context.Location.terrainFeatures.TryGetValue(context.Tile + offset, out TerrainFeature feature) is false || feature is not HoeDirt dirt || dirt.state.Value == HoeDirt.watered)
                 {
-                    dirt.state.Value = HoeDirt.watered;
+                    continue;
                 }
+
+                if (skipsDewyCrops && dirt.crop is not null && TraitModDataHelper.GetTraits(dirt.modData).Has(ID))
+                {
+                    continue;
+                }
+
+                dirt.state.Value = HoeDirt.watered;
             }
         }
 
@@ -46,7 +55,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Doesn't water its own soil or garden pots.";
+            return "Doesn't water its own soil, other Dewy crops or garden pots.";
         }
     }
 }

@@ -149,7 +149,7 @@
   "trait.colossal.name": "Colossal",
   "trait.colossal.description": "More likely to become a giant crop.",
   "trait.resilient.name": "Resilient",
-  "trait.resilient.description": "Never loses all its traits when diluted.",
+  "trait.resilient.description": "Diluting it removes one trait instead of risking them all.",
   "trait.prismatic.name": "Prismatic",
   "trait.prismatic.description": "Shimmers with every color.",
   "trait.titanic.name": "Titanic",
@@ -201,7 +201,7 @@
   "trait.paddy.name": "Paddy",
   "trait.paddy.description": "Thrives near water like rice, without needing to be watered.",
   "trait.solitary.name": "Solitary",
-  "trait.solitary.description": "Grows faster with no crops around it, but slower otherwise.",
+  "trait.solitary.description": "Grows faster with few crops around it, but slower when crowded.",
   "trait.companion.name": "Companion",
   "trait.companion.description": "Grows faster next to different crops.",
   "trait.selfseeding.name": "Self-Seeding",
@@ -307,7 +307,7 @@
   "trait.clustered.name": "Clustered",
   "trait.clustered.description": "Smaller produce, but always one more.",
   "trait.untamed.name": "Untamed",
-  "trait.untamed.description": "Always brings some forage and Foraging experience with it.",
+  "trait.untamed.description": "Brings forage and Foraging experience with its harvests.",
   "trait.cured.name": "Cured",
   "trait.cured.description": "Machines take longer with it, but its artisan goods sell for more.",
   "trait.aged.name": "Aged",
@@ -321,5 +321,5 @@
   "trait.charmed.name": "Charmed",
   "trait.charmed.description": "No villager can dislike it as a gift.",
   "trait.acquiredtaste.name": "Acquired Taste",
-  "trait.acquiredtaste.description": "Villagers react twice as strongly to it, good or bad."
+  "trait.acquiredtaste.description": "Villagers react more strongly to it, good or bad."
 }

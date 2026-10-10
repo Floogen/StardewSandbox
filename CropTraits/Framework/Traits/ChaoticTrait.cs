@@ -8,7 +8,7 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Chaotic";
 
-        public const double IRIDIUM_CHANCE = 0.5;
+        public const double IRIDIUM_CHANCE = 0.35;
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Neutral;

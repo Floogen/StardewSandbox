@@ -104,7 +104,7 @@ namespace CropTraits.Framework.Traits
         public virtual bool GrowsInEverySeason => false;
 
         /// <summary>
-        /// If crows never eat the crop. A crow that picks it leaves without eating anything.
+        /// If crows never eat the crop. Crows pass over it instead.
         /// </summary>
         public virtual bool IsIgnoredByCrows => false;
 

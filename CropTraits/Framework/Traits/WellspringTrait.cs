@@ -21,8 +21,8 @@ namespace CropTraits.Framework.Traits
                 context.Dirt.state.Value = HoeDirt.watered;
             }
 
-            DewyTrait.WaterTiles(context, DewyTrait.SIDE_OFFSETS);
-            DewyTrait.WaterTiles(context, DewyTrait.CORNER_OFFSETS);
+            DewyTrait.WaterTiles(context, DewyTrait.SIDE_OFFSETS, false);
+            DewyTrait.WaterTiles(context, DewyTrait.CORNER_OFFSETS, false);
         }
 
         public override string GetTierDetails(int tier)

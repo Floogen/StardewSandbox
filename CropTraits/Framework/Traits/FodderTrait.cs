@@ -17,7 +17,7 @@ namespace CropTraits.Framework.Traits
         // Dropped as an item like the hay from wheat, so it can be put in a hay hopper
         public override void OnHarvestCompleted(HarvestContext context, int xTile, int yTile, GameLocation location, int tier)
         {
-            if (Game1.random.NextDouble() < HAY_CHANCE_PER_TIER * tier)
+            if (Game1.random.NextDouble() < HAY_CHANCE_PER_TIER * tier * HarvestDropHelper.GetHarvestPaceMultiplier(context))
             {
                 HarvestDropHelper.DropNew(context, HAY_ID, 1, xTile, yTile, location);
             }
@@ -30,7 +30,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Dropped on top of the normal harvest. Junimos carry it to their hut.";
+            return $"Dropped on top of the normal harvest. Junimos carry it to their hut. {HarvestDropHelper.GetHarvestPaceNote()}";
         }
     }
 }

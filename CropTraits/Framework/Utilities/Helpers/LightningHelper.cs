@@ -10,14 +10,14 @@ namespace CropTraits.Framework.Utilities.Helpers
 {
     public static class LightningHelper
     {
-        public const double CONDUCTIVE_STRIKE_CHANCE = 0.02;
+        public const double CONDUCTIVE_STRIKE_CHANCE = 0.005; // Rolled for each crop, roughly a 45% chance per crop over a full stormy day
         public const int LIGHTNING_RANDOM_SEED = 6143; // Keeps the conductive strike roll apart from the game's own lightning rolls
         public const int MAX_STRIKE_GROWTH_DAYS = 500; // Guards against a crop that never reports ready
 
         // True only while the game runs a lightning update, so a tool-less hit on soil can be told apart from other damage like bombs
         public static bool IsLightningUpdateActive { get; set; }
 
-        // Called after each of the game's lightning updates (main player only), giving storms a chance to strike a conductive crop that isn't ready yet
+        // Called after each of the game's lightning updates (main player only), giving each conductive crop that isn't ready yet its own chance to be struck
         public static void TryStrikeConductiveCrop(int timeOfDay)
         {
             if (Context.IsMainPlayer is false)
@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Utilities.Helpers
 
             Farm farm = Game1.getFarm();
             Random random = Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed, timeOfDay, LIGHTNING_RANDOM_SEED);
-            if (farm is null || random.NextDouble() >= CONDUCTIVE_STRIKE_CHANCE)
+            if (farm is null)
             {
                 return;
             }
 
-            // Ordered by tile so the pick only depends on the roll
+            // Ordered by tile so each crop's roll only depends on the day and time
             List<(Vector2 Tile, HoeDirt Dirt)> targets = farm.terrainFeatures.Pairs
                 .Where(pair => pair.Value is HoeDirt dirt && IsStrikeTarget(dirt, includeReady: false))
                 .Select(pair => (Tile: pair.Key, Dirt: (HoeDirt)pair.Value))
@@ -40,13 +40,13 @@ namespace CropTraits.Framework.Utilities.Helpers
                 .ThenBy(target => target.Tile.Y)
                 .ToList();
 
-            if (targets.Count == 0)
+            foreach ((Vector2 tile, HoeDirt targetDirt) in targets)
             {
-                return;
+                if (random.NextDouble() < CONDUCTIVE_STRIKE_CHANCE)
+                {
+                    Strike(farm, tile, targetDirt);
+                }
             }
-
-            (Vector2 tile, HoeDirt targetDirt) = targets[random.Next(targets.Count)];
-            Strike(farm, tile, targetDirt);
         }
 
         public static bool IsStrikeTarget(HoeDirt dirt, bool includeReady)

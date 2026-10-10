@@ -7,6 +7,7 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override int MaxTier => 1;
+        public override TraitRarity Rarity => TraitRarity.Uncommon;
         public override bool IsIgnoredByCrows => true;
 
         public override string GetTierDetails(int tier)
@@ -16,7 +17,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "A crow that picks it leaves without eating anything.";
+            return "Crows pass over it, so it's never eaten.";
         }
     }
 }

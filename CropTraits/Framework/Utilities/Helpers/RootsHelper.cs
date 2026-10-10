@@ -12,7 +12,6 @@ namespace CropTraits.Framework.Utilities.Helpers
         public const string IRIDIUM_ORE_ID = "(O)386";
         public const string GEODE_ID = "(O)535";
         public const string FROZEN_GEODE_ID = "(O)536";
-        public const string MAGMA_GEODE_ID = "(O)537";
         public const string OMNI_GEODE_ID = "(O)749";
 
         public const int MIN_ORE_COUNT = 1;
@@ -20,7 +19,7 @@ namespace CropTraits.Framework.Utilities.Helpers
         // Ore counts lean toward the top of the range on better quality harvests
         public static void DropOre(HarvestContext context, string oreId, int maxCount, int xTile, int yTile, GameLocation location)
         {
-            if (HarvestDropHelper.IsNonRenewable(context) is false)
+            if (HarvestDropHelper.IsNonRenewable(context) is false || Game1.random.NextDouble() >= HarvestDropHelper.GetHarvestPaceMultiplier(context))
             {
                 return;
             }
@@ -29,10 +28,10 @@ namespace CropTraits.Framework.Utilities.Helpers
             HarvestDropHelper.DropNew(context, oreId, count, xTile, yTile, location);
         }
 
-        // Geodes always drop one, whatever the harvest quality
+        // Geodes drop one at most, whatever the harvest quality
         public static void DropGeode(HarvestContext context, string geodeId, int xTile, int yTile, GameLocation location)
         {
-            if (HarvestDropHelper.IsNonRenewable(context) is false)
+            if (HarvestDropHelper.IsNonRenewable(context) is false || Game1.random.NextDouble() >= HarvestDropHelper.GetHarvestPaceMultiplier(context))
             {
                 return;
             }
@@ -47,12 +46,12 @@ namespace CropTraits.Framework.Utilities.Helpers
 
         public static string GetOreNotes()
         {
-            return "Dropped on top of the normal harvest. Better quality harvests lean toward the top of the range. Only appears on crops that don't grow back. Can't share a crop with Resprouting or other Roots traits.";
+            return $"Dropped on top of the normal harvest. Better quality harvests lean toward the top of the range. {HarvestDropHelper.GetHarvestPaceNote()} Only appears on crops that don't grow back. Can't share a crop with Resprouting or other Roots traits.";
         }
 
         public static string GetGeodeNotes()
         {
-            return "Dropped on top of the normal harvest, always one whatever the quality. Only appears on crops that don't grow back. Can't share a crop with Resprouting or other Roots traits.";
+            return $"Dropped on top of the normal harvest, one geode whatever the quality. {HarvestDropHelper.GetHarvestPaceNote()} Only appears on crops that don't grow back. Can't share a crop with Resprouting or other Roots traits.";
         }
     }
 }

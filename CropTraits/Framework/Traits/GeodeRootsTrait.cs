@@ -12,15 +12,16 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "GeodeRoots";
 
-        // Each tier finds a deeper geode (Geode, Frozen Geode, then Magma Geode)
-        public static readonly string[] GEODE_IDS_BY_TIER = { RootsHelper.GEODE_ID, RootsHelper.FROZEN_GEODE_ID, RootsHelper.MAGMA_GEODE_ID };
-        public static readonly string[] GEODE_NAMES_BY_TIER = { "Geode", "Frozen Geode", "Magma Geode" };
+        // Each tier finds a deeper geode (Geode, then Frozen Geode). Omni Roots is the top geode trait
+        public static readonly string[] GEODE_IDS_BY_TIER = { RootsHelper.GEODE_ID, RootsHelper.FROZEN_GEODE_ID };
+        public static readonly string[] GEODE_NAMES_BY_TIER = { "Geode", "Frozen Geode" };
 
         // Resprouting would let the crop grow back, while the ore roots keep a crop to one kind of bonus drop
         private static readonly string[] CONFLICTS = { CopperRootsTrait.ID, IronRootsTrait.ID, GoldRootsTrait.ID, IridiumRootsTrait.ID, ResproutingTrait.ID };
 
         public override string Id => ID;
         public override TraitRarity Rarity => TraitRarity.Uncommon;
+        public override int MaxTier => 2;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
 
         // Geodes are a reward for replanting, so crops that grow back are left out

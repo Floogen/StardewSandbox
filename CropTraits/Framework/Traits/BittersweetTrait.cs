@@ -9,7 +9,7 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Bittersweet";
 
-        public const double HIGH_PRICE_BONUS = 0.40;
+        public const double HIGH_PRICE_BONUS = 0.25;
         public const double LOW_PRICE_PENALTY = 0.20;
         public const double HIGH_PRICE_CHANCE = 0.5;
         public const int PRICE_RANDOM_SEED = 7333; // Keeps the daily price roll apart from other rolls made on the same day
