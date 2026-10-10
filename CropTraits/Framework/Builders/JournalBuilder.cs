@@ -508,7 +508,7 @@ namespace CropTraits.Framework.Builders
             List<string> lines = new();
             if (trait is CombinationTrait combinationTrait)
             {
-                lines.Add($"Fused from {GetTraitReferenceText(combinationTrait.FirstTraitId, linkedTraitIds)} and {GetTraitReferenceText(combinationTrait.SecondTraitId, linkedTraitIds)} by the Seed Splicer.");
+                lines.Add($"Fused from {GetTraitReferenceText(combinationTrait.FirstTraitId, linkedTraitIds)} and {GetTraitReferenceText(combinationTrait.SecondTraitId, linkedTraitIds)} via the Seed Splicer.");
             }
             else
             {
@@ -521,7 +521,9 @@ namespace CropTraits.Framework.Builders
             }
             else if (conflictIds.Count > 0)
             {
-                lines.Add($"Can't appear with {JoinWithOr(conflictIds.Select(conflictId => GetTraitReferenceText(conflictId, linkedTraitIds)).ToList())}.");
+                // Each conflict gets its own line, so a long list reads cleanly and can carry over to the next page
+                lines.Add("Can't appear with the following:");
+                lines.AddRange(conflictIds.Select(conflictId => $"- {GetTraitReferenceText(conflictId, linkedTraitIds)}"));
             }
 
             if (trait.BlocksPropagation)
@@ -560,17 +562,6 @@ namespace CropTraits.Framework.Builders
             }
 
             return GetTraitLinkText(traitId, name, linkedTraitIds);
-        }
-
-        // Reads "A, B or C" with no comma before the last entry
-        public string JoinWithOr(List<string> entries)
-        {
-            if (entries.Count <= 1)
-            {
-                return string.Join(string.Empty, entries);
-            }
-
-            return $"{string.Join(", ", entries.Take(entries.Count - 1))} or {entries[^1]}";
         }
 
         public string GetRarityText(TraitRarity rarity)
