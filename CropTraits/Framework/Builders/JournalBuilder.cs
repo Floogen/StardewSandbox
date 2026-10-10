@@ -386,8 +386,9 @@ namespace CropTraits.Framework.Builders
         {
             DiscoveryData discoveries = CropTraits.discoveryManager.Data;
 
+            bool isRevealingUndiscovered = GetBooleanVariable(REVEAL_UNDISCOVERED_TRAITS_VARIABLE, false);
             List<Trait> orderedTraits = CropTraits.traitManager.Traits.Values
-                .OrderByDescending(trait => discoveries.Traits.ContainsKey(trait.Id))
+                .OrderByDescending(trait => isRevealingUndiscovered || discoveries.Traits.ContainsKey(trait.Id))
                 .ThenBy(trait => CropTraits.traitManager.GetTraitName(trait.Id), StringComparer.CurrentCulture)
                 .ToList();
 
