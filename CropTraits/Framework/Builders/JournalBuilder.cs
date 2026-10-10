@@ -506,6 +506,18 @@ namespace CropTraits.Framework.Builders
         public List<string> GetTraitDetailLines(Trait trait, DiscoveryData discoveries, List<string> conflictIds, HashSet<string> linkedTraitIds)
         {
             List<string> lines = new();
+
+            SDate discoveryDate = null;
+            if (discoveries.Traits.TryGetValue(trait.Id, out TraitDiscoveryData discovery) is false)
+            {
+                lines.Add(TranslationHelper.Get("journal.traits.not_discovered"));
+            }
+            else
+            {
+                discoveryDate = SDate.FromDaysSinceStart(discovery.FirstDiscoveredDay + 1);
+                lines.Add($"Discovered: {discoveryDate.Season} {discoveryDate.Day} Year {discoveryDate.Year}");
+            }
+
             if (trait is CombinationTrait combinationTrait)
             {
                 lines.Add($"Fused from {GetTraitReferenceText(combinationTrait.FirstTraitId, linkedTraitIds)} and {GetTraitReferenceText(combinationTrait.SecondTraitId, linkedTraitIds)} via the Seed Splicer.");
@@ -522,8 +534,12 @@ namespace CropTraits.Framework.Builders
             else if (conflictIds.Count > 0)
             {
                 // Each conflict gets its own line, so a long list reads cleanly and can carry over to the next page
-                lines.Add("Can't appear with the following:");
-                lines.AddRange(conflictIds.Select(conflictId => $"- {GetTraitReferenceText(conflictId, linkedTraitIds)}"));
+                lines.Add("\nCan't appear with the following:");
+                for (int index = 0; index < conflictIds.Count; index++)
+                {
+                    bool isLast = index == conflictIds.Count - 1;
+                    lines.Add($"- {GetTraitReferenceText(conflictIds[index], linkedTraitIds)}{(isLast ? "\n" : string.Empty)}");
+                }
             }
 
             if (trait.BlocksPropagation)
@@ -536,19 +552,10 @@ namespace CropTraits.Framework.Builders
                 lines.Add("Price changes carry into artisan goods and stack with other price traits.");
             }
 
-            if (discoveries.Traits.TryGetValue(trait.Id, out TraitDiscoveryData discovery) is false)
-            {
-                lines.Add(TranslationHelper.Get("journal.traits.not_discovered"));
-                return lines;
-            }
-
-            if (trait.MaxTier > 1)
+            if (discoveryDate is not null && trait.MaxTier > 1)
             {
                 lines.Add(TranslationHelper.Get("journal.traits.tiers_seen", new { tiers = string.Join(", ", discovery.TiersSeen.OrderBy(tier => tier).Select(TraitManager.ToRoman)), max = TraitManager.ToRoman(trait.MaxTier) }));
             }
-
-            var discoveryDate = SDate.FromDaysSinceStart(discovery.FirstDiscoveredDay + 1);
-            lines.Add($"Discovered: {discoveryDate.Season} {discoveryDate.Day} Year {discoveryDate.Year}");
             return lines;
         }
 
