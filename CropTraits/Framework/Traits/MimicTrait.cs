@@ -3,6 +3,7 @@ using CropTraits.Framework.Models;
 using CropTraits.Framework.Utilities.Helpers;
 using StardewValley.GameData.Crops;
 using StardewValley.TerrainFeatures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,11 +22,17 @@ namespace CropTraits.Framework.Traits
         public override TraitRarity Rarity => TraitRarity.Rare;
         public override int MaxTier => 1;
 
+        public override void OnDayEnding(NightlyContext context, int tier)
+        {
+            CopyTrait(context, false);
+        }
+
         /// <summary>
-        /// Once ready to harvest, copies one trait at tier I from an adjacent crop of a different type, the only way a trait can move between crop types.
+        /// Once ready to harvest, copies one trait from an adjacent crop of a different type, the only way a trait can move between crop types.
+        /// The copy is tier I, though traits like Chimera keep the neighbor's own tier. Both share the same flag, so a crop holding both copies once per planting.
         /// Only a neighbor's visible traits count, so a hidden mutation can't be copied before it's revealed. Its own traits are read live, so a trait gained earlier tonight still counts.
         /// </summary>
-        public override void OnDayEnding(NightlyContext context, int tier)
+        public static void CopyTrait(NightlyContext context, bool keepsNeighborTier)
         {
             if (context.Dirt?.crop is null || context.Dirt.readyForHarvest() is false || context.Dirt.modData.ContainsKey(HAS_COPIED_MOD_DATA_KEY))
             {
@@ -40,8 +47,9 @@ namespace CropTraits.Framework.Traits
 
             CropData ownCropData = context.Dirt.crop.GetData();
 
-            // Neighbors and their traits are both in a fixed order. A trait offered by two neighbors is only listed once, so the pick only depends on the roll
+            // Neighbors and their traits are both in a fixed order. A trait offered by two neighbors is only listed once (at its highest tier), so the pick only depends on the roll
             List<string> candidateIds = new();
+            Dictionary<string, int> highestTiers = new();
             foreach (NightlyNeighbor neighbor in context.Neighbors)
             {
                 if (neighbor.State.CropId == context.State.CropId || PlantedTraitHelper.TryGetDirt(context.Location, neighbor.Tile, out HoeDirt neighborDirt) is false)
@@ -49,12 +57,19 @@ namespace CropTraits.Framework.Traits
                     continue;
                 }
 
-                foreach (string traitId in PlantedTraitHelper.GetVisibleTraits(neighborDirt).Ids)
+                foreach (KeyValuePair<string, int> trait in PlantedTraitHelper.GetVisibleTraits(neighborDirt).Entries)
                 {
-                    if (candidateIds.Contains(traitId) is false && CanCopy(traitId, ownTraits, ownCropData))
+                    if (CanCopy(trait.Key, ownTraits, ownCropData) is false)
                     {
-                        candidateIds.Add(traitId);
+                        continue;
                     }
+
+                    if (candidateIds.Contains(trait.Key) is false)
+                    {
+                        candidateIds.Add(trait.Key);
+                    }
+
+                    highestTiers[trait.Key] = Math.Max(highestTiers.GetValueOrDefault(trait.Key), trait.Value);
                 }
             }
 
@@ -64,7 +79,8 @@ namespace CropTraits.Framework.Traits
                 return;
             }
 
-            ownTraits.Set(candidateIds[context.Random.Next(candidateIds.Count)], 1);
+            string copiedId = candidateIds[context.Random.Next(candidateIds.Count)];
+            ownTraits.Set(copiedId, keepsNeighborTier ? highestTiers[copiedId] : 1);
             TraitModDataHelper.SetTraits(context.Dirt.modData, ownTraits);
             context.Dirt.modData[HAS_COPIED_MOD_DATA_KEY] = "true";
         }

@@ -13,6 +13,44 @@ namespace CropTraits.Framework.Utilities.Helpers
 {
     public static class FertilizerHelper
     {
+        // Basic, Quality then Deluxe Fertilizer, ranked weakest to strongest so traits like Composting only ever upgrade soil
+        public static readonly string[] QUALITY_FERTILIZER_IDS = { "(O)368", "(O)369", "(O)919" };
+        public static readonly string[] QUALITY_FERTILIZER_NAMES = { "Basic Fertilizer", "Quality Fertilizer", "Deluxe Fertilizer" };
+
+        public const int NO_FERTILIZER_RANK = 0;
+        public const int OTHER_FERTILIZER_RANK = -1;
+
+        // Fertilizer may be stored qualified or unqualified. Fertilizers outside the quality line (like Speed-Gro) rank as other
+        public static int GetQualityFertilizerRank(string fertilizerId)
+        {
+            if (string.IsNullOrEmpty(fertilizerId))
+            {
+                return NO_FERTILIZER_RANK;
+            }
+
+            int index = System.Array.IndexOf(QUALITY_FERTILIZER_IDS, ItemRegistry.QualifyItemId(fertilizerId));
+            return index < 0 ? OTHER_FERTILIZER_RANK : index + 1;
+        }
+
+        public static string GetQualityFertilizerName(int rank)
+        {
+            return QUALITY_FERTILIZER_NAMES[System.Math.Clamp(rank, 1, QUALITY_FERTILIZER_NAMES.Length) - 1];
+        }
+
+        // Only soil with no fertilizer or a weaker quality fertilizer is upgraded, so other fertilizers are never replaced
+        public static bool TryUpgradeQualityFertilizer(HoeDirt dirt, int rank)
+        {
+            int currentRank = GetQualityFertilizerRank(dirt?.fertilizer.Value);
+            int targetRank = System.Math.Clamp(rank, 1, QUALITY_FERTILIZER_IDS.Length);
+            if (dirt is null || currentRank == OTHER_FERTILIZER_RANK || currentRank >= targetRank)
+            {
+                return false;
+            }
+
+            dirt.fertilizer.Value = QUALITY_FERTILIZER_IDS[targetRank - 1];
+            return true;
+        }
+
         public const int FERTILIZER_DRAW_METHOD_COUNT = 2; // HoeDirt.DrawOptimized and IndoorPot.draw
 
         // Tracked by name, since Harmony reruns transpilers whenever another mod patches the same method

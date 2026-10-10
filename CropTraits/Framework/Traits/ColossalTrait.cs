@@ -1,8 +1,6 @@
-using StardewValley;
+using CropTraits.Framework.Utilities.Helpers;
 using StardewValley.GameData.Crops;
-using StardewValley.GameData.GiantCrops;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CropTraits.Framework.Traits
 {
@@ -12,7 +10,6 @@ namespace CropTraits.Framework.Traits
         public const string ID = "Colossal";
 
         public const double GIANT_CROP_CHANCE_PER_TIER = 0.02;
-        public const string GIANT_CROPS_ASSET = "Data/GiantCrops";
 
         private static readonly string[] CONFLICTS = { SmallTrait.ID };
 
@@ -20,16 +17,10 @@ namespace CropTraits.Framework.Traits
         public override TraitRarity Rarity => TraitRarity.Rare;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
 
-        // Read from the asset so giant crops added by other mods count too
+        // Only crops with a giant form, including giant crops added by other mods
         public override bool CanApplyTo(CropData cropData)
         {
-            string harvestItemId = ItemRegistry.QualifyItemId(cropData?.HarvestItemId);
-            if (string.IsNullOrEmpty(harvestItemId))
-            {
-                return false;
-            }
-
-            return Game1.content.Load<Dictionary<string, GiantCropData>>(GIANT_CROPS_ASSET).Values.Any(giantCrop => ItemRegistry.QualifyItemId(giantCrop.FromItemId) == harvestItemId);
+            return GiantCropHelper.CanBecomeGiant(cropData);
         }
 
         public override double ModifyGiantCropChance(double chance, int tier)

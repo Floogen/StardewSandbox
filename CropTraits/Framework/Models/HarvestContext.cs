@@ -24,5 +24,8 @@ namespace CropTraits.Framework.Models
 
         // Set once the main harvest has been offered to traits like Gilded, so extra produce is never taken in its place
         public bool IsMainHarvestHandled { get; set; }
+
+        // Set when an outdoor crop is harvested past its season (kept alive by traits like Hardy), so traits like Enduring can reward it
+        public bool IsOutOfSeason { get; set; }
     }
 }

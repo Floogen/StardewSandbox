@@ -9,7 +9,7 @@ namespace CropTraits.Framework.Traits
         public const string ID = "Balanced";
 
         // Swift and Sluggish are included since a crop can regain the traits it was fused from, while Thirsty would set its growth back. Traits that speed up or slow down by where the crop grows are included too
-        private static readonly string[] CONFLICTS = { SwiftTrait.ID, SluggishTrait.ID, RainLovingTrait.ID, SunLovingTrait.ID, HothouseTrait.ID, ThirstyTrait.ID, LateBloomerTrait.ID, ParasiticTrait.ID, WatersideTrait.ID, DrylandTrait.ID, PaddyTrait.ID, SolitaryTrait.ID, CompanionTrait.ID };
+        private static readonly string[] CONFLICTS = { SwiftTrait.ID, SluggishTrait.ID, RainLovingTrait.ID, SunLovingTrait.ID, HothouseTrait.ID, ThirstyTrait.ID, LateBloomerTrait.ID, ParasiticTrait.ID, WatersideTrait.ID, DrylandTrait.ID, PaddyTrait.ID, SolitaryTrait.ID, CompanionTrait.ID, AmphibiousTrait.ID, TropicalTrait.ID, StormbornTrait.ID, DwarfTrait.ID };
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Neutral;

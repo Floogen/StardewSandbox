@@ -20,11 +20,16 @@ namespace CropTraits.Framework.Traits
         public override TraitRarity Rarity => TraitRarity.Rare;
         public override int MaxTier => 1;
 
-        /// <summary>
-        /// Once ready to harvest, copies one of its traits at tier I onto an adjacent crop of the same type that has room for it.
-        /// Neighbors are read from the live soil rather than the snapshot, so two Contagious crops never fill the same open slot.
-        /// </summary>
         public override void OnDayEnding(NightlyContext context, int tier)
+        {
+            SpreadTraits(context, false);
+        }
+
+        /// <summary>
+        /// Once ready to harvest, copies one of its traits at tier I onto an adjacent crop of the same type that has room for it. Traits like Pervasive copy onto every such crop instead.
+        /// Neighbors are read from the live soil rather than the snapshot, so two Contagious crops never fill the same open slot. Both share the same flag, so a crop holding both spreads once per planting.
+        /// </summary>
+        public static void SpreadTraits(NightlyContext context, bool spreadsToEveryNeighbor)
         {
             if (context.Dirt?.crop is null || context.Dirt.readyForHarvest() is false || context.Dirt.modData.ContainsKey(HAS_SPREAD_MOD_DATA_KEY))
             {
@@ -70,8 +75,28 @@ namespace CropTraits.Framework.Traits
                 return;
             }
 
-            (HoeDirt targetDirt, TraitSet targetTraits, string spreadTraitId) = candidates[context.Random.Next(candidates.Count)];
-            targetTraits.Set(spreadTraitId, 1);
+            if (spreadsToEveryNeighbor is false)
+            {
+                (HoeDirt targetDirt, TraitSet targetTraits, string spreadTraitId) = candidates[context.Random.Next(candidates.Count)];
+                GiveTrait(targetDirt, targetTraits, spreadTraitId);
+            }
+            else
+            {
+                // Grouped in the order the neighbors were visited, so each neighbor's pick only depends on the roll
+                foreach (IGrouping<HoeDirt, (HoeDirt Dirt, TraitSet Traits, string TraitId)> neighborCandidates in candidates.GroupBy(candidate => candidate.Dirt))
+                {
+                    List<(HoeDirt Dirt, TraitSet Traits, string TraitId)> options = neighborCandidates.ToList();
+                    (HoeDirt targetDirt, TraitSet targetTraits, string spreadTraitId) = options[context.Random.Next(options.Count)];
+                    GiveTrait(targetDirt, targetTraits, spreadTraitId);
+                }
+            }
+
+            context.Dirt.modData[HAS_SPREAD_MOD_DATA_KEY] = "true";
+        }
+
+        public static void GiveTrait(HoeDirt targetDirt, TraitSet targetTraits, string traitId)
+        {
+            targetTraits.Set(traitId, 1);
             TraitModDataHelper.SetTraits(targetDirt.modData, targetTraits);
 
             // A growing crop rebuilds its phases so growth traits like Swift apply, while a grown one has nothing left to change
@@ -79,8 +104,6 @@ namespace CropTraits.Framework.Traits
             {
                 GrowthHelper.ReapplyGrowthTraits(targetDirt, targetTraits, GrowthHelper.GetPlanter(targetDirt, Game1.MasterPlayer));
             }
-
-            context.Dirt.modData[HAS_SPREAD_MOD_DATA_KEY] = "true";
         }
 
         // Only traits mutation can roll are passed on, so combinations stay something only the Seed Splicer makes

@@ -45,6 +45,13 @@ namespace CropTraits.Framework.Utilities.Helpers
             return multiplier == 1 ? amount : Math.Max((int)Math.Round(amount * multiplier), 0);
         }
 
+        // Builds a buff named after the trait that gives it, so eating more refreshes it instead of stacking
+        public static Buff CreateTraitBuff(string traitId, string buffId, BuffEffects effects, int minutes, int iconSheetIndex)
+        {
+            string traitName = CropTraits.traitManager.GetTraitName(traitId);
+            return new Buff(buffId, source: traitId, displaySource: traitName, duration: minutes * Game1.realMilliSecondsPerGameMinute, iconTexture: Game1.buffsIcons, iconSheetIndex: iconSheetIndex, effects: effects, displayName: traitName);
+        }
+
         public static IEnumerable<Buff> AddTraitBuffs(Item item, IEnumerable<Buff> buffs)
         {
             TraitSet traits = TraitModDataHelper.GetTraits(item?.modData);

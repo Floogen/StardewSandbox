@@ -1,6 +1,7 @@
 using CropTraits.Framework.Models;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.GameData.Crops;
 using StardewValley.GameData.GiantCrops;
 using StardewValley.TerrainFeatures;
 using System;
@@ -13,6 +14,7 @@ namespace CropTraits.Framework.Utilities.Helpers
     {
         public const int GIANT_CROP_RANDOM_SEED = 6113; // Keeps the trait pick apart from other rolls made on the same tile and day
         public const int COLOSSAL_RANDOM_SEED = 6427; // Keeps the Colossal roll apart from the game's own giant crop roll
+        public const string GIANT_CROPS_ASSET = "Data/GiantCrops";
 
         // Set during the extra attempt Colossal makes, so that attempt doesn't roll its own bonus
         private static bool _isColossalAttempt;
@@ -49,6 +51,24 @@ namespace CropTraits.Framework.Utilities.Helpers
             }
 
             return grid;
+        }
+
+        // Read from the asset so giant crops added by other mods count too
+        public static bool CanBecomeGiant(CropData cropData)
+        {
+            string harvestItemId = ItemRegistry.QualifyItemId(cropData?.HarvestItemId);
+            if (string.IsNullOrEmpty(harvestItemId))
+            {
+                return false;
+            }
+
+            return Game1.content.Load<Dictionary<string, GiantCropData>>(GIANT_CROPS_ASSET).Values.Any(giantCrop => ItemRegistry.QualifyItemId(giantCrop.FromItemId) == harvestItemId);
+        }
+
+        // One crop with a trait like Stunted anywhere in the grid stops the whole giant crop
+        public static bool IsGrowthPrevented(Dictionary<Vector2, TileTraitState> grid)
+        {
+            return grid is not null && grid.Values.Any(state => CropTraits.traitManager.PreventsGiantCrop(state.Traits));
         }
 
         // Called from the Crop.TryGrowGiantCrop postfix

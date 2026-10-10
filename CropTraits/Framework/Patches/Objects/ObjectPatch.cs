@@ -316,6 +316,13 @@ namespace CropTraits.Framework.Patches.Objects
                 // Traits like Barren take seeds away, but the Seed Maker always makes at least one
                 __result.Stack = System.Math.Max(MIN_SEED_MAKER_SEEDS, __result.Stack + CropTraits.traitManager.GetExtraSeeds(produceTraits, random));
 
+                // Traits like Measured replace the count outright, after the extras are rolled so the draws stay the same
+                int? fixedSeedCount = CropTraits.traitManager.GetFixedSeedCount(produceTraits);
+                if (fixedSeedCount.HasValue)
+                {
+                    __result.Stack = System.Math.Max(MIN_SEED_MAKER_SEEDS, fixedSeedCount.Value);
+                }
+
                 // Seeds that lose every trait become plain seeds, since an empty set removes the key
                 TraitModDataHelper.SetTraits(__result.modData, CropTraits.traitManager.GetMadeSeedTraits(produceTraits, random));
             }

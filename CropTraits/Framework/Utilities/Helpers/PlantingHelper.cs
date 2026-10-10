@@ -47,10 +47,10 @@ namespace CropTraits.Framework.Utilities.Helpers
         }
 
         /// <summary>
-        /// Plants a seedling of the crop in a random empty tilled tile around it, carrying the same traits.
+        /// Plants a seedling of the crop in a random empty tilled tile around it, carrying the same traits. Traits like Eager start it halfway grown.
         /// The seedling skips its first-night mutation roll, since it starts as a copy rather than a new planting. Returns false when there's no room.
         /// </summary>
-        public static bool TrySpreadCrop(GameLocation location, Vector2 tile, HoeDirt parentDirt, Random random)
+        public static bool TrySpreadCrop(GameLocation location, Vector2 tile, HoeDirt parentDirt, Random random, bool startsHalfwayGrown)
         {
             Crop parentCrop = parentDirt?.crop;
             if (location is null || parentCrop is null || parentCrop.dead.Value || parentCrop.forageCrop.Value)
@@ -94,6 +94,11 @@ namespace CropTraits.Framework.Utilities.Helpers
             targetDirt.nearWaterForPaddy.Value = -1;
 
             GrowthHelper.ReapplyGrowthTraits(targetDirt, TraitSet.FromKey(traitKey), GrowthHelper.GetPlanter(targetDirt, Game1.MasterPlayer));
+            if (startsHalfwayGrown)
+            {
+                GrowthHelper.ResetToHalfwayGrowth(targetDirt.crop);
+            }
+
             return true;
         }
     }

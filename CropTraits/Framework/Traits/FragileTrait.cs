@@ -15,7 +15,12 @@ namespace CropTraits.Framework.Traits
         public override TraitPolarity Polarity => TraitPolarity.Negative;
         public override int MaxTier => 1;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
-        public override bool LosesQualityWhenLeftReady => true;
+        public override bool TracksDaysLeftReady => true;
+
+        public override int GetLeftReadyQualityShift(int daysLeftReady, int tier)
+        {
+            return -daysLeftReady;
+        }
 
         public override string GetTierDetails(int tier)
         {

@@ -24,6 +24,12 @@ namespace CropTraits.Framework.Traits
         // Runs at the end of the day, so the seedling's first night of growth happens straight away
         public override void OnDayEnding(NightlyContext context, int tier)
         {
+            TrySpread(context, SPREAD_CHANCE_PER_TIER * tier, false);
+        }
+
+        // Shared with Eager. Both use the same flag, so a crop holding both still spreads at most once per growth cycle
+        public static void TrySpread(NightlyContext context, double chance, bool startsHalfwayGrown)
+        {
             if (context.Dirt?.crop is null || context.Dirt.readyForHarvest() is false || context.Dirt.modData.ContainsKey(HAS_SPREAD_MOD_DATA_KEY))
             {
                 return;
@@ -35,12 +41,12 @@ namespace CropTraits.Framework.Traits
                 return;
             }
 
-            if (IsInSeason(context) is false || context.Random.NextDouble() >= SPREAD_CHANCE_PER_TIER * tier)
+            if (IsInSeason(context) is false || context.Random.NextDouble() >= chance)
             {
                 return;
             }
 
-            if (PlantingHelper.TrySpreadCrop(context.Location, context.Tile, context.Dirt, context.Random))
+            if (PlantingHelper.TrySpreadCrop(context.Location, context.Tile, context.Dirt, context.Random, startsHalfwayGrown))
             {
                 context.Dirt.modData[HAS_SPREAD_MOD_DATA_KEY] = "true";
             }

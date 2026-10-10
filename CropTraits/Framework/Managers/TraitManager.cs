@@ -292,9 +292,25 @@ namespace CropTraits.Framework.Managers
             return Resolve(traits).Any(entry => entry.Trait.IsRemovedAfterHarvest);
         }
 
-        public bool LosesQualityWhenLeftReady(TraitSet traits)
+        public bool TracksDaysLeftReady(TraitSet traits)
         {
-            return Resolve(traits).Any(entry => entry.Trait.LosesQualityWhenLeftReady);
+            return Resolve(traits).Any(entry => entry.Trait.TracksDaysLeftReady);
+        }
+
+        public int GetLeftReadyQualityShift(TraitSet traits, int daysLeftReady)
+        {
+            int steps = 0;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                steps += trait.GetLeftReadyQualityShift(daysLeftReady, tier);
+            }
+
+            return steps;
+        }
+
+        public bool PreventsGiantCrop(TraitSet traits)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.PreventsGiantCrop);
         }
 
         public bool ClearsNearbyWeeds(TraitSet traits)
@@ -340,6 +356,53 @@ namespace CropTraits.Framework.Managers
             }
 
             return seedTraits;
+        }
+
+        public int? GetFixedSeedCount(TraitSet traits)
+        {
+            int? seedCount = null;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                int? traitCount = trait.GetFixedSeedCount(tier);
+                if (traitCount.HasValue && (seedCount.HasValue is false || traitCount.Value > seedCount.Value))
+                {
+                    seedCount = traitCount;
+                }
+            }
+
+            return seedCount;
+        }
+
+        public double GetCaskAgingMultiplier(TraitSet traits)
+        {
+            double multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = trait.ModifyCaskAgingRate(multiplier, tier);
+            }
+
+            return Math.Max(multiplier, 0);
+        }
+
+        public double GetBadGiftFriendshipMultiplier(TraitSet traits)
+        {
+            double multiplier = 1;
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                multiplier = trait.ModifyBadGiftFriendship(multiplier, tier);
+            }
+
+            return Math.Max(multiplier, 0);
+        }
+
+        public int GetGiftTaste(TraitSet traits, int giftTaste)
+        {
+            foreach ((Trait trait, int tier) in Resolve(traits))
+            {
+                giftTaste = trait.ModifyGiftTaste(giftTaste, tier);
+            }
+
+            return giftTaste;
         }
 
         public double GetInheritChanceMultiplier(TraitSet traits)

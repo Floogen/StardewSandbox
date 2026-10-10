@@ -102,6 +102,7 @@ namespace CropTraits
                 new ItemRegistryPatch(monitor, modHelper).Apply(harmony);
                 new ColoredObjectPatch(monitor, modHelper).Apply(harmony);
                 new ObjectPatch(monitor, modHelper).Apply(harmony);
+                new CaskPatch(monitor, modHelper).Apply(harmony);
                 new IndoorPotPatch(monitor, modHelper).Apply(harmony);
                 new ItemPatch(monitor, modHelper).Apply(harmony);
                 new MachineDataUtilityPatch(monitor, modHelper).Apply(harmony);

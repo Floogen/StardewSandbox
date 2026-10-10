@@ -14,7 +14,7 @@ namespace CropTraits.Framework.Managers
     public class NightlyGrowthManager : BaseManager
     {
         public const string OUT_OF_SEASON_NIGHTS_MOD_DATA_KEY = "PeacefulEnd.CropTraits/OutOfSeasonNights"; // Nights an outdoor crop has kept growing past its season, on HoeDirt
-        public const string DAYS_LEFT_READY_MOD_DATA_KEY = "PeacefulEnd.CropTraits/DaysLeftReady"; // Full days a crop with a trait like Fragile has sat ready to harvest, on HoeDirt
+        public const string DAYS_LEFT_READY_MOD_DATA_KEY = "PeacefulEnd.CropTraits/DaysLeftReady"; // Full days a crop with a trait like Fragile or Mellow has sat ready to harvest, on HoeDirt
         public const int NIGHTLY_RANDOM_SEED = 7919; // Keeps the nightly rolls apart from the mutation roll made on the same tile and day
 
         // Keyed by the dirt itself, since pot dirt isn't stored by tile

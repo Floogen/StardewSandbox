@@ -139,9 +139,14 @@ namespace CropTraits.Framework.Traits
         public virtual bool IsRemovedAfterHarvest => false;
 
         /// <summary>
-        /// If the harvest drops one quality step for each full day the crop was left ready.
+        /// If the full days the crop sits ready to harvest are counted overnight, so traits like Fragile and Mellow can change the harvest quality by them.
         /// </summary>
-        public virtual bool LosesQualityWhenLeftReady => false;
+        public virtual bool TracksDaysLeftReady => false;
+
+        /// <summary>
+        /// If the crop can never become a giant crop. Checked for every crop in the grid, so one is enough to stop it.
+        /// </summary>
+        public virtual bool PreventsGiantCrop => false;
 
         /// <summary>
         /// If the crop clears weeds from the eight tiles around it each morning.
@@ -223,6 +228,24 @@ namespace CropTraits.Framework.Traits
         public virtual int ModifyHarvestQuality(int quality, Random random, int tier)
         {
             return quality;
+        }
+
+        /// <summary>
+        /// The same as ModifyHarvestQuality, for traits that need to know about the harvest itself (such as whether the crop is past its season).
+        /// The harvest manager calls this one, which passes through to the simpler version unless a trait overrides it.
+        /// </summary>
+        public virtual int ModifyHarvestQuality(int quality, HarvestContext context, Random random, int tier)
+        {
+            return ModifyHarvestQuality(quality, random, tier);
+        }
+
+        /// <summary>
+        /// Quality steps to shift the harvest by for the full days it was left ready (negative drops it). Only counted when a trait on the crop sets TracksDaysLeftReady.
+        /// The steps from every trait are added together. The result is clamped to the crop's own quality limits.
+        /// </summary>
+        public virtual int GetLeftReadyQualityShift(int daysLeftReady, int tier)
+        {
+            return 0;
         }
 
         /// <summary>
@@ -333,6 +356,22 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
+        /// Adjusts the friendship lost when the produce is given as a gift the villager dislikes or hates (1 is normal, higher loses more).
+        /// </summary>
+        public virtual double ModifyBadGiftFriendship(double multiplier, int tier)
+        {
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Changes how much a villager likes the produce as a gift, using the game's gift taste values (such as NPC.gift_taste_dislike). Called whenever the game checks a villager's taste for it.
+        /// </summary>
+        public virtual int ModifyGiftTaste(int giftTaste, int tier)
+        {
+            return giftTaste;
+        }
+
+        /// <summary>
         /// Extra seeds the Seed Maker adds when it turns the produce into its own seeds. The extras from every trait are added together.
         /// Traits like Barren return a negative number to take seeds away, though the Seed Maker always makes at least one.
         /// </summary>
@@ -348,6 +387,23 @@ namespace CropTraits.Framework.Traits
         public virtual void ModifyMadeSeedTraits(TraitSet seedTraits, Random random, int tier)
         {
 
+        }
+
+        /// <summary>
+        /// An exact number of seeds for the Seed Maker to make from the produce, replacing the game's roll and any extras from traits like Seedy. Null leaves the count alone.
+        /// The highest count among the crop's traits is used.
+        /// </summary>
+        public virtual int? GetFixedSeedCount(int tier)
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Adjusts how fast a cask ages an artisan good carrying this trait (1 is normal). The trait must be a price trait (IsPriceTrait) to reach the artisan good.
+        /// </summary>
+        public virtual double ModifyCaskAgingRate(double multiplier, int tier)
+        {
+            return multiplier;
         }
 
         /// <summary>

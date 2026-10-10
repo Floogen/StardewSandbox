@@ -45,6 +45,7 @@ namespace CropTraits.Framework.Managers
                 return;
             }
 
+            GameLocation location = soil.Location ?? crop.currentLocation;
             _activeHarvest = new HarvestContext
             {
                 TraitKey = traitKey,
@@ -52,7 +53,8 @@ namespace CropTraits.Framework.Managers
                 SeedId = crop.netSeedIndex.Value,
                 QualifiedHarvestItemId = qualifiedHarvestItemId,
                 Soil = soil,
-                JunimoHarvester = junimoHarvester
+                JunimoHarvester = junimoHarvester,
+                IsOutOfSeason = location is not null && location.IsOutdoors && NightlyGrowthHelper.IsInSeasonIgnoringTraits(crop, location) is false
             };
         }
 
@@ -123,13 +125,13 @@ namespace CropTraits.Framework.Managers
             int modifiedQuality = quality;
             foreach ((Trait trait, int tier) in CropTraits.traitManager.Resolve(context.Traits))
             {
-                modifiedQuality = trait.ModifyHarvestQuality(modifiedQuality, random, tier);
+                modifiedQuality = trait.ModifyHarvestQuality(modifiedQuality, context, random, tier);
             }
 
-            // Traits like Fragile drop a quality step for each full day the crop sat ready
-            if (context.Soil is not null && CropTraits.traitManager.LosesQualityWhenLeftReady(context.Traits))
+            // Traits like Fragile drop quality for each full day the crop sat ready, while traits like Mellow raise it
+            if (context.Soil is not null && CropTraits.traitManager.TracksDaysLeftReady(context.Traits))
             {
-                modifiedQuality = QualityHelper.ShiftQuality(modifiedQuality, -NightlyGrowthHelper.GetDaysLeftReady(context.Soil));
+                modifiedQuality = QualityHelper.ShiftQuality(modifiedQuality, CropTraits.traitManager.GetLeftReadyQualityShift(context.Traits, NightlyGrowthHelper.GetDaysLeftReady(context.Soil)));
             }
 
             if (modifiedQuality == quality)

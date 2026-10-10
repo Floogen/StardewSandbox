@@ -77,10 +77,10 @@ namespace CropTraits.Framework.Utilities.Helpers
             return 0;
         }
 
-        // Counts each full day a crop with a trait like Fragile sat ready, clearing the count once it's no longer ready
+        // Counts each full day a crop with a trait like Fragile or Mellow sat ready, clearing the count once it's no longer ready
         public static void CountDayLeftReady(HoeDirt dirt, TraitSet traits, bool wasLeftReady)
         {
-            if (CropTraits.traitManager.LosesQualityWhenLeftReady(traits) is false || dirt.readyForHarvest() is false)
+            if (CropTraits.traitManager.TracksDaysLeftReady(traits) is false || dirt.readyForHarvest() is false)
             {
                 dirt.modData.Remove(NightlyGrowthManager.DAYS_LEFT_READY_MOD_DATA_KEY);
                 return;

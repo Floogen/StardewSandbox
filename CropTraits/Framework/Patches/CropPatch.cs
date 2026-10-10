@@ -44,10 +44,17 @@ namespace CropTraits.Framework.Patches
             harmony.Patch(AccessTools.Method(_crop, nameof(Crop.draw), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(Color), typeof(float) }), prefix: new HarmonyMethod(GetType(), nameof(DrawPrefix)));
         }
 
-        // The grid is captured first, since the game removes the crops that form the giant crop
-        private static void TryGrowGiantCropPrefix(Crop __instance, bool checkPreconditions, out Dictionary<Vector2, TileTraitState> __state)
+        // The grid is captured first, since the game removes the crops that form the giant crop. Traits like Stunted skip the game's attempt entirely
+        private static bool TryGrowGiantCropPrefix(Crop __instance, bool checkPreconditions, out Dictionary<Vector2, TileTraitState> __state, ref bool __result)
         {
             __state = GiantCropHelper.CaptureGrid(__instance, checkPreconditions);
+            if (GiantCropHelper.IsGrowthPrevented(__state))
+            {
+                __result = false;
+                return false;
+            }
+
+            return true;
         }
 
         private static void TryGrowGiantCropPostfix(Crop __instance, bool checkPreconditions, Dictionary<Vector2, TileTraitState> __state, ref bool __result)
