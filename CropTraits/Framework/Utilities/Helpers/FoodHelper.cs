@@ -27,10 +27,16 @@ namespace CropTraits.Framework.Utilities.Helpers
             return _isCalculatingHealth ? energy : ApplyRestorationTraits(item, energy);
         }
 
-        // Inedible items (and harmful ones with negative values) are left alone
+        // Only produce has a seed ID, since artisan goods carry price traits like Tangy but aren't the crop itself
+        public static bool IsProduce(Item item)
+        {
+            return item?.modData.ContainsKey(CropTraits.SEED_ID_MOD_DATA_KEY) ?? false;
+        }
+
+        // Inedible items (and harmful ones with negative values) are left alone, as are artisan goods
         public static int ApplyRestorationTraits(Item item, int amount)
         {
-            if (amount <= 0 || item is null)
+            if (amount <= 0 || IsProduce(item) is false)
             {
                 return amount;
             }
@@ -52,9 +58,15 @@ namespace CropTraits.Framework.Utilities.Helpers
             return new Buff(buffId, source: traitId, displaySource: traitName, duration: minutes * Game1.realMilliSecondsPerGameMinute, iconTexture: Game1.buffsIcons, iconSheetIndex: iconSheetIndex, effects: effects, displayName: traitName);
         }
 
+        // Artisan goods are left alone, so eating Tangy jelly gives no speed boost
         public static IEnumerable<Buff> AddTraitBuffs(Item item, IEnumerable<Buff> buffs)
         {
-            TraitSet traits = TraitModDataHelper.GetTraits(item?.modData);
+            if (IsProduce(item) is false)
+            {
+                return buffs;
+            }
+
+            TraitSet traits = TraitModDataHelper.GetTraits(item.modData);
             if (traits.Count == 0)
             {
                 return buffs;

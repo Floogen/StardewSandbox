@@ -16,7 +16,7 @@ namespace CropTraits.Framework.Managers
         public const string PENDING_MUTATION_MOD_DATA_KEY = "PeacefulEnd.CropTraits/PendingMutation"; // Marks HoeDirt awaiting its first overnight mutation roll
         public const string HAS_MUTATED_MOD_DATA_KEY = "PeacefulEnd.CropTraits/HasMutated"; // Marks HoeDirt whose crop passed a mutation roll, which ends its nightly Mutagenic Fertilizer rolls
 
-        /// <summary>Resolves the mutation roll the night after a crop is planted, plus a nightly roll for crops with Mutagenic Fertilizer until they mutate or mature.</summary>
+        /// <summary>Resolves the mutation roll the night after a crop is planted, plus a roll on each night a crop with Mutagenic Fertilizer grows until it mutates or matures.</summary>
         public MutationManager(IMonitor monitor, IModHelper helper) : base(monitor, helper)
         {
 
@@ -42,7 +42,7 @@ namespace CropTraits.Framework.Managers
             List<(Vector2 Tile, HoeDirt Dirt, bool IsFirstRoll)> rollingDirt = DirtHelper.GetAllDirt(location)
                 .Where(entry => entry.Dirt.crop is not null)
                 .Select(entry => (entry.Tile, entry.Dirt, IsFirstRoll: entry.Dirt.modData.ContainsKey(PENDING_MUTATION_MOD_DATA_KEY)))
-                .Where(entry => entry.IsFirstRoll || MutationHelper.CanRollNightly(entry.Dirt))
+                .Where(entry => entry.IsFirstRoll || MutationHelper.CanRollNightly(entry.Dirt, location, entry.Tile))
                 .ToList();
 
             if (rollingDirt.Count == 0)

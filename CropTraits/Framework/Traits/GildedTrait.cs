@@ -53,7 +53,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Extra produce (from crops like blueberries or traits like Prolific) is never turned into coins. Junimo harvests are never turned into coins. The coins don't count as shipped.";
+            return "Extra produce (from crops like blueberries or traits like Prolific) is never turned into coins. Junimo harvests are never turned into coins. The coins don't count as shipped. A crop that also has Fortunate rolls Fortunate first, then Gilded if that fails.";
         }
     }
 }

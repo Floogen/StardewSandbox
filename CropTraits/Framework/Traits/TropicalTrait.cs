@@ -2,7 +2,7 @@ using CropTraits.Framework.Models;
 
 namespace CropTraits.Framework.Traits
 {
-    // Fused from Hothouse and Sun Loving, thriving anywhere warm without being held back elsewhere
+    // Fused from Hothouse and Sun Loving, thriving anywhere warm and on dry days elsewhere without either parent's penalty
     public class TropicalTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
@@ -16,7 +16,9 @@ namespace CropTraits.Framework.Traits
 
         public override void OnDayEnding(NightlyContext context, int tier)
         {
-            if ((context.IsOutdoors is false || context.Location.InIslandContext()) && context.Random.NextDouble() < BOOST_CHANCE)
+            // Indoors and Ginger Island are always warm, while elsewhere outdoors only dry days count
+            bool isWarm = context.IsOutdoors is false || context.Location.InIslandContext() || context.IsRaining is false;
+            if (isWarm && context.Random.NextDouble() < BOOST_CHANCE)
             {
                 context.Plan.ExtraGrowthDays++;
             }
@@ -24,12 +26,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(BOOST_CHANCE)} chance to grow an extra day each night indoors or anywhere on Ginger Island";
+            return $"Has a {ToPercent(BOOST_CHANCE)} chance to grow an extra day each night indoors or on Ginger Island, and after dry days everywhere else outdoors";
         }
 
         public override string GetNotes()
         {
-            return "Grows normally everywhere else, without Hothouse's outdoor penalty or Sun Loving's rain penalty. The extra day only counts on nights the crop grows (when it's watered).";
+            return "Rain outside Ginger Island only cancels the boost for that night, without Hothouse's outdoor penalty or Sun Loving's rain penalty. Storms count as rain. The extra day only counts on nights the crop grows (when it's watered).";
         }
     }
 }

@@ -31,5 +31,10 @@ namespace CropTraits.Framework.Traits
         {
             return $"Cycles through rainbow colors, glows at night and sells for {ToPercent(PRICE_BONUS)} more";
         }
+
+        public override string GetNotes()
+        {
+            return "Flowers keep their own petal colors, both on the crop and as produce. Its price bonus carries into artisan goods made from it.";
+        }
     }
 }

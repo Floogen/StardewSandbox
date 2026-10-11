@@ -323,6 +323,11 @@ namespace CropTraits.Framework.Managers
             return Resolve(traits).Any(entry => entry.Trait.IsConductive);
         }
 
+        public bool CountsAsWatered(TraitSet traits, GameLocation location, Vector2 tile)
+        {
+            return Resolve(traits).Any(entry => entry.Trait.CountsAsWatered(location, tile, entry.Tier));
+        }
+
         public double GetGiftFriendshipMultiplier(TraitSet traits)
         {
             double multiplier = 1;
@@ -427,12 +432,12 @@ namespace CropTraits.Framework.Managers
             return Math.Max(multiplier, 0);
         }
 
-        public int GetNeighborInfluenceMultiplier(TraitSet traits)
+        public int GetNeighborBonusCapMultiplier(TraitSet traits)
         {
             int multiplier = 1;
             foreach ((Trait trait, int tier) in Resolve(traits))
             {
-                multiplier = Math.Max(multiplier, trait.GetNeighborInfluenceMultiplier(tier));
+                multiplier = Math.Max(multiplier, trait.GetNeighborBonusCapMultiplier(tier));
             }
 
             return multiplier;

@@ -10,10 +10,10 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Fortunate";
 
-        public const double BASE_CHANCE = 0.50;
+        public const double BASE_CHANCE = 0.60;
         public const double CHANCE_PER_LUCK = 2.5; // Daily luck usually sits between -0.1 and 0.1, so this spans the full range below
-        public const double MIN_CHANCE = 0.25;
-        public const double MAX_CHANCE = 0.75;
+        public const double MIN_CHANCE = 0.35;
+        public const double MAX_CHANCE = 0.85;
 
         public override string Id => ID;
         public override string FirstTraitId => FickleTrait.ID;
@@ -36,7 +36,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return $"A neutral luck day gives Gilded's usual {ToPercent(BASE_CHANCE)}. Extra produce is never turned into coins. Junimo harvests are never turned into coins. The coins don't count as shipped.";
+            return $"A neutral luck day gives {ToPercent(BASE_CHANCE)}, above Gilded's usual {ToPercent(GildedTrait.GILDED_CHANCE)}. A crop that also has Gilded rolls Fortunate first, then Gilded if that fails. Extra produce is never turned into coins. Junimo harvests are never turned into coins. The coins don't count as shipped.";
         }
     }
 }

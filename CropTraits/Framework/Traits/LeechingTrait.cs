@@ -67,7 +67,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Only Basic, Quality and Deluxe Fertilizer move, only when they beat its own. The soil it takes from is left bare. Soil holding other fertilizers like Speed-Gro is left alone.";
+            return "Only Basic, Quality and Deluxe Fertilizer move, only when they beat its own. The soil it takes from is left bare. Soil holding other fertilizers like Speed-Gro is left alone, and it takes nothing while its own soil holds one (Mutagenic Fertilizer included).";
         }
     }
 }

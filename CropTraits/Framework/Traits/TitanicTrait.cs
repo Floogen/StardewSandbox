@@ -30,7 +30,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "A giant crop keeps up to three traits from the crops it formed from, so the extra produce needs Titanic to be one of them.";
+            return "A giant crop keeps up to three traits from the crops it formed from, so the extra produce needs Titanic to be one of them. Only the produce dropped when it breaks is boosted, not pieces knocked off with the Shaving enchantment.";
         }
     }
 }

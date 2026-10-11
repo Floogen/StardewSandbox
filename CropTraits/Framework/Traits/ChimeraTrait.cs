@@ -34,7 +34,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Covers all eight surrounding tiles. Copies once per planting, even alongside Mimic. Never copies combination traits. Only copies traits its own crop could roll.";
+            return "Covers all eight surrounding tiles. Copies once per planting, even alongside Mimic. Never copies combination traits. Only copies traits its own crop could roll. Flowers keep their own petal colors, both on the crop and as produce.";
         }
     }
 }

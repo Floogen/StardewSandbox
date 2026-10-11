@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 namespace CropTraits.Framework.Traits
 {
-    // Fused from Sluggish and Regal, trading slower growth for better quality odds than Regal II
+    // Fused from Sluggish and Regal, trading slower growth for the quality odds of Regal III
     public class LateBloomerTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
         public const string ID = "LateBloomer";
 
         public const double SLOWDOWN = 0.20;
-        public const int QUALITY_LEVELS = 2;
+        public const int QUALITY_LEVELS = 3;
 
         // Matches Sluggish, since Late Bloomer replaces it
         private static readonly string[] CONFLICTS = { SwiftTrait.ID };

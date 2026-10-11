@@ -30,7 +30,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Each crop type has its own tint, so its produce still stacks.";
+            return "Each crop type has its own tint, so its produce still stacks. Flowers keep their own petal colors, both on the crop and as produce.";
         }
     }
 }

@@ -12,7 +12,7 @@ namespace CropTraits.Framework.Traits
         public const string ID = "Clustered";
 
         public const float SIZE_REDUCTION = 0.25f;
-        public const double PRICE_PENALTY = 0.15;
+        public const double PRICE_PENALTY = 0.35;
         public const int EXTRA_ITEMS = 1;
 
         private static readonly string[] CONFLICTS = { LargeTrait.ID };

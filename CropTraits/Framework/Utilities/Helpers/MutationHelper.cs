@@ -1,6 +1,7 @@
 using CropTraits.Framework.Managers;
 using CropTraits.Framework.Models;
 using CropTraits.Framework.Traits;
+using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using System;
@@ -26,8 +27,8 @@ namespace CropTraits.Framework.Utilities.Helpers
             return Math.Clamp(chance, 0, 1);
         }
 
-        // Mutagenic Fertilizer adds a roll every night (including when applied after planting) until the crop mutates or matures
-        public static bool CanRollNightly(HoeDirt dirt)
+        // Mutagenic Fertilizer adds a roll every night the crop grows (including when applied after planting) until the crop mutates or matures
+        public static bool CanRollNightly(HoeDirt dirt, GameLocation location, Vector2 tile)
         {
             Crop crop = dirt.crop;
             if (crop is null || crop.dead.Value || PlantedTraitHelper.IsMature(crop))
@@ -41,7 +42,24 @@ namespace CropTraits.Framework.Utilities.Helpers
                 return false;
             }
 
-            return HasMutagenicFertilizer(dirt) && dirt.modData.ContainsKey(MutationManager.HAS_MUTATED_MOD_DATA_KEY) is false;
+            if (HasMutagenicFertilizer(dirt) is false || dirt.modData.ContainsKey(MutationManager.HAS_MUTATED_MOD_DATA_KEY))
+            {
+                return false;
+            }
+
+            // Leaving the crop unwatered keeps it from maturing, so dry nights can't be used to buy extra rolls
+            return IsGrowingTonight(dirt, location, tile);
+        }
+
+        // Read at the end of the day, before the game dries the soil. Traits like Deep Rooted and Paddy count as watered
+        public static bool IsGrowingTonight(HoeDirt dirt, GameLocation location, Vector2 tile)
+        {
+            if (dirt.state.Value == HoeDirt.watered || dirt.crop?.GetData()?.NeedsWatering == false)
+            {
+                return true;
+            }
+
+            return CropTraits.traitManager.CountsAsWatered(TraitModDataHelper.GetTraits(dirt.modData), location, tile);
         }
 
         public static bool HasMutagenicFertilizer(HoeDirt dirt)

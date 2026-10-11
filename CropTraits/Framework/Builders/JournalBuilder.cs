@@ -249,7 +249,7 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph("Every crop you plant has a small chance to gain a [link=trait][underline]trait[/underline][/link] when it first sprouts.\n\nThese traits can make a crop grow faster, sell for more or even give an extra harvest. Some traits can even make crops survive outside their normal seasons!\n\nBe mindful that not every trait is helpful, however.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph("Mutagenic Fertilizer can be used to raise the chances of a trait appearing by allowing the crop to roll for mutations every day (until fully grown).").Spacing(176);
+            page.AddParagraph("Mutagenic Fertilizer can be used to raise the chances of a trait appearing by allowing the crop to roll for mutations every night it's watered (until fully grown).").Spacing(176);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(CropTraits.MUTAGENIC_FERTILIZER_QUALIFIED_ID).Set("Description", TranslationHelper.Get("item.mutagenic_fertilizer.description") + "\n\nThis can be purchased from Pierre once you reach farming level 5.").Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
             page.AddParagraph("Where you plant a crop also matters. When a plant mutates, it is much more likely to pick up a trait from adjacent crops [highlight]of the same type[/highlight].").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);

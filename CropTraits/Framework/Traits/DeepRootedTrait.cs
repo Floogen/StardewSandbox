@@ -1,4 +1,6 @@
 using CropTraits.Framework.Models;
+using Microsoft.Xna.Framework;
+using StardewValley;
 
 namespace CropTraits.Framework.Traits
 {
@@ -12,9 +14,14 @@ namespace CropTraits.Framework.Traits
         public override string FirstTraitId => DroughtTolerantTrait.ID;
         public override string SecondTraitId => RainLovingTrait.ID;
 
+        public override bool CountsAsWatered(GameLocation location, Vector2 tile, int tier)
+        {
+            return true;
+        }
+
         public override void OnDayEnding(NightlyContext context, int tier)
         {
-            context.Plan.CountsAsWatered = true;
+            context.Plan.CountsAsWatered = CountsAsWatered(context.Location, context.Tile, tier);
         }
 
         public override string GetTierDetails(int tier)

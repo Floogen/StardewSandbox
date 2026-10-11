@@ -7,7 +7,7 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Tender";
 
-        public const double FLATTEN_CHANCE = 0.25;
+        public const double FLATTEN_CHANCE = 0.10;
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Negative;

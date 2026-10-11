@@ -14,6 +14,11 @@ namespace CropTraits.Framework.Traits
         public override TraitRarity Rarity => TraitRarity.Rare;
         public override bool BlocksMutationReplacement => true;
 
+        public override string GetTierDetails(int tier)
+        {
+            return "Mutations can't replace or displace its traits";
+        }
+
         public override string GetNotes()
         {
             return $"Mutations can still add a trait (when the crop has fewer than {TraitManager.MAX_TRAITS}) or raise a tier. Crossbreeding can still remove traits, including Stable.";

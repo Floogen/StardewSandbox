@@ -10,7 +10,7 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Negative;
-        public override TraitRarity Rarity => TraitRarity.Uncommon;
+        public override TraitRarity Rarity => TraitRarity.Rare;
         public override int MaxTier => 1;
         public override bool IsRemovedAfterHarvest => true;
 

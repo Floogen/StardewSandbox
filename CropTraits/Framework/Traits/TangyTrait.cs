@@ -41,7 +41,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetNotes()
         {
-            return "Its price bonus carries into artisan goods made from it. Eating more refreshes the buff instead of stacking it.";
+            return "Its price bonus carries into artisan goods made from it, though only the produce itself gives the speed boost. Eating more refreshes the buff instead of stacking it.";
         }
     }
 }

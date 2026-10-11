@@ -181,6 +181,14 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
+        /// If the crop grows tonight without being watered (such as Deep Rooted anywhere or Paddy near water). Also lets Mutagenic Fertilizer roll on those nights.
+        /// </summary>
+        public virtual bool CountsAsWatered(GameLocation location, Vector2 tile, int tier)
+        {
+            return false;
+        }
+
+        /// <summary>
         /// Adjusts the fertilizer quality level vanilla uses for the crop's harvest quality odds (Deluxe Fertilizer is level 3).
         /// </summary>
         public virtual int ModifyQualityBoostLevel(int level, int tier)
@@ -423,9 +431,9 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
-        /// How strongly the crop's traits pull on the mutation roll of the same crop type around it (1 is normal). The highest value among the crop's traits is used.
+        /// Raises the limit on how far the crop's traits can pull on the mutation roll of the same crop type around it (1 is normal). The highest value among the crop's traits is used.
         /// </summary>
-        public virtual int GetNeighborInfluenceMultiplier(int tier)
+        public virtual int GetNeighborBonusCapMultiplier(int tier)
         {
             return 1;
         }
