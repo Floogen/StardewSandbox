@@ -239,6 +239,13 @@ namespace CropTraits.Framework.Patches.Objects
                 return false;
             }
 
+            // Only one player can use a Seed Splicer at a time, so two splices can't overwrite each other
+            if (SpliceHelper.IsInUseByAnotherPlayer(__instance, who.currentLocation))
+            {
+                Game1.showRedMessage(TranslationHelper.Get("menu.status.in_use"));
+                return false;
+            }
+
             Game1.activeClickableMenu = new SeedSplicerMenu(__instance);
             return false;
         }

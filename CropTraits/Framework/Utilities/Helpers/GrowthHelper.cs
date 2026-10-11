@@ -86,7 +86,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             crop.phaseDays.Add(FINAL_PHASE_LENGTH);
 
             // Vanilla fertilizer and profession boosts are reapplied first so they stack predictably with traits
-            CropTraits.modHelper.Reflection.GetMethod(dirt, "applySpeedIncreases").Invoke(planter ?? Game1.MasterPlayer);
+            dirt.applySpeedIncreases(planter ?? Game1.MasterPlayer);
 
             ApplyGrowthTraits(crop, traits);
         }

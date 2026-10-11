@@ -23,7 +23,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                 return isPassable;
             }
 
-            TraitSet traits = CropAppearanceHelper.GetVisibleTraits(dirt);
+            TraitSet traits = PlantedTraitHelper.GetVisibleTraits(dirt);
             if (traits.Count == 0)
             {
                 return isPassable;

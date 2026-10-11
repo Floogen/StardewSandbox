@@ -38,6 +38,7 @@ namespace CropTraits
         public const string PLANTER_ID_MOD_DATA_KEY = "PeacefulEnd.CropTraits/PlanterId"; // Farmer who planted the crop on HoeDirt, so growth rebuilds use their professions
         public const string SPLICE_START_DAY_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SpliceStartDay"; // Total day a running splice started, on the Seed Splicer
         public const string SPLICE_START_TIME_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SpliceStartTime"; // Time of day a running splice started, on the Seed Splicer
+        public const string SPLICER_USER_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SplicerUserId"; // Player with the Seed Splicer's menu open, on the Seed Splicer
         public const string SPLICE_UPGRADED_TRAITS_MOD_DATA_KEY = "PeacefulEnd.CropTraits/SpliceUpgradedTraits"; // Traits that grew stronger in the held seeds, on the Seed Splicer
 
         // Shared static helpers
@@ -160,6 +161,7 @@ namespace CropTraits
             IParchmentApi parchmentApi = Helper.ModRegistry.GetApi<IParchmentApi>(PARCHMENT_ID);
             if (parchmentApi is null)
             {
+                Monitor.Log("Couldn't get the Parchment API, so the Field Notes won't be available. Make sure Parchment is installed and up to date.", LogLevel.Error);
                 return;
             }
 

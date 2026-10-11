@@ -1,6 +1,7 @@
 using CropTraits.Framework.Models;
 using StardewModdingAPI;
 using StardewValley;
+using System.Linq;
 
 namespace CropTraits.Framework.Utilities.Helpers
 {
@@ -12,6 +13,31 @@ namespace CropTraits.Framework.Utilities.Helpers
     {
         public const int SPLICE_DURATION_MINUTES = 180;
         public const int LAST_TIME_OF_DAY = 2600;
+
+        // Another player has the menu open while they're online and still in the same location, so a claim left by someone who disconnected or walked away never blocks it
+        public static bool IsInUseByAnotherPlayer(Object machine, GameLocation location)
+        {
+            if (machine.modData.TryGetValue(CropTraits.SPLICER_USER_MOD_DATA_KEY, out string userIdText) is false || long.TryParse(userIdText, out long userId) is false || userId == Game1.player.UniqueMultiplayerID)
+            {
+                return false;
+            }
+
+            return Game1.getOnlineFarmers().Any(farmer => farmer.UniqueMultiplayerID == userId && farmer.currentLocation?.NameOrUniqueName == location?.NameOrUniqueName);
+        }
+
+        public static void ClaimMachine(Object machine)
+        {
+            machine.modData[CropTraits.SPLICER_USER_MOD_DATA_KEY] = Game1.player.UniqueMultiplayerID.ToString();
+        }
+
+        // Only the player holding the claim releases it, so closing a menu never frees one someone else has open
+        public static void ReleaseMachine(Object machine)
+        {
+            if (machine.modData.TryGetValue(CropTraits.SPLICER_USER_MOD_DATA_KEY, out string userIdText) && userIdText == Game1.player.UniqueMultiplayerID.ToString())
+            {
+                machine.modData.Remove(CropTraits.SPLICER_USER_MOD_DATA_KEY);
+            }
+        }
 
         public static bool IsSplicing(Object machine)
         {

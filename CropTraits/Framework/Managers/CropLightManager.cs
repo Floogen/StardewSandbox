@@ -2,6 +2,7 @@ using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
@@ -18,7 +19,8 @@ namespace CropTraits.Framework.Managers
         // Light colors are subtracted from the darkness, so this gives a soft green glow
         public static readonly Color LIGHT_COLOR = new Color(120, 40, 120);
 
-        private readonly HashSet<string> _lightIds = new();
+        // Per screen, since each split-screen player sees their own location's lights
+        private readonly PerScreen<HashSet<string>> _lightIds = new(() => new HashSet<string>());
 
         /// <summary>Adds a local light to each glowing crop in the current location while it's dark out, removing them otherwise.</summary>
         public CropLightManager(IMonitor monitor, IModHelper helper) : base(monitor, helper)
@@ -45,7 +47,7 @@ namespace CropTraits.Framework.Managers
             {
                 foreach ((Vector2 tile, HoeDirt dirt) in DirtHelper.GetAllDirt(location))
                 {
-                    if (dirt.crop is null || dirt.crop.dead.Value || CropTraits.traitManager.GlowsAtNight(CropAppearanceHelper.GetVisibleTraits(dirt)) is false)
+                    if (dirt.crop is null || dirt.crop.dead.Value || CropTraits.traitManager.GlowsAtNight(PlantedTraitHelper.GetVisibleTraits(dirt)) is false)
                     {
                         continue;
                     }
@@ -61,23 +63,23 @@ namespace CropTraits.Framework.Managers
                 }
             }
 
-            foreach (string lightId in _lightIds.Where(lightId => wantedIds.Contains(lightId) is false).ToList())
+            foreach (string lightId in _lightIds.Value.Where(lightId => wantedIds.Contains(lightId) is false).ToList())
             {
                 Game1.currentLightSources.Remove(lightId);
             }
 
-            _lightIds.Clear();
-            _lightIds.UnionWith(wantedIds);
+            _lightIds.Value.Clear();
+            _lightIds.Value.UnionWith(wantedIds);
         }
 
         public void Reset()
         {
-            foreach (string lightId in _lightIds)
+            foreach (string lightId in _lightIds.Value)
             {
                 Game1.currentLightSources.Remove(lightId);
             }
 
-            _lightIds.Clear();
+            _lightIds.ResetAllScreens();
         }
     }
 }

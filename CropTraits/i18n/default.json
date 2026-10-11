@@ -45,6 +45,7 @@
 
   // Seed Splicer menu
   "menu.title": "Seed Splicer",
+  "menu.status.in_use": "Someone else is using this Seed Splicer.",
   "menu.button.splice": "Splice",
   "menu.status.empty": "Place two crops ({{count}} each) of the same type.",
   "menu.status.needs_second": "Add a second crop of the same type.",

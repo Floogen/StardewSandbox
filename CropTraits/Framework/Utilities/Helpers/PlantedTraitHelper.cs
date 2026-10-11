@@ -19,14 +19,16 @@ namespace CropTraits.Framework.Utilities.Helpers
             return crop.fullyGrown.Value || crop.currentPhase.Value >= crop.phaseDays.Count - 1;
         }
 
+        // Before maturity only the seed's traits are visible, so a hidden mutation doesn't show early. The set is cached and shared, so it must never be changed
         public static TraitSet GetVisibleTraits(HoeDirt dirt)
         {
             if (dirt?.crop is null || dirt.crop.dead.Value)
             {
-                return new TraitSet();
+                return TraitModDataHelper.GetCachedTraits(string.Empty);
             }
 
-            return IsMature(dirt.crop) ? TraitModDataHelper.GetTraits(dirt.modData) : GetSeedTraits(dirt);
+            string modDataKey = IsMature(dirt.crop) ? CropTraits.TRAITS_MOD_DATA_KEY : CropTraits.SEED_TRAITS_MOD_DATA_KEY;
+            return TraitModDataHelper.GetCachedTraits(dirt.modData.TryGetValue(modDataKey, out string traitKey) ? traitKey : string.Empty);
         }
 
         public static TraitSet GetSeedTraits(HoeDirt dirt)

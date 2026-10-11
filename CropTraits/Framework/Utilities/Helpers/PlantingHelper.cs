@@ -40,6 +40,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             dirt.modData.Remove(MutationManager.PENDING_MUTATION_MOD_DATA_KEY);
             dirt.modData.Remove(MutationManager.HAS_MUTATED_MOD_DATA_KEY);
             dirt.modData.Remove(NightlyGrowthManager.OUT_OF_SEASON_NIGHTS_MOD_DATA_KEY);
+            dirt.modData.Remove(NightlyGrowthManager.DAYS_LEFT_READY_MOD_DATA_KEY);
             dirt.modData.Remove(HarvestManager.REGROWTHS_USED_MOD_DATA_KEY);
             dirt.modData.Remove(SelfSeedingTrait.HAS_SPREAD_MOD_DATA_KEY);
             dirt.modData.Remove(ContagiousTrait.HAS_SPREAD_MOD_DATA_KEY);

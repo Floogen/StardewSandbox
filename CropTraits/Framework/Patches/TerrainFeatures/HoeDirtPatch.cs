@@ -71,12 +71,20 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
         }
 
         // Seeds that grow in every season skip the season check (the held seed carries the traits)
-        private static void PlantPrefix(string itemId, Farmer who, bool isFertilizer)
+        private static void PlantPrefix(HoeDirt __instance, string itemId, Farmer who, bool isFertilizer)
         {
-            if (isFertilizer is false)
+            if (isFertilizer)
             {
-                PlantingHelper.BeginSeasonCheck(who?.ActiveObject, itemId);
+                return;
             }
+
+            // Traits from the last crop stay on the soil until something new is planted, so they're cleared before vanilla applies its speed boosts
+            if (__instance.crop is null)
+            {
+                PlantingHelper.ResetCropModData(__instance);
+            }
+
+            PlantingHelper.BeginSeasonCheck(who?.ActiveObject, itemId);
         }
 
         // Used for the placement highlight, which only ever checks the local player's held seed

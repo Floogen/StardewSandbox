@@ -2,6 +2,7 @@ using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.TerrainFeatures;
 using System.Collections.Generic;
@@ -10,7 +11,10 @@ namespace CropTraits.Framework.Managers
 {
     public class TraitViewManager : BaseManager
     {
-        public bool IsEnabled { get; private set; }
+        // Per screen, so each split-screen player toggles their own view
+        private readonly PerScreen<bool> _isEnabled = new();
+
+        public bool IsEnabled => _isEnabled.Value;
 
         public TraitViewManager(IMonitor monitor, IModHelper helper) : base(monitor, helper)
         {
@@ -26,7 +30,7 @@ namespace CropTraits.Framework.Managers
 
             helper.Input.SuppressActiveKeybinds(CropTraits.modConfig.ToggleTraitViewKeybind);
 
-            IsEnabled = IsEnabled is false;
+            _isEnabled.Value = _isEnabled.Value is false;
             Game1.playSound("smallSelect");
         }
 
@@ -62,7 +66,7 @@ namespace CropTraits.Framework.Managers
 
         public void Reset()
         {
-            IsEnabled = false;
+            _isEnabled.ResetAllScreens();
         }
 
         private bool TryGetHoveredCrop(GameLocation location, Vector2 hoveredTile, out HoeDirt dirt, out Vector2 cropTile)

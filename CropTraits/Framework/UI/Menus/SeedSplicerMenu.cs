@@ -65,6 +65,7 @@ namespace CropTraits.Framework.UI.Menus
         public SeedSplicerMenu(Object machine) : base(0, 0, GetMenuWidth(), GetMenuHeight(), true)
         {
             _machine = machine;
+            SpliceHelper.ClaimMachine(_machine);
             _menuTexture = Game1.content.Load<Texture2D>(AssetManager.SEED_SPLICER_MENU_TEXTURE_PATH);
             _wasOutputReady = SpliceHelper.IsReady(_machine);
 
@@ -541,6 +542,7 @@ namespace CropTraits.Framework.UI.Menus
         {
             StopRumble();
             ReturnAllItems();
+            SpliceHelper.ReleaseMachine(_machine);
             base.cleanupBeforeExit();
         }
 
@@ -548,6 +550,7 @@ namespace CropTraits.Framework.UI.Menus
         {
             StopRumble();
             ReturnAllItems();
+            SpliceHelper.ReleaseMachine(_machine);
             base.emergencyShutDown();
         }
 
