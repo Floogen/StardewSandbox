@@ -14,7 +14,6 @@ namespace CropTraits.Framework.Traits
 
         // Each tier finds a deeper geode (Geode, then Frozen Geode). Omni Roots is the top geode trait
         public static readonly string[] GEODE_IDS_BY_TIER = { RootsHelper.GEODE_ID, RootsHelper.FROZEN_GEODE_ID };
-        public static readonly string[] GEODE_NAMES_BY_TIER = { "Geode", "Frozen Geode" };
 
         // Resprouting would let the crop grow back, while the ore roots keep a crop to one kind of bonus drop
         private static readonly string[] CONFLICTS = { CopperRootsTrait.ID, IronRootsTrait.ID, GoldRootsTrait.ID, IridiumRootsTrait.ID, ResproutingTrait.ID };
@@ -42,7 +41,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Drops a {GEODE_NAMES_BY_TIER[GetTierIndex(tier)]} when harvested";
+            return GetText($"details.tier_{GetTierIndex(tier) + 1}");
         }
 
         public override string GetNotes()

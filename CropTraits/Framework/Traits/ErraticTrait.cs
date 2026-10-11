@@ -22,12 +22,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Harvest quality moves one step up or down at random";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Steps go normal, silver, gold then iridium. Quality never goes below normal or past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

@@ -20,12 +20,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Can be walked through, even though it grows on a trellis";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Only appears on trellis crops like hops, grapes and green beans. Takes effect once the trait shows on the crop.";
+            return GetText("notes");
         }
     }
 }

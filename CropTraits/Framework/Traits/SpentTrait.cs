@@ -22,12 +22,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Removed after its first harvest instead of growing back";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Only appears on crops that regrow.";
+            return GetText("notes");
         }
     }
 }

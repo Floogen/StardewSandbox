@@ -30,12 +30,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"+{ToPercent(GIANT_CROP_CHANCE_PER_TIER * tier)} chance each night to become a giant crop";
+            return GetText("details", new { giantCropChance = ToPercentValue(GIANT_CROP_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Vanilla giant crops have a 1% chance. Only one crop in the grid needs Colossal (the highest tier counts).";
+            return GetText("notes");
         }
     }
 }

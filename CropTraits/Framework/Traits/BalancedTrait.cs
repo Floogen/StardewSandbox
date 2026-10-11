@@ -20,12 +20,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Ignores every change to its growth speed";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Speed-Gro, the Agriculturist profession, paddy water and neighboring crops (such as Greedy) never change how fast it grows.";
+            return GetText("notes");
         }
     }
 }

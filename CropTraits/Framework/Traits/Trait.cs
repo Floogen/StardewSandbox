@@ -1,4 +1,6 @@
+using CropTraits.Framework.Managers;
 using CropTraits.Framework.Models;
+using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
 using StardewValley;
 using StardewValley.Buffs;
@@ -464,9 +466,18 @@ namespace CropTraits.Framework.Traits
             };
         }
 
-        public static string ToPercent(double value)
+        /// <summary>
+        /// Reads this trait's own text from the i18n file, such as "details" for "trait.swift.details".
+        /// </summary>
+        public string GetText(string textKey, object tokens = null)
         {
-            return $"{Math.Round(value * 100)}%";
+            return TranslationHelper.Get($"{TraitManager.GetTranslationPrefix(Id)}.{textKey}", tokens);
+        }
+
+        // A rounded percentage without its sign, since the i18n text places the sign (some languages put a space before it)
+        public static string ToPercentValue(double value)
+        {
+            return Math.Round(value * 100).ToString();
         }
     }
 }

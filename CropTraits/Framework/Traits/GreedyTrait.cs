@@ -41,12 +41,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Each adjacent crop of another type has a {ToPercent(SLOW_CHANCE_PER_TIER * tier)} chance to skip growing each night";
+            return GetText("details", new { slowChance = ToPercentValue(SLOW_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Covers all eight surrounding tiles. Crops with Balanced aren't affected.";
+            return GetText("notes");
         }
     }
 }

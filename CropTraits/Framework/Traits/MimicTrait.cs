@@ -103,12 +103,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Once ready to harvest, copies one trait (at tier I) from an adjacent crop of a different type";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Covers all eight surrounding tiles. Copies one trait per planting, waiting until a neighbor has one it can take. Never copies itself or combination traits. Only copies traits its own crop could roll.";
+            return GetText("notes");
         }
     }
 }

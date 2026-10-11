@@ -30,12 +30,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Harvests from 6pm onward have a {ToPercent(NIGHT_STEP_UP_CHANCE)} chance to rise one quality step, while earlier harvests have a {ToPercent(DAY_STEP_DOWN_CHANCE)} chance to drop one";
+            return GetText("details", new { nightStepUpChance = ToPercentValue(NIGHT_STEP_UP_CHANCE), dayStepDownChance = ToPercentValue(DAY_STEP_DOWN_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Junimos harvest during the day, so they get the daytime odds. Quality never goes below normal or past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

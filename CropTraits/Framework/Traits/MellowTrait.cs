@@ -26,12 +26,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return tier == 1 ? $"Harvest quality rises one step once it's left ready for {DAYS_PER_STEP} full days" : $"Harvest quality rises one step for every {DAYS_PER_STEP} full days it's left ready (up to {tier} steps)";
+            return tier == 1 ? GetText("details.tier_1", new { days = DAYS_PER_STEP }) : GetText("details", new { days = DAYS_PER_STEP, steps = tier });
         }
 
         public override string GetNotes()
         {
-            return "Steps go normal, silver, gold then iridium. Quality never goes past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

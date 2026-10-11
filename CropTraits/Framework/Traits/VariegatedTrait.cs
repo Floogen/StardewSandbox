@@ -25,12 +25,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "The crop and its produce are tinted";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Each crop type has its own tint, so its produce still stacks. Flowers keep their own petal colors, both on the crop and as produce.";
+            return GetText("notes");
         }
     }
 }

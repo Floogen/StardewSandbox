@@ -29,12 +29,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Tinted like Variegated. Once ready to harvest, copies one trait at its own tier from an adjacent crop of a different type";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Covers all eight surrounding tiles. Copies once per planting, even alongside Mimic. Never copies combination traits. Only copies traits its own crop could roll. Flowers keep their own petal colors, both on the crop and as produce.";
+            return GetText("notes");
         }
     }
 }

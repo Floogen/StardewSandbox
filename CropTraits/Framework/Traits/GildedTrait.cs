@@ -48,12 +48,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(GILDED_CHANCE)} chance to turn the main harvest into coins worth {VALUE_MULTIPLIER:0.#}x its sale price";
+            return GetText("details", new { gildedChance = ToPercentValue(GILDED_CHANCE), valueMultiplier = VALUE_MULTIPLIER.ToString("0.#") });
         }
 
         public override string GetNotes()
         {
-            return "Extra produce (from crops like blueberries or traits like Prolific) is never turned into coins. Junimo harvests are never turned into coins. The coins don't count as shipped. A crop that also has Fortunate rolls Fortunate first, then Gilded if that fails.";
+            return GetText("notes");
         }
     }
 }

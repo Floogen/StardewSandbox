@@ -30,12 +30,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Grows an extra day after every stormy day and is never flattened by storms. Lightning makes it fully grown instead of killing it, like Conductive";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Only applies outdoors. Rain without lightning doesn't count. The extra day only counts on nights the crop grows (when it's watered). Storms on the farm can also strike it like a Conductive crop.";
+            return GetText("notes");
         }
     }
 }

@@ -34,12 +34,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Eating it gives {SPEED_PENALTY} Speed for {BUFF_MINUTES_PER_TIER * tier} minutes";
+            return GetText("details", new { speedPenalty = SPEED_PENALTY, minutes = (BUFF_MINUTES_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Eating more refreshes the slowdown instead of stacking it. Only appears on crops with edible produce.";
+            return GetText("notes");
         }
     }
 }

@@ -32,12 +32,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Artisan goods made from it come out one quality level higher and sell for {ToPercent(ARTISAN_PRICE_BONUS)} more";
+            return GetText("details", new { artisanPriceBonus = ToPercentValue(ARTISAN_PRICE_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return "The produce itself sells at its normal price. Wine that starts at a higher quality needs less time in a cask.";
+            return GetText("notes");
         }
     }
 }

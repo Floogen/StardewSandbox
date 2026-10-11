@@ -22,12 +22,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Glows softly at night. Harvests from 6pm onward always rise one quality step";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Unlike Nocturnal, daytime harvests lose nothing. Quality never goes past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

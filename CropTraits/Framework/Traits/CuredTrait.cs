@@ -29,12 +29,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Machines take {ToPercent(TIME_INCREASE)} longer with it, but artisan goods made from it sell for {ToPercent(ARTISAN_PRICE_BONUS)} more";
+            return GetText("details", new { timeIncrease = ToPercentValue(TIME_INCREASE), artisanPriceBonus = ToPercentValue(ARTISAN_PRICE_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return "Machine times are rounded up to the next 10 minutes. Casks age by days, so their time isn't affected.";
+            return GetText("notes");
         }
     }
 }

@@ -21,12 +21,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Quality odds raised by {QUALITY_LEVELS} fertilizer levels, but withers if not harvested on the day it's ready";
+            return GetText("details", new { qualityLevels = QUALITY_LEVELS });
         }
 
         public override string GetNotes()
         {
-            return "Each quality level matches one step of fertilizer (Basic, Quality then Deluxe) and stacks with any fertilizer used.";
+            return GetText("notes");
         }
     }
 }

@@ -24,12 +24,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(FEWER_SEED_CHANCE_PER_TIER * tier)} chance for the Seed Maker to make one fewer seed";
+            return GetText("details", new { fewerSeedChance = ToPercentValue(FEWER_SEED_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "The Seed Maker always makes at least one seed. Only applies when it makes the crop's own seeds, not Mixed or Ancient Seeds.";
+            return GetText("notes");
         }
     }
 }

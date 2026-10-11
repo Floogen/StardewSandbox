@@ -31,12 +31,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(STEP_DOWN_CHANCE_PER_TIER * tier)} chance for the harvest to drop one quality step";
+            return GetText("details", new { stepDownChance = ToPercentValue(STEP_DOWN_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Steps go normal, silver, gold then iridium. Quality never goes below normal or past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

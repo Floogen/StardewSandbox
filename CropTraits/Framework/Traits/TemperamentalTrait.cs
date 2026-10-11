@@ -21,12 +21,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"+{ToPercent(MUTATION_BONUS)} mutation chance on every roll";
+            return GetText("details", new { mutationBonus = ToPercentValue(MUTATION_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return $"Mutation chance starts at {ToPercent(MutationHelper.BASE_MUTATION_CHANCE)}. Applies to the roll the night after planting and to Mutagenic Fertilizer's nightly rolls.";
+            return GetText("notes", new { baseMutationChance = ToPercentValue(MutationHelper.BASE_MUTATION_CHANCE) });
         }
     }
 }

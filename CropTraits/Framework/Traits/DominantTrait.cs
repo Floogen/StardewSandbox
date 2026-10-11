@@ -20,12 +20,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Its traits can pull up to {BONUS_CAP_MULTIPLIER} times as far on which trait nearby crops of the same type mutate into";
+            return GetText("details", new { bonusCapMultiplier = BONUS_CAP_MULTIPLIER });
         }
 
         public override string GetNotes()
         {
-            return "Covers all eight surrounding tiles. Doesn't change how likely they are to mutate. Each neighbor still pulls as hard as normal, so the higher limit matters most when the nearby crops hold higher tier traits.";
+            return GetText("notes");
         }
     }
 }

@@ -39,12 +39,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(FADE_CHANCE)} chance that seeds made from it lose one tier of a random trait";
+            return GetText("details", new { fadeChance = ToPercentValue(FADE_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Only applies to the Seed Maker. A trait at tier I fades away entirely. Fading can fade itself too.";
+            return GetText("notes");
         }
     }
 }

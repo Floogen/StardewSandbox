@@ -66,12 +66,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(SPREAD_CHANCE_PER_TIER * tier)} chance each night it's ready to harvest to plant a seedling in empty tilled soil around it";
+            return GetText("details", new { spreadChance = ToPercentValue(SPREAD_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Spreads at most once each time it's ready to harvest and only while in season. The seedling carries the same traits and skips its first mutation roll. Crops with Seedless never spread.";
+            return GetText("notes");
         }
     }
 }

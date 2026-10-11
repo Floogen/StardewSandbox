@@ -14,12 +14,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Its traits always carry over when crossbred. Mutations can't replace them either";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "The three trait limit and conflicts still apply when crossbreeding.";
+            return GetText("notes");
         }
     }
 }

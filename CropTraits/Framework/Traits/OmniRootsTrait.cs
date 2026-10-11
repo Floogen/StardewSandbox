@@ -33,7 +33,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Drops an Omni Geode when harvested";
+            return GetText("details");
         }
 
         public override string GetNotes()

@@ -62,12 +62,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Each night, takes the strongest quality fertilizer from the soil around it into its own";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Only Basic, Quality and Deluxe Fertilizer move, only when they beat its own. The soil it takes from is left bare. Soil holding other fertilizers like Speed-Gro is left alone, and it takes nothing while its own soil holds one (Mutagenic Fertilizer included).";
+            return GetText("notes");
         }
     }
 }

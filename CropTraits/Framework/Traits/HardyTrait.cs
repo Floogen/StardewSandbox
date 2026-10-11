@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Keeps growing for {NIGHTS_PER_TIER * tier} days after its season ends";
+            return GetText("details", new { nights = (NIGHTS_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Only matters outdoors, where crops die when their season ends. Once the extra days run out, the crop dies as normal.";
+            return GetText("notes");
         }
     }
 }

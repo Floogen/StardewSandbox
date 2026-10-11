@@ -26,12 +26,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Never needs watering";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "The soil still looks dry.";
+            return GetText("notes");
         }
     }
 }

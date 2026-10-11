@@ -15,12 +15,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Lightning makes it fully grown instead of killing it. Storms also have a {LightningHelper.CONDUCTIVE_STRIKE_CHANCE * 100:0.#}% chance every 10 minutes to strike it while it isn't ready yet";
+            return GetText("details", new { strikeChance = (LightningHelper.CONDUCTIVE_STRIKE_CHANCE * 100).ToString("0.#") });
         }
 
         public override string GetNotes()
         {
-            return "Only on the farm, where the game's lightning strikes. Lightning rods don't stop the extra strikes.";
+            return GetText("notes");
         }
     }
 }

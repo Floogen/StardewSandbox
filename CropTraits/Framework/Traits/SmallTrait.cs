@@ -25,7 +25,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(SIZE_REDUCTION)} smaller and sells for {ToPercent(PRICE_PENALTY)} less";
+            return GetText("details", new { sizeReduction = ToPercentValue(SIZE_REDUCTION), pricePenalty = ToPercentValue(PRICE_PENALTY) });
         }
     }
 }

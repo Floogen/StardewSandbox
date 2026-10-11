@@ -33,12 +33,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Eating it gives +{SKILL_BONUS} Fishing for {BUFF_MINUTES_PER_TIER * tier / 60} hours";
+            return GetText("details", new { skillBonus = SKILL_BONUS, hours = (BUFF_MINUTES_PER_TIER * tier / 60) });
         }
 
         public override string GetNotes()
         {
-            return "Eating more refreshes the buff instead of stacking it. Only appears on crops with edible produce.";
+            return GetText("notes");
         }
     }
 }

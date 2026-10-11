@@ -39,19 +39,21 @@ namespace CropTraits.Framework.Utilities.Helpers
             HarvestDropHelper.DropNew(context, geodeId, 1, xTile, yTile, location);
         }
 
-        public static string GetOreRangeText(int maxCount, string oreName)
+        // Uses the game's own name for the ore, so it matches the player's language
+        public static string GetOreRangeText(int maxCount, string oreId)
         {
-            return maxCount <= MIN_ORE_COUNT ? $"Drops {MIN_ORE_COUNT} {oreName} when harvested" : $"Drops {MIN_ORE_COUNT} to {maxCount} {oreName} when harvested";
+            string oreName = ItemRegistry.GetDataOrErrorItem(oreId).DisplayName;
+            return maxCount <= MIN_ORE_COUNT ? TranslationHelper.Get("traits.shared.ore_count", new { count = MIN_ORE_COUNT, ore = oreName }) : TranslationHelper.Get("traits.shared.ore_range", new { min = MIN_ORE_COUNT, max = maxCount, ore = oreName });
         }
 
         public static string GetOreNotes()
         {
-            return $"Dropped on top of the normal harvest. Better quality harvests lean toward the top of the range. {HarvestDropHelper.GetHarvestPaceNote()} Only appears on crops that don't grow back. Can't share a crop with Resprouting or other Roots traits.";
+            return TranslationHelper.Get("traits.shared.ore_notes", new { paceNote = HarvestDropHelper.GetHarvestPaceNote() });
         }
 
         public static string GetGeodeNotes()
         {
-            return $"Dropped on top of the normal harvest, one geode whatever the quality. {HarvestDropHelper.GetHarvestPaceNote()} Only appears on crops that don't grow back. Can't share a crop with Resprouting or other Roots traits.";
+            return TranslationHelper.Get("traits.shared.geode_notes", new { paceNote = HarvestDropHelper.GetHarvestPaceNote() });
         }
     }
 }

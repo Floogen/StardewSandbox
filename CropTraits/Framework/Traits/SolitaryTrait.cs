@@ -39,12 +39,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(ALONE_BOOST_CHANCE)} chance to grow an extra day each night with {MAX_ALONE_NEIGHBORS} or fewer crops around it, but a {ToPercent(CROWDED_SKIP_CHANCE)} chance to skip growing each night with {MIN_CROWDED_NEIGHBORS} or more";
+            return GetText("details", new { aloneBoostChance = ToPercentValue(ALONE_BOOST_CHANCE), maxAloneNeighbors = MAX_ALONE_NEIGHBORS, crowdedSkipChance = ToPercentValue(CROWDED_SKIP_CHANCE), minCrowdedNeighbors = MIN_CROWDED_NEIGHBORS });
         }
 
         public override string GetNotes()
         {
-            return $"Covers all eight surrounding tiles, counting crops of any type. With {MAX_ALONE_NEIGHBORS + 1} to {MIN_CROWDED_NEIGHBORS - 1} crops around it, it grows normally. The extra day only counts on nights the crop grows (when it's watered).";
+            return GetText("notes", new { normalMin = (MAX_ALONE_NEIGHBORS + 1), normalMax = (MIN_CROWDED_NEIGHBORS - 1) });
         }
     }
 }

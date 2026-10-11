@@ -35,12 +35,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Harvests find a piece of seasonal forage, giving {FORAGING_EXPERIENCE} Foraging experience";
+            return GetText("details", new { experience = FORAGING_EXPERIENCE });
         }
 
         public override string GetNotes()
         {
-            return $"Always finds forage on crops that take {HarvestDropHelper.FULL_CHANCE_DAYS_PER_HARVEST} or more days per harvest. {HarvestDropHelper.GetHarvestPaceNote()} The forage matches the season where the crop grows. Junimo harvests still find forage but give no experience.";
+            return GetText("notes", new { fullChanceDays = HarvestDropHelper.FULL_CHANCE_DAYS_PER_HARVEST, paceNote = HarvestDropHelper.GetHarvestPaceNote() });
         }
     }
 }

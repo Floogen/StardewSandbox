@@ -22,12 +22,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Casks age artisan goods made from it {ToPercent(AGING_BONUS)} faster";
+            return GetText("details", new { agingBonus = ToPercentValue(AGING_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return "Carries into the artisan goods made from it, so only those goods age faster. It doesn't change their price.";
+            return GetText("notes");
         }
     }
 }

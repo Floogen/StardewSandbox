@@ -18,12 +18,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Clears weeds from the eight surrounding tiles each morning";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Cleared weeds don't drop anything. Also clears weeds spread by nearby Invasive crops.";
+            return GetText("notes");
         }
     }
 }

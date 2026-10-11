@@ -36,12 +36,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Grows an extra day after rainy days, but has a {ToPercent(DRY_DAY_SKIP_CHANCE)} chance to skip growing after days without rain";
+            return GetText("details", new { dryDaySkipChance = ToPercentValue(DRY_DAY_SKIP_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Only applies outdoors.";
+            return GetText("notes");
         }
     }
 }

@@ -41,12 +41,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(DRY_DAY_BOOST_CHANCE)} chance to grow an extra day after days without rain, but skips growing after rainy days";
+            return GetText("details", new { dryDayBoostChance = ToPercentValue(DRY_DAY_BOOST_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Only applies outdoors. Storms count as rain. The extra day only counts on nights the crop grows (when it's watered).";
+            return GetText("notes");
         }
     }
 }

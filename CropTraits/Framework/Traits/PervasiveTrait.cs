@@ -20,12 +20,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Once ready to harvest, copies one of its traits (at tier I) onto every adjacent crop of the same type with room";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Covers all eight surrounding tiles. Each neighbor gets its own random pick. Spreads once per planting, even alongside Contagious. Never passes on itself or combination traits.";
+            return GetText("notes");
         }
     }
 }

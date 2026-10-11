@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Silver and gold harvests become iridium or normal ({ToPercent(IRIDIUM_CHANCE)} chance of iridium)";
+            return GetText("details", new { iridiumChance = ToPercentValue(IRIDIUM_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Normal and iridium harvests stay as they are. Quality never goes past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

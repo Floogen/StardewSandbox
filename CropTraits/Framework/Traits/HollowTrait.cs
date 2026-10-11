@@ -39,12 +39,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(CRUMBLE_CHANCE_PER_TIER * tier)} chance for the main harvest to crumble into Fiber";
+            return GetText("details", new { crumbleChance = ToPercentValue(CRUMBLE_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Extra produce (from crops like blueberries or traits like Prolific) never crumbles. Junimo harvests never crumble.";
+            return GetText("notes");
         }
     }
 }

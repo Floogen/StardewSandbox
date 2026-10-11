@@ -30,12 +30,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(FLATTEN_CHANCE)} chance to die overnight after a stormy day";
+            return GetText("details", new { flattenChance = ToPercentValue(FLATTEN_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Only applies outdoors. Rain without lightning doesn't count.";
+            return GetText("notes");
         }
     }
 }

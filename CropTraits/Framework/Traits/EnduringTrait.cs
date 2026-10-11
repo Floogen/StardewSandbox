@@ -28,12 +28,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Keeps growing for {OUT_OF_SEASON_NIGHTS} days after its season ends. Harvests in that time rise one quality step";
+            return GetText("details", new { outOfSeasonNights = OUT_OF_SEASON_NIGHTS });
         }
 
         public override string GetNotes()
         {
-            return "Only matters outdoors, where crops die when their season ends. Hardy's extra days don't stack with these (the longer one counts). Quality never goes past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

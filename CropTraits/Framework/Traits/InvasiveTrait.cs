@@ -61,12 +61,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(SPREAD_CHANCE_PER_TIER * tier)} chance each night to spread a weed onto an empty adjacent tile";
+            return GetText("details", new { spreadChance = ToPercentValue(SPREAD_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Only spreads outdoors, onto open ground.";
+            return GetText("notes");
         }
     }
 }

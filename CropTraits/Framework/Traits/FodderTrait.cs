@@ -25,12 +25,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(HAY_CHANCE_PER_TIER * tier)} chance to find Hay when harvested";
+            return GetText("details", new { hayChance = ToPercentValue(HAY_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return $"Dropped on top of the normal harvest. Junimos carry it to their hut. {HarvestDropHelper.GetHarvestPaceNote()}";
+            return GetText("notes", new { paceNote = HarvestDropHelper.GetHarvestPaceNote() });
         }
     }
 }

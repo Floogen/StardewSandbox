@@ -50,12 +50,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return tier == 1 ? "Waters the soil on its four sides each morning" : "Waters all eight soil tiles around it each morning";
+            return GetText(tier == 1 ? "details.tier_1" : "details.tier_2");
         }
 
         public override string GetNotes()
         {
-            return "Doesn't water its own soil, other Dewy crops or garden pots.";
+            return GetText("notes");
         }
     }
 }

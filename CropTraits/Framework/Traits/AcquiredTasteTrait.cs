@@ -25,12 +25,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Every gift reaction is {REACTION_MULTIPLIER:0.#}x as strong, good or bad";
+            return GetText("details", new { reactionMultiplier = REACTION_MULTIPLIER.ToString("0.#") });
         }
 
         public override string GetNotes()
         {
-            return $"Loved, liked and neutral gifts give {REACTION_MULTIPLIER:0.#}x the friendship, while disliked and hated gifts lose {REACTION_MULTIPLIER:0.#}x as much. Artisan goods made from it don't keep it.";
+            return GetText("notes", new { reactionMultiplier = REACTION_MULTIPLIER.ToString("0.#") });
         }
     }
 }

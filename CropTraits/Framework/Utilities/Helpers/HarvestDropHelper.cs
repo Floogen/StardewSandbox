@@ -72,7 +72,7 @@ namespace CropTraits.Framework.Utilities.Helpers
 
         public static string GetHarvestPaceNote()
         {
-            return $"Crops that take fewer than {FULL_CHANCE_DAYS_PER_HARVEST} days per harvest (before speed boosts) have a lower chance, so faster crops don't earn more per day.";
+            return TranslationHelper.Get("traits.shared.harvest_pace_note", new { days = FULL_CHANCE_DAYS_PER_HARVEST });
         }
 
         public static int GetHarvestQuality(HarvestContext context)

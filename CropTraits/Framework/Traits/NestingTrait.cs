@@ -32,12 +32,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(DROP_CHANCE)} chance each morning to drop a Bat Wing once fully grown";
+            return GetText("details", new { dropChance = ToPercentValue(DROP_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "The thorns catch what would have spawned, so nothing hostile appears.";
+            return GetText("notes");
         }
     }
 }

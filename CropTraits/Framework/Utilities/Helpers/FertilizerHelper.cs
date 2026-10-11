@@ -15,7 +15,6 @@ namespace CropTraits.Framework.Utilities.Helpers
     {
         // Basic, Quality then Deluxe Fertilizer, ranked weakest to strongest so traits like Composting only ever upgrade soil
         public static readonly string[] QUALITY_FERTILIZER_IDS = { "(O)368", "(O)369", "(O)919" };
-        public static readonly string[] QUALITY_FERTILIZER_NAMES = { "Basic Fertilizer", "Quality Fertilizer", "Deluxe Fertilizer" };
 
         public const int NO_FERTILIZER_RANK = 0;
         public const int OTHER_FERTILIZER_RANK = -1;
@@ -32,9 +31,10 @@ namespace CropTraits.Framework.Utilities.Helpers
             return index < 0 ? OTHER_FERTILIZER_RANK : index + 1;
         }
 
+        // Uses the game's own name for the fertilizer, so it matches the player's language
         public static string GetQualityFertilizerName(int rank)
         {
-            return QUALITY_FERTILIZER_NAMES[System.Math.Clamp(rank, 1, QUALITY_FERTILIZER_NAMES.Length) - 1];
+            return ItemRegistry.GetDataOrErrorItem(QUALITY_FERTILIZER_IDS[System.Math.Clamp(rank, 1, QUALITY_FERTILIZER_IDS.Length) - 1]).DisplayName;
         }
 
         // Only soil with no fertilizer or a weaker quality fertilizer is upgraded, so other fertilizers are never replaced

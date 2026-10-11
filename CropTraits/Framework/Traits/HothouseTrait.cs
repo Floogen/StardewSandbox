@@ -35,12 +35,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(INDOOR_BOOST_CHANCE)} chance to grow an extra day each night indoors, but a {ToPercent(OUTDOOR_SKIP_CHANCE)} chance to skip growing each night outdoors";
+            return GetText("details", new { indoorBoostChance = ToPercentValue(INDOOR_BOOST_CHANCE), outdoorSkipChance = ToPercentValue(OUTDOOR_SKIP_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Indoors covers the Greenhouse and garden pots inside buildings. The extra day only counts on nights the crop grows (when it's watered).";
+            return GetText("notes");
         }
     }
 }

@@ -9,7 +9,6 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Roosting";
 
-        public static readonly string[] BAT_NAMES_BY_TIER = { "bat", "frost bat", "lava bat" };
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Neutral;
@@ -28,7 +27,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(MonsterHelper.SPAWN_CHANCE)} chance each morning to spawn a {BAT_NAMES_BY_TIER[MonsterHelper.GetTierIndex(tier)]}";
+            return GetText($"details.tier_{MonsterHelper.GetTierIndex(tier) + 1}", new { spawnChance = ToPercentValue(MonsterHelper.SPAWN_CHANCE) });
         }
 
         public override string GetNotes()

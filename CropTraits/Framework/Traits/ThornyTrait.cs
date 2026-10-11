@@ -12,12 +12,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Crows never eat it";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Crows pass over it, so it's never eaten.";
+            return GetText("notes");
         }
     }
 }

@@ -67,7 +67,7 @@ namespace CropTraits.Framework.Utilities.Helpers
 
         public static string GetNotes()
         {
-            return $"Only outdoors once fully grown. Each location holds at most {MorningManager.MAX_MONSTERS_PER_LOCATION} monsters, counting any already there. Can be turned off in the config, which also stops it from being rolled.";
+            return TranslationHelper.Get("traits.shared.monster_notes", new { maxMonsters = MorningManager.MAX_MONSTERS_PER_LOCATION });
         }
     }
 }

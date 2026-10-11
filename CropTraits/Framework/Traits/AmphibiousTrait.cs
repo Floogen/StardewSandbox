@@ -24,12 +24,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(BOOST_CHANCE)} chance to grow an extra day each night outdoors, near water or not";
+            return GetText("details", new { boostChance = ToPercentValue(BOOST_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Only applies outdoors. The extra day only counts on nights the crop grows (when it's watered).";
+            return GetText("notes");
         }
     }
 }

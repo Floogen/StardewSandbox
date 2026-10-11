@@ -23,12 +23,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return tier == 1 ? "Grows back once after harvest" : $"Grows back {tier} times after harvest";
+            return tier == 1 ? GetText("details.tier_1") : GetText("details", new { count = tier });
         }
 
         public override string GetNotes()
         {
-            return "Only appears on crops that don't already regrow. Each time, it goes back to the growth stage halfway through, so growing back takes about half the original time.";
+            return GetText("notes");
         }
     }
 }

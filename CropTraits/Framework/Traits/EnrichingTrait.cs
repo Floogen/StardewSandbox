@@ -47,12 +47,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Leaves {FertilizerHelper.GetQualityFertilizerName(FERTILIZER_RANK)} in its soil and every empty soil around it once it's harvested for the last time";
+            return GetText("details", new { fertilizer = FertilizerHelper.GetQualityFertilizerName(FERTILIZER_RANK) });
         }
 
         public override string GetNotes()
         {
-            return "Only upgrades soil with no fertilizer or a weaker quality fertilizer. Soil with a crop growing in it is skipped.";
+            return GetText("notes");
         }
     }
 }

@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Artisan goods made from it sell for {ToPercent(ARTISAN_PRICE_BONUS_PER_TIER * tier)} more";
+            return GetText("details", new { artisanPriceBonus = ToPercentValue(ARTISAN_PRICE_BONUS_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "The produce itself sells at its normal price. Only appears on fruit and vegetables.";
+            return GetText("notes");
         }
     }
 }

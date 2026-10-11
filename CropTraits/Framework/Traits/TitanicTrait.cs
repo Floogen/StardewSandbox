@@ -25,12 +25,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"+{ToPercent(GIANT_CROP_CHANCE)} chance each night to become a giant crop, which drops {ToPercent(YIELD_BONUS)} more produce";
+            return GetText("details", new { giantCropChance = ToPercentValue(GIANT_CROP_CHANCE), yieldBonus = ToPercentValue(YIELD_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return "A giant crop keeps up to three traits from the crops it formed from, so the extra produce needs Titanic to be one of them. Only the produce dropped when it breaks is boosted, not pieces knocked off with the Shaving enchantment.";
+            return GetText("notes");
         }
     }
 }

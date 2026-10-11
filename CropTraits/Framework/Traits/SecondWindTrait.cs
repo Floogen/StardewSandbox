@@ -39,12 +39,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Costs {ENERGY_COST} energy to harvest, but restores {ENERGY_RESTORED} when you're below {ToPercent(LOW_ENERGY_SHARE)} energy";
+            return GetText("details", new { energyCost = ENERGY_COST, energyRestored = ENERGY_RESTORED, lowEnergyShare = ToPercentValue(LOW_ENERGY_SHARE) });
         }
 
         public override string GetNotes()
         {
-            return "Never takes your energy below zero or past your maximum. Junimo harvests do nothing.";
+            return GetText("notes");
         }
     }
 }

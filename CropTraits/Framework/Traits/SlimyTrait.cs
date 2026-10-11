@@ -10,7 +10,6 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Slimy";
 
-        public static readonly string[] SLIME_NAMES_BY_TIER = { "green slime", "frost jelly", "red sludge" };
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Neutral;
@@ -38,12 +37,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(MonsterHelper.SPAWN_CHANCE)} chance each morning to spawn a {SLIME_NAMES_BY_TIER[MonsterHelper.GetTierIndex(tier)]}";
+            return GetText($"details.tier_{MonsterHelper.GetTierIndex(tier) + 1}", new { spawnChance = ToPercentValue(MonsterHelper.SPAWN_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return $"{MonsterHelper.GetNotes()} The slime takes on the crop's color when it has one.";
+            return GetText("notes", new { monsterNotes = MonsterHelper.GetNotes() });
         }
     }
 }

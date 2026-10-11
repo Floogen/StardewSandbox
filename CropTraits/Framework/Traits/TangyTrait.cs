@@ -36,12 +36,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Sells for {ToPercent(PRICE_BONUS)} more, plus +{SPEED_BONUS} Speed for {BUFF_MINUTES / 60} hour when eaten";
+            return GetText("details", new { priceBonus = ToPercentValue(PRICE_BONUS), speedBonus = SPEED_BONUS, hours = (BUFF_MINUTES / 60) });
         }
 
         public override string GetNotes()
         {
-            return "Its price bonus carries into artisan goods made from it, though only the produce itself gives the speed boost. Eating more refreshes the buff instead of stacking it.";
+            return GetText("notes");
         }
     }
 }

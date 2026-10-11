@@ -34,12 +34,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(SLOWDOWN)} longer growth time and quality odds raised by {QUALITY_LEVELS} fertilizer levels";
+            return GetText("details", new { slowdown = ToPercentValue(SLOWDOWN), qualityLevels = QUALITY_LEVELS });
         }
 
         public override string GetNotes()
         {
-            return "Growth time is rounded up to whole days. Each quality level matches one step of fertilizer (Basic, Quality then Deluxe) and stacks with any fertilizer used.";
+            return GetText("notes");
         }
     }
 }

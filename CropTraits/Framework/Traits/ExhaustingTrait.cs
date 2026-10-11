@@ -33,12 +33,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Costs {ENERGY_PER_TIER * tier} energy each time it's harvested";
+            return GetText("details", new { energy = (ENERGY_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Never takes your energy below zero. Junimo harvests cost nothing.";
+            return GetText("notes");
         }
     }
 }

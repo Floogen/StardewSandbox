@@ -37,12 +37,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Restores {ToPercent(RESTORATION_BONUS)} more energy and health when eaten, plus +{FARMING_BONUS} Farming and +{SPEED_BONUS} Speed for {BUFF_MINUTES / 60} hours";
+            return GetText("details", new { restorationBonus = ToPercentValue(RESTORATION_BONUS), farmingBonus = FARMING_BONUS, speedBonus = SPEED_BONUS, hours = (BUFF_MINUTES / 60) });
         }
 
         public override string GetNotes()
         {
-            return "Eating more refreshes the buff instead of stacking it.";
+            return GetText("notes");
         }
     }
 }

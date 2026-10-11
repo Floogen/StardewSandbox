@@ -22,7 +22,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Sells for {ToPercent(PRICE_BONUS_PER_TIER * tier)} more";
+            return GetText("details", new { priceBonus = ToPercentValue(PRICE_BONUS_PER_TIER * tier) });
         }
     }
 }

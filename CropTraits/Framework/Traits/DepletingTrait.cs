@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Strips the fertilizer from its soil once it's harvested for the last time";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Removes every kind of fertilizer, including Speed-Gro and Mutagenic Fertilizer. A crop that grows back keeps it until its final harvest.";
+            return GetText("notes");
         }
     }
 }

@@ -24,12 +24,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Its own traits are {ToPercent(INHERIT_REDUCTION_PER_TIER * tier)} less likely to carry over when crossbred";
+            return GetText("details", new { inheritReduction = ToPercentValue(INHERIT_REDUCTION_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Traits both parents share always carry over as normal. Only this parent's own traits are affected, Recessive included.";
+            return GetText("notes");
         }
     }
 }

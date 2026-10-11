@@ -13,12 +13,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Ignores all fertilizer";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Covers growth speed, water retention, quality and Mutagenic Fertilizer's nightly mutation rolls. Fertilizer can still be applied, but it has no effect.";
+            return GetText("notes");
         }
     }
 }

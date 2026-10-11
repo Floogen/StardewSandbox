@@ -30,7 +30,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(SIZE_INCREASE)} bigger and sells for {ToPercent(PRICE_BONUS)} more";
+            return GetText("details", new { sizeIncrease = ToPercentValue(SIZE_INCREASE), priceBonus = ToPercentValue(PRICE_BONUS) });
         }
     }
 }

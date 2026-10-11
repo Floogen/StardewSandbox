@@ -45,12 +45,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(SIZE_REDUCTION)} smaller and sells for {ToPercent(PRICE_PENALTY)} less, but every harvest gives {EXTRA_ITEMS} extra";
+            return GetText("details", new { sizeReduction = ToPercentValue(SIZE_REDUCTION), pricePenalty = ToPercentValue(PRICE_PENALTY), extraItems = EXTRA_ITEMS });
         }
 
         public override string GetNotes()
         {
-            return "The extra item keeps the same quality and traits.";
+            return GetText("notes");
         }
     }
 }

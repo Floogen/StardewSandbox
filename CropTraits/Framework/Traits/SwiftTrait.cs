@@ -26,12 +26,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(SPEED_PER_TIER * tier)} shorter growth time";
+            return GetText("details", new { speed = ToPercentValue(SPEED_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Rounded up to whole days, with each growth stage keeping at least one day.";
+            return GetText("notes");
         }
     }
 }

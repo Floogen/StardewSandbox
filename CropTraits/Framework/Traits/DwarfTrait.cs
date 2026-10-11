@@ -36,12 +36,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(SIZE_REDUCTION)} smaller with {ToPercent(SPEED_BONUS)} shorter growth time. Still sells at full price";
+            return GetText("details", new { sizeReduction = ToPercentValue(SIZE_REDUCTION), speedBonus = ToPercentValue(SPEED_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return "Can never become a giant crop. Growth time is rounded up to whole days, with each growth stage keeping at least one day.";
+            return GetText("notes");
         }
     }
 }

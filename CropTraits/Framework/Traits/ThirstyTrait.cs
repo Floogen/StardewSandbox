@@ -29,12 +29,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Loses a day of growth when left unwatered";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Growth never goes back past the day it was planted. Crops ready to harvest aren't affected.";
+            return GetText("notes");
         }
     }
 }

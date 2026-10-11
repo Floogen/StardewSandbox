@@ -18,12 +18,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Leaves {FertilizerHelper.GetQualityFertilizerName(tier)} in its soil once it's harvested for the last time";
+            return GetText("details", new { fertilizer = FertilizerHelper.GetQualityFertilizerName(tier) });
         }
 
         public override string GetNotes()
         {
-            return "Only upgrades soil with no fertilizer or a weaker quality fertilizer. Other fertilizers like Speed-Gro are left alone. A crop that grows back leaves it after its final harvest.";
+            return GetText("notes");
         }
     }
 }

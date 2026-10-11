@@ -24,12 +24,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Machines take {ToPercent(TIME_INCREASE_PER_TIER * tier)} longer when it's put in";
+            return GetText("details", new { timeIncrease = ToPercentValue(TIME_INCREASE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Rounded up to the next 10 minutes. Casks age by days, so they aren't affected.";
+            return GetText("notes");
         }
     }
 }

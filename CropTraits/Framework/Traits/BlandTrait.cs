@@ -29,12 +29,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Restores {ToPercent(RESTORATION_PENALTY_PER_TIER * tier)} less energy and health when eaten";
+            return GetText("details", new { restorationPenalty = ToPercentValue(RESTORATION_PENALTY_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Only appears on crops with edible produce.";
+            return GetText("notes");
         }
     }
 }

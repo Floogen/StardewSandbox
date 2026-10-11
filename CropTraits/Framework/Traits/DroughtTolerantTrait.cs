@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(WATERED_CHANCE_PER_TIER * tier)} chance an unwatered day still counts as watered";
+            return GetText("details", new { wateredChance = ToPercentValue(WATERED_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "The soil still looks dry when this happens.";
+            return GetText("notes");
         }
     }
 }

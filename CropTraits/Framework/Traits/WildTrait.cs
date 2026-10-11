@@ -45,12 +45,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(FORAGE_CHANCE_PER_TIER * tier)} chance to find a piece of seasonal forage when harvested";
+            return GetText("details", new { forageChance = ToPercentValue(FORAGE_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return $"The forage matches the season where the crop grows. It's dropped on top of the normal harvest. {HarvestDropHelper.GetHarvestPaceNote()}";
+            return GetText("notes", new { paceNote = HarvestDropHelper.GetHarvestPaceNote() });
         }
     }
 }

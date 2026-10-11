@@ -609,7 +609,7 @@ namespace CropTraits.Framework.Managers
             return TranslationHelper.GetOrDefault($"{GetTranslationPrefix(traitId)}.description", string.Empty);
         }
 
-        private static string GetTranslationPrefix(string traitId)
+        public static string GetTranslationPrefix(string traitId)
         {
             return $"trait.{traitId?.ToLowerInvariant()}";
         }

@@ -24,12 +24,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Restores {ToPercent(RESTORATION_BONUS_PER_TIER * tier)} more energy and health when eaten";
+            return GetText("details", new { restorationBonus = ToPercentValue(RESTORATION_BONUS_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Only appears on crops with edible produce.";
+            return GetText("notes");
         }
     }
 }

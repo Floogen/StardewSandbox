@@ -34,12 +34,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Gives {ToPercent(EXPERIENCE_BONUS_PER_TIER * tier)} more farming experience when harvested";
+            return GetText("details", new { experienceBonus = ToPercentValue(EXPERIENCE_BONUS_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Always gives at least 1 extra experience. Junimo harvests give no experience, same as normal.";
+            return GetText("notes");
         }
     }
 }

@@ -13,12 +13,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Can be planted and grows outdoors in every season (winter included)";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "It never dies when a season ends.";
+            return GetText("notes");
         }
     }
 }

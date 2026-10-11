@@ -35,7 +35,7 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return RootsHelper.GetOreRangeText(MAX_ORE_COUNT, "iron ore");
+            return RootsHelper.GetOreRangeText(MAX_ORE_COUNT, RootsHelper.IRON_ORE_ID);
         }
 
         public override string GetNotes()

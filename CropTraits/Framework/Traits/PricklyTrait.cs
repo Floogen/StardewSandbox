@@ -34,12 +34,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Picking it costs {DAMAGE_PER_TIER * tier} health";
+            return GetText("details", new { damage = (DAMAGE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Never takes you below 1 health. Junimos don't mind the prickles.";
+            return GetText("notes");
         }
     }
 }

@@ -13,12 +13,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Diluting it in the Seed Splicer always splits off one trait instead of sometimes wiping them all";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "The trait removed is still picked evenly, so Resilient itself can be the one removed. A crop with only one trait still comes out plain.";
+            return GetText("notes");
         }
     }
 }

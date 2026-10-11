@@ -24,12 +24,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Harvest quality drops one step for each full day it's left ready";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Harvesting on the day it's ready loses nothing. Steps go iridium, gold, silver then normal, and quality never goes below normal.";
+            return GetText("notes");
         }
     }
 }

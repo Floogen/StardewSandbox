@@ -19,7 +19,8 @@ namespace CropTraits.Framework.Managers
         public const string CRAFTING_RECIPES_DATA_PATH = "Data/CraftingRecipes";
 
         public const string PIERRE_SHOP_ID = "SeedShop";
-        public const string MUTAGENIC_FERTILIZER_SHOP_CONDITION = "PLAYER_FARMING_LEVEL Current 5";
+        public const int MUTAGENIC_FERTILIZER_FARMING_LEVEL = 5;
+        public static readonly string MUTAGENIC_FERTILIZER_SHOP_CONDITION = $"PLAYER_FARMING_LEVEL Current {MUTAGENIC_FERTILIZER_FARMING_LEVEL}";
 
         public const string SPRITE_SHEET_TEXTURE_PATH = "Mods/PeacefulEnd.CropTraits/Spritesheet";
         public const string SPRITE_SHEET_FILE_PATH = "Framework/Assets/Spritesheet.png";

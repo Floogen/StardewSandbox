@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Waters its own soil and all eight soil tiles around it each morning";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Garden pots around it aren't watered, though its own pot is.";
+            return GetText("notes");
         }
     }
 }

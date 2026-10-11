@@ -34,12 +34,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(EXTRA_HARVEST_CHANCE_PER_TIER * tier)} chance for an extra harvest";
+            return GetText("details", new { extraHarvestChance = ToPercentValue(EXTRA_HARVEST_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "The extra harvest keeps the same quality and traits.";
+            return GetText("notes");
         }
     }
 }

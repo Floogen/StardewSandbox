@@ -18,12 +18,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Scarecrows don't protect it";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Crops with Guardian can't protect it either.";
+            return GetText("notes");
         }
     }
 }

@@ -18,12 +18,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Gives {ToPercent(FRIENDSHIP_PENALTY_PER_TIER * tier)} less friendship when given as a gift";
+            return GetText("details", new { friendshipPenalty = ToPercentValue(FRIENDSHIP_PENALTY_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Only applies to gifts the villager doesn't dislike or hate, so it never makes a bad gift worse. Artisan goods made from it don't keep it.";
+            return GetText("notes");
         }
     }
 }

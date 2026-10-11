@@ -29,12 +29,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Each day, sells for either {ToPercent(HIGH_PRICE_BONUS)} more or {ToPercent(LOW_PRICE_PENALTY)} less";
+            return GetText("details", new { highPriceBonus = ToPercentValue(HIGH_PRICE_BONUS), lowPricePenalty = ToPercentValue(LOW_PRICE_PENALTY) });
         }
 
         public override string GetNotes()
         {
-            return "Every Bittersweet item has the same price on a given day. The change also carries into artisan goods.";
+            return GetText("notes");
         }
     }
 }

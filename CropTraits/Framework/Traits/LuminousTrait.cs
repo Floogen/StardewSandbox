@@ -13,12 +13,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Glows softly at night";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Only the planted crop glows, not its produce.";
+            return GetText("notes");
         }
     }
 }

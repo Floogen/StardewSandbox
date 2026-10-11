@@ -27,12 +27,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Harvests in the last week of the season have a {ToPercent(STEP_UP_CHANCE_PER_TIER * tier)} chance to rise one quality step";
+            return GetText("details", new { stepUpChance = ToPercentValue(STEP_UP_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return $"The last week runs from day {LAST_WEEK_START_DAY} to the end of the month, wherever the crop grows. Quality never goes past the crop's own limits.";
+            return GetText("notes", new { lastWeekStartDay = LAST_WEEK_START_DAY });
         }
     }
 }

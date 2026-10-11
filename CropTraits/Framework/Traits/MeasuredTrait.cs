@@ -20,12 +20,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"The Seed Maker always makes exactly {SEED_COUNT} seeds from it";
+            return GetText("details", new { seedCount = SEED_COUNT });
         }
 
         public override string GetNotes()
         {
-            return "Replaces the game's roll and any extra or missing seeds from traits like Seedy and Barren. Only applies when the Seed Maker makes the crop's own seeds.";
+            return GetText("notes");
         }
     }
 }

@@ -31,12 +31,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(MIN_CHANCE)} to {ToPercent(MAX_CHANCE)} chance to turn the main harvest into coins worth {GildedTrait.VALUE_MULTIPLIER:0.#}x its sale price, higher on luckier days";
+            return GetText("details", new { minChance = ToPercentValue(MIN_CHANCE), maxChance = ToPercentValue(MAX_CHANCE), valueMultiplier = GildedTrait.VALUE_MULTIPLIER.ToString("0.#") });
         }
 
         public override string GetNotes()
         {
-            return $"A neutral luck day gives {ToPercent(BASE_CHANCE)}, above Gilded's usual {ToPercent(GildedTrait.GILDED_CHANCE)}. A crop that also has Gilded rolls Fortunate first, then Gilded if that fails. Extra produce is never turned into coins. Junimo harvests are never turned into coins. The coins don't count as shipped.";
+            return GetText("notes", new { baseChance = ToPercentValue(BASE_CHANCE), gildedChance = ToPercentValue(GildedTrait.GILDED_CHANCE) });
         }
     }
 }

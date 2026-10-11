@@ -14,12 +14,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Does nothing on its own. When it comes out of the Seed Splicer, it turns into a random positive trait at tier I";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Picks from traits the crop can mutate into that it doesn't already have and wouldn't conflict with. If none fit, it stays Latent. The Seed Maker keeps it Latent.";
+            return GetText("notes");
         }
     }
 }

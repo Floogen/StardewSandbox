@@ -39,12 +39,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Near water, never needs watering and has a {ToPercent(NEAR_WATER_BOOST_CHANCE)} chance to grow an extra day each night";
+            return GetText("details", new { nearWaterBoostChance = ToPercentValue(NEAR_WATER_BOOST_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return $"Only applies outdoors. Near water means within {WaterHelper.WATER_RANGE} tiles of any water tile (fish ponds don't count). The soil still looks dry. Away from water it grows normally.";
+            return GetText("notes", new { waterRange = WaterHelper.WATER_RANGE });
         }
     }
 }

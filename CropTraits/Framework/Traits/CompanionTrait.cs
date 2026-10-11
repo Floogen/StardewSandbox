@@ -46,12 +46,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(BOOST_CHANCE_PER_TYPE_PER_TIER * tier)} chance to grow an extra day each night for every other crop type around it (up to {ToPercent(GetBoostChance(MAX_COUNTED_TYPES, tier))})";
+            return GetText("details", new { chancePerType = ToPercentValue(BOOST_CHANCE_PER_TYPE_PER_TIER * tier), maxChance = ToPercentValue(GetBoostChance(MAX_COUNTED_TYPES, tier)) });
         }
 
         public override string GetNotes()
         {
-            return $"Covers all eight surrounding tiles. Each different crop type counts once, up to {MAX_COUNTED_TYPES} types. The extra day only counts on nights the crop grows (when it's watered).";
+            return GetText("notes", new { maxTypes = MAX_COUNTED_TYPES });
         }
     }
 }

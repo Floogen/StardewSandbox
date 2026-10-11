@@ -26,12 +26,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(BOOST_CHANCE)} chance to grow an extra day each night indoors or on Ginger Island, and after dry days everywhere else outdoors";
+            return GetText("details", new { boostChance = ToPercentValue(BOOST_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return "Rain outside Ginger Island only cancels the boost for that night, without Hothouse's outdoor penalty or Sun Loving's rain penalty. Storms count as rain. The extra day only counts on nights the crop grows (when it's watered).";
+            return GetText("notes");
         }
     }
 }

@@ -28,12 +28,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Can never become a giant crop";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "One Stunted crop anywhere in the grid is enough to stop the whole giant crop. Only appears on crops with a giant form.";
+            return GetText("notes");
         }
     }
 }

@@ -18,12 +18,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"{ToPercent(EXTRA_SEED_CHANCE_PER_TIER * tier)} chance for the Seed Maker to make one extra seed";
+            return GetText("details", new { extraSeedChance = ToPercentValue(EXTRA_SEED_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Only applies when the Seed Maker makes the crop's own seeds, not Mixed or Ancient Seeds.";
+            return GetText("notes");
         }
     }
 }

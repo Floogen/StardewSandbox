@@ -13,12 +13,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Withers if not harvested on the day it's ready";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Regrowing crops wither the same way each time they're ready again.";
+            return GetText("notes");
         }
     }
 }

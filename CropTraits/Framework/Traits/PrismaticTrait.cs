@@ -29,12 +29,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Cycles through rainbow colors, glows at night and sells for {ToPercent(PRICE_BONUS)} more";
+            return GetText("details", new { priceBonus = ToPercentValue(PRICE_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return "Flowers keep their own petal colors, both on the crop and as produce. Its price bonus carries into artisan goods made from it.";
+            return GetText("notes");
         }
     }
 }

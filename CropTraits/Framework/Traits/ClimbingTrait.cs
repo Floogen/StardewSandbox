@@ -22,12 +22,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Blocks movement like a trellis crop once it's past its first growth stage";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Takes effect once the trait shows on the crop, so a hidden mutation only blocks the way once it's fully grown. Junimos can still get through.";
+            return GetText("notes");
         }
     }
 }

@@ -48,12 +48,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Each adjacent crop of another type has a {ToPercent(BOOST_CHANCE_PER_TIER * tier)} chance to grow an extra day each night";
+            return GetText("details", new { boostChance = ToPercentValue(BOOST_CHANCE_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return "Covers all eight surrounding tiles. A crop can only gain one extra day a night this way, however many Nurturing crops surround it. The extra day only counts on nights the neighbor grows (when it's watered). Crops with Balanced aren't affected.";
+            return GetText("notes");
         }
     }
 }

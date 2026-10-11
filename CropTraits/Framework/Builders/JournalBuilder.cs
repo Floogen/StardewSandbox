@@ -87,15 +87,15 @@ namespace CropTraits.Framework.Builders
             ApplyNotebookAppearance(book);
 
             // Cover
-            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Crop Traits[/bold]").Font("Dialogue").Alignment("Center").Position(0, 125).Condition(COVER_STATE_CONDITION);
-            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text("[bold]Guide[/bold]").Font("Dialogue").Alignment("Center").Position(0, 225).Condition(COVER_STATE_CONDITION);
+            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text($"[bold]{TranslationHelper.Get("journal.cover.heading")}[/bold]").Font("Dialogue").Alignment("Center").Position(0, 125).Condition(COVER_STATE_CONDITION);
+            book.AddOverlay("Paragraph").TextColor("255 223 96").Set("ShadowColor", "0 0 0 100").Scale(2).Text($"[bold]{TranslationHelper.Get("journal.cover.subheading")}[/bold]").Font("Dialogue").Alignment("Center").Position(0, 225).Condition(COVER_STATE_CONDITION);
             book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 336, 32, 32).Tint("255 255 255 125").Scale(6).Alignment("Center").VerticalAlignment("Center").Position(0, 125).Condition(COVER_STATE_CONDITION);
             //book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(29, 181, 19, 17).Scale(6).Alignment("Center").VerticalAlignment("Center").Position(135, 75).Condition(COVER_STATE_CONDITION);
             //book.AddOverlay("Image").Item(Game1.random.ChooseFrom(Game1.cropData.Values.Where(c => c is not null && c.Seasons.Contains(Game1.season)).ToList()).HarvestItemId).Scale(3).Alignment("Center").VerticalAlignment("Center").Position(145, 75).Condition(COVER_STATE_CONDITION);
 
             // Add bookmark to return to home page
             book.AddOverlay("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 180, 21, 20).Scale(4).Position(-24, 125)
-            .Set("Description", "Go to home")
+            .Set("Description", TranslationHelper.Get("journal.bookmark.home"))
             .AddHoverFrame(0, 160)
             .Action("PeacefulEnd.Parchment_GoToStart")
             .Condition(READABLE_STATE_CONDITION);
@@ -127,12 +127,12 @@ namespace CropTraits.Framework.Builders
             book.AddLink("discovered_crops_hyperlink").HoverEffect("underline").Action($"PeacefulEnd.Parchment_JumpToChapter {CROPS_CHAPTER_ID}");
             book.AddLink("settings_hyperlink").HoverEffect("underline").Action($"PeacefulEnd.Parchment_JumpToChapter {SETTINGS_CHAPTER_ID}");
 
-            book.AddLink("baseline").Tooltip(string.Empty, "The base, unmodified crop.");
-            book.AddLink("trait").Tooltip(string.Empty, "A mutation of a baseline crop.\n\nMost crops have a small chance to gain a mutation after being planted.\n\nCrop traits can vary from helpful to harmful.");
-            book.AddLink("combination_traits").Tooltip(string.Empty, "A special type of trait that appears when using the Seed Splicer with eligible traits from each parent.");
-            book.AddLink("seed_splicer").Tooltip(string.Empty, "A machine that takes two crops of the same type to create seeds of a new germline.\n\nCan be used to combine traits or remove them.");
+            book.AddLink("baseline").Tooltip(string.Empty, TranslationHelper.Get("journal.tooltip.baseline"));
+            book.AddLink("trait").Tooltip(string.Empty, TranslationHelper.Get("journal.tooltip.trait"));
+            book.AddLink("combination_traits").Tooltip(string.Empty, TranslationHelper.Get("journal.tooltip.combination_traits"));
+            book.AddLink("seed_splicer").Tooltip(string.Empty, TranslationHelper.Get("journal.tooltip.seed_splicer"));
 
-            book.AddLink("trait_seedless").Tooltip(string.Empty, "This trait prevents produce from being turned into seeds.\n\nIt does increase the sell price of the produce, however.");
+            book.AddLink("trait_seedless").Tooltip(string.Empty, TranslationHelper.Get("journal.tooltip.seedless"));
 
             AddGettingStartedPages(book, GETTING_STARTED_CHAPTER_ID);
             AddSpottingMutationsPages(book, SPOTTING_MUTATIONS_CHAPTER_ID);
@@ -188,31 +188,31 @@ namespace CropTraits.Framework.Builders
             overviewPage.AddParagraph("- " + TranslationHelper.Get("journal.overview.blends", new { count = discoveries.BlendJournal.Count })).Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(8);
 
             overviewPage.AddHeading("-----").Font("Small").Alignment("Center").Spacing(24);
-            overviewPage.AddHeading($"[bounce][bold]Hint:[/bold][/bounce] {GetRandomHint()}").Font("Small").Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(12);
+            overviewPage.AddHeading($"[bounce][bold]{TranslationHelper.Get("journal.hint.label")}[/bold][/bounce] {GetRandomHint()}").Font("Small").Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(12);
 
             IPageBuilder contentPage = book.AddPage("contents", FRONT_CHAPTER_ID);
-            contentPage.AddTitle("Contents").Alignment("Center").Spacing(32);
-            contentPage.AddHeading("[link=getting_started_hyperlink]Getting Started[/link]").Font("Small").Alignment("Center").Spacing(0);
+            contentPage.AddTitle(TranslationHelper.Get("journal.contents.title")).Alignment("Center").Spacing(32);
+            contentPage.AddHeading($"[link=getting_started_hyperlink]{TranslationHelper.Get("journal.contents.getting_started")}[/link]").Font("Small").Alignment("Center").Spacing(0);
             contentPage.AddHeading("---").Font("Small").Alignment("Center").Spacing(12);
-            contentPage.AddHeading("[link=spotting_mutations_hyperlink]Spotting Mutations[/link]").Font("Small").Alignment("Center").Spacing(12);
-            contentPage.AddHeading("[link=selective_breeding_hyperlink]Selective Breeding[/link]").Font("Small").Alignment("Center").Spacing(12);
-            contentPage.AddHeading("[link=combination_traits_hyperlink]Combination Traits[/link]").Font("Small").Alignment("Center").Spacing(12);
+            contentPage.AddHeading($"[link=spotting_mutations_hyperlink]{TranslationHelper.Get("journal.contents.spotting_mutations")}[/link]").Font("Small").Alignment("Center").Spacing(12);
+            contentPage.AddHeading($"[link=selective_breeding_hyperlink]{TranslationHelper.Get("journal.contents.selective_breeding")}[/link]").Font("Small").Alignment("Center").Spacing(12);
+            contentPage.AddHeading($"[link=combination_traits_hyperlink]{TranslationHelper.Get("journal.contents.combination_traits")}[/link]").Font("Small").Alignment("Center").Spacing(12);
             contentPage.AddHeading("---").Font("Small").Alignment("Center").Spacing(12);
-            contentPage.AddHeading("[link=discovered_traits_hyperlink]Discovered Traits[/link]").Font("Small").Alignment("Center").Spacing(12);
-            contentPage.AddHeading("[link=discovered_crops_hyperlink]Discovered Crops[/link]").Font("Small").Alignment("Center").Spacing(12);
+            contentPage.AddHeading($"[link=discovered_traits_hyperlink]{TranslationHelper.Get("journal.contents.discovered_traits")}[/link]").Font("Small").Alignment("Center").Spacing(12);
+            contentPage.AddHeading($"[link=discovered_crops_hyperlink]{TranslationHelper.Get("journal.contents.discovered_crops")}[/link]").Font("Small").Alignment("Center").Spacing(12);
             contentPage.AddHeading("---").Font("Small").Alignment("Center").Spacing(12);
-            contentPage.AddHeading("[link=settings_hyperlink]Settings[/link]").Font("Small").Alignment("Center").Spacing(12);
+            contentPage.AddHeading($"[link=settings_hyperlink]{TranslationHelper.Get("journal.contents.settings")}[/link]").Font("Small").Alignment("Center").Spacing(12);
         }
 
         public string GetRandomHint()
         {
             var randomHints = new List<string>()
             {
-                "You can go back a page by using [bold]Escape[/bold] key or the controller's [bold]B button[/bold]!",
-                $"You can press [bold]{GetTraitViewKey()}[/bold] to show an icon over every crop with traits.\n\nHover over a crop to see its details, then press it again to hide the icons.",
-                "The higher quality the parent crop, the more likely its [link=trait][underline]traits[/underline][/link] are inherited when using the [link=seed_splicer][underline]Seed Splicer[/underline][/link]!",
-                "Planting adjacent crops that share the same [link=trait][underline]trait[/underline][/link] can be a helpful way to increase their tier!",
-                "Each half of a [link=combination_traits][underline]combination traits[/underline][/link] must come from a different parent. A crop that has both parts won't fuse on its own."
+                TranslationHelper.Get("journal.hint.go_back"),
+                TranslationHelper.Get("journal.hint.trait_view", new { key = GetTraitViewKey() }),
+                TranslationHelper.Get("journal.hint.parent_quality"),
+                TranslationHelper.Get("journal.hint.adjacent_crops"),
+                TranslationHelper.Get("journal.hint.combination_parents")
             };
 
             return Game1.random.ChooseFrom(randomHints);
@@ -244,40 +244,40 @@ namespace CropTraits.Framework.Builders
         {
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
-            page.AddTitle("Getting Started").Alignment("Center").Spacing(16);
-            page.AddParagraph("Every crop you plant has a small chance to gain a [link=trait][underline]trait[/underline][/link] when it first sprouts.\n\nThese traits can make a crop grow faster, sell for more or even give an extra harvest. Some traits can even make crops survive outside their normal seasons!\n\nBe mindful that not every trait is helpful, however.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddTitle(TranslationHelper.Get("journal.getting_started.title")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.intro")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph("Mutagenic Fertilizer can be used to raise the chances of a trait appearing by allowing the crop to roll for mutations every night it's watered (until fully grown).").Spacing(176);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.mutagenic_fertilizer")).Spacing(176);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
-            page.AddBackground("Image").Item(CropTraits.MUTAGENIC_FERTILIZER_QUALIFIED_ID).Set("Description", TranslationHelper.Get("item.mutagenic_fertilizer.description") + "\n\nThis can be purchased from Pierre once you reach farming level 5.").Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
-            page.AddParagraph("Where you plant a crop also matters. When a plant mutates, it is much more likely to pick up a trait from adjacent crops [highlight]of the same type[/highlight].").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddBackground("Image").Item(CropTraits.MUTAGENIC_FERTILIZER_QUALIFIED_ID).Set("Description", TranslationHelper.Get("item.mutagenic_fertilizer.description") + "\n\n" + TranslationHelper.Get("journal.getting_started.mutagenic_fertilizer_shop", new { level = AssetManager.MUTAGENIC_FERTILIZER_FARMING_LEVEL })).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.neighbors")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
-            page.AddHeading("Trait Details").Alignment("Center").Spacing(16);
-            page.AddParagraph("Some traits have tiers, which strengthens their effect as the rank increases.\n\nMutations that occur for crops with existing traits may increase their rank, where applicable.\n\n[bounce][bold]Hint:[/bold][/bounce] Planting adjacent crops that share the same trait can be a helpful way to increase their tier!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddHeading(TranslationHelper.Get("journal.getting_started.tiers_heading")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.tiers")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 4);
-            page.AddParagraph("Seeds and crops can hold up to [highlight]three traits[/highlight].\n\nIf a crop already has three traits, it may result in one of them being replaced when a mutation occurs.\n\nSome traits, called [link=combination_traits][underline]combination traits[/underline][/link], can only be produced by using the [link=seed_splicer][underline]Seed Splicer[/underline][/link].\n\nThis notebook will automatically keep track of all discovered traits.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.trait_limit")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 5);
-            page.AddHeading("Propagating Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("To reliably propagate the same set of traits, you can utilize the Seed Maker. This machine is craftable at farming level 3.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
+            page.AddHeading(TranslationHelper.Get("journal.getting_started.propagating_heading")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_maker", new { level = RecipeManager.SEED_MAKER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(SEED_MAKER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -24);
-            page.AddParagraph("The Seed Maker will preserve the traits when creating new seeds, allowing for repeated planting of the same germline.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_maker_traits")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 6, hideNumber: true);
-            page.AddHeading("Splicing Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("Traits can be mixed together more reliably by using the Seed Splicer. This machine is craftable at farming level 9.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
+            page.AddHeading(TranslationHelper.Get("journal.getting_started.splicing_heading")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_splicer", new { level = RecipeManager.SEED_SPLICER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(CropTraits.SEED_SPLICER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -24);
-            page.AddParagraph("The Seed Splicer lets you mix traits together by crossbreeding two crops [highlight]of the same type[/highlight] but of different germlines.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_splicer_traits")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
         }
 
         public string GetTraitViewKey()
         {
-            return CropTraits.modConfig.ToggleTraitViewKeybind.IsBound ? CropTraits.modConfig.ToggleTraitViewKeybind.ToString() : "the trait view key (set it in the config)";
+            return CropTraits.modConfig.ToggleTraitViewKeybind.IsBound ? CropTraits.modConfig.ToggleTraitViewKeybind.ToString() : TranslationHelper.Get("journal.trait_view_key_unbound");
         }
 
         public void AddSpottingMutationsPages(IBookBuilder book, string chapterId)
@@ -287,55 +287,55 @@ namespace CropTraits.Framework.Builders
 
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
-            page.AddTitle("Spotting Mutations").Alignment("Center").Spacing(16);
-            page.AddParagraph("Fully grown crops that have mutated will sparkle until they're harvested, so keep an eye out for any glimmers in your fields.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddTitle(TranslationHelper.Get("journal.spotting_mutations.title")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.sparkles")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 80, 48, 48).Scale(6).Alignment("Center").VerticalAlignment("Center").Position(0, 128);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph("Seeds and produce that have traits are marked with a small green badge in the top-right corner. Hover over them to see their traits (negative ones are highlighted in red).").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(132);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.badges")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(132);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 128, 48, 32).Set("DisplayName", cornSeeds.DisplayName).Set("Description", TraitTooltipHelper.GetDescriptionWithTraits(cornSeeds)).Scale(2).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
-            page.AddParagraph($"You can press [bold]{GetTraitViewKey()}[/bold] to show an icon over every crop with traits. Hover over a crop to see its details, then press it again to hide the icons.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.trait_view", new { key = GetTraitViewKey() })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
-            page.AddParagraph("Before a crop is fully grown, you will only see the traits it was planted with. Once it has finished growing, any new traits will be marked with \"[bounce][color=ForestGreen]New![/color][/bounce]\".").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.hidden_traits", new { newLabel = TranslationHelper.Get("tooltip.new_trait") })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0);
         }
 
         public void AddSelectiveBreedingPages(IBookBuilder book, string chapterId)
         {
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
-            page.AddTitle("Selective Breeding").Alignment("Center").Spacing(16);
-            page.AddParagraph("Got a set of traits that you would like to keep growing? Put its produce into in a Seed Maker!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(138);
+            page.AddTitle(TranslationHelper.Get("journal.selective_breeding.title")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_maker")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(138);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -32);
             page.AddBackground("Image").Item(SEED_MAKER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -56);
-            page.AddParagraph("The Seed Maker is craftable starting from farming level 3.\n\n[bounce][bold]Note:[/bold][/bounce] Crops with the [link=trait_seedless][underline]Seedless[/underline][/link] trait are unable to be processed by the Seed Maker.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_maker_unlock", new { level = RecipeManager.SEED_MAKER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph("The Seed Splicer lets you mix traits by crossbreeding two crops [highlight]of the same type[/highlight] with different traits.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -80);
             page.AddBackground("Image").Item(CropTraits.SEED_SPLICER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -104);
-            page.AddParagraph("The Seed Splicer is craftable starting from farming level 9.\n\nTo get started, put five of a crop in each slot and click Splice. After a few hours the seeds will be ready to collect.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer_unlock", new { level = RecipeManager.SEED_SPLICER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
-            page.AddHeading("Mixing Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("When inputting two crops with traits, they will crossbreed and combine their traits into new seeds.\n\nEvery splice rolls its own result, so the same pair can give different seeds.\n\nWhen both crops share a trait at the same tier, there is a small chance it grows stronger.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddHeading(TranslationHelper.Get("journal.selective_breeding.mixing_heading")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.mixing")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 4, hideNumber: true);
-            page.AddParagraph("[bounce][bold]Hint:[/bold][/bounce] The higher quality the crop, the more likely its traits are inherited!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
-            page.AddHeading("Diluting Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("Got a trait you don't want? Splice the crop with a [link=baseline][underline]baseline[/underline][/link] crop of the same type.\n\nThis dilutes it, causing the removal of one of its traits or turning the seeds back to normal.\n\n[bounce][bold]Hint:[/bold][/bounce] The quality of both crops matter for preserving traits!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.quality_hint")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddHeading(TranslationHelper.Get("journal.selective_breeding.diluting_heading")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.diluting")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
         }
 
         public void AddCombinationTraitsPages(IBookBuilder book, string chapterId)
         {
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
-            page.AddTitle("Combination Traits").Alignment("Center").Spacing(16);
-            page.AddParagraph("Some [link=trait][underline]traits[/underline][/link] can be mixed into a unique trait, called a [link=combination_traits][underline]combination trait[/underline][/link].\n\nWhen two crossbred crops each carry part of a required trait combination, there's a chance they combine into a single trait.\n\n[bounce][bold]Hint:[/bold][/bounce] Each half must come from a different parent. A crop that has both parts won't fuse on its own.").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddTitle(TranslationHelper.Get("journal.combination_traits.title")).Alignment("Center").Spacing(16);
+            page.AddParagraph(TranslationHelper.Get("journal.combination_traits.intro")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
 
             page = CreateNumberedPage(book, chapterId, 2, hideNumber: true);
-            page.AddParagraph("A combination trait replaces the two traits that compose it. This can be helpful to bypass the three trait limit.\n\nA crop with a combination trait can still regain the traits it was made from. Their effects can stack with the combination's.\n\nSome combination traits can also turn a harmful trait into something useful!").Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph(TranslationHelper.Get("journal.combination_traits.details")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
         }
 
         // The index lists only names, two columns per page, and each discovered (or revealed) trait opens its own page with the details
@@ -444,10 +444,10 @@ namespace CropTraits.Framework.Builders
 
             page.AddParagraph(CropTraits.traitManager.GetTraitDescription(trait.Id)).Font("Small").Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(24);
 
-            page = AddLineBlock(book, page, chapterId, ref pageIndex, "Details", GetTraitDetailLines(trait, discoveries, GetConflictingTraitIds(trait), linkedTraitIds), linkedTraitIds, 32);
-            page = AddLineBlock(book, page, chapterId, ref pageIndex, "Effects", GetTraitEffectLines(trait), linkedTraitIds, 24);
+            page = AddLineBlock(book, page, chapterId, ref pageIndex, TranslationHelper.Get("journal.traits.details_heading"), GetTraitDetailLines(trait, discoveries, GetConflictingTraitIds(trait), linkedTraitIds), linkedTraitIds, 32);
+            page = AddLineBlock(book, page, chapterId, ref pageIndex, TranslationHelper.Get("journal.traits.effects_heading"), GetTraitEffectLines(trait), linkedTraitIds, 24);
 
-            AddBackLink(book, page, chapterId, pageIndex, TRAITS_INDEX_LINK_ID, "Back to Traits");
+            AddBackLink(book, page, chapterId, pageIndex, TRAITS_INDEX_LINK_ID, TranslationHelper.Get("journal.traits.back"));
         }
 
         // Each line is its own paragraph so the block can continue on the next page, with the heading kept beside its first line
@@ -514,26 +514,26 @@ namespace CropTraits.Framework.Builders
             else
             {
                 discoveryDate = SDate.FromDaysSinceStart(discovery.FirstDiscoveredDay + 1);
-                lines.Add($"Discovered: {discoveryDate.Season} {discoveryDate.Day} Year {discoveryDate.Year}");
+                lines.Add(TranslationHelper.Get("journal.traits.discovered", new { date = discoveryDate.ToLocaleString() }));
             }
 
             if (trait is CombinationTrait combinationTrait)
             {
-                lines.Add($"Fused from {GetTraitReferenceText(combinationTrait.FirstTraitId, linkedTraitIds)} and {GetTraitReferenceText(combinationTrait.SecondTraitId, linkedTraitIds)} via the Seed Splicer.");
+                lines.Add(TranslationHelper.Get("journal.traits.fused_from", new { first = GetTraitReferenceText(combinationTrait.FirstTraitId, linkedTraitIds), second = GetTraitReferenceText(combinationTrait.SecondTraitId, linkedTraitIds) }));
             }
             else
             {
-                lines.Add(trait.CanBeRolled ? $"Base rarity: {GetRarityText(trait.Rarity)}" : "Only appears through crossbreeding.");
+                lines.Add(trait.CanBeRolled ? TranslationHelper.Get("journal.traits.base_rarity", new { rarity = GetRarityText(trait.Rarity) }) : TranslationHelper.Get("journal.traits.crossbreed_only"));
             }
 
             if (trait.IsExclusive)
             {
-                lines.Add("Can't share a crop with other traits.");
+                lines.Add(TranslationHelper.Get("journal.traits.exclusive"));
             }
             else if (conflictIds.Count > 0)
             {
                 // Each conflict gets its own line, so a long list reads cleanly and can carry over to the next page
-                lines.Add("\nCan't appear with the following:");
+                lines.Add("\n" + TranslationHelper.Get("journal.traits.conflicts"));
                 for (int index = 0; index < conflictIds.Count; index++)
                 {
                     bool isLast = index == conflictIds.Count - 1;
@@ -543,12 +543,12 @@ namespace CropTraits.Framework.Builders
 
             if (trait.BlocksPropagation)
             {
-                lines.Add("Rejected by the Seed Maker and Seed Splicer.");
+                lines.Add(TranslationHelper.Get("journal.traits.blocks_propagation"));
             }
 
             if (trait.IsPriceTrait)
             {
-                lines.Add("Carries into artisan goods made from it, where any price change stacks with other price traits.");
+                lines.Add(TranslationHelper.Get("journal.traits.price_trait"));
             }
 
             if (discoveryDate is not null && trait.MaxTier > 1)
@@ -579,7 +579,7 @@ namespace CropTraits.Framework.Builders
                 _ => "DimGray"
             };
 
-            return $"[color={color}]{rarity}[/color]";
+            return $"[color={color}]{TranslationHelper.Get($"journal.rarity.{rarity.ToString().ToLowerInvariant()}")}[/color]";
         }
 
         // Conflicts are declared one way, so both directions are checked. Exclusive traits are covered by their own line instead
@@ -683,7 +683,7 @@ namespace CropTraits.Framework.Builders
                 page = AddWithOverflow(book, page, chapterId, ref pageIndex, entryPage => AddCrossbreedEntry(entryPage, crossbreed, isLastEntry, linkedTraitIds));
             }
 
-            AddBackLink(book, page, chapterId, pageIndex, CROPS_INDEX_LINK_ID, "Back to Crops");
+            AddBackLink(book, page, chapterId, pageIndex, CROPS_INDEX_LINK_ID, TranslationHelper.Get("journal.crop.back"));
         }
 
         // Returns how many elements were added, so the whole entry (and its divider) moves to the next page when it doesn't fit

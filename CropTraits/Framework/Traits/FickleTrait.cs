@@ -37,12 +37,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Harvests rise one quality step on lucky days and drop one on unlucky days";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Uses the harvesting player's luck for the day. A neutral day leaves the quality alone. Quality never goes below normal or past the crop's own limits.";
+            return GetText("notes");
         }
     }
 }

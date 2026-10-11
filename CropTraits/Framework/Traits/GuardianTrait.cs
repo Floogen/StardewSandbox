@@ -14,12 +14,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return "Crows never eat it. It also protects the eight tiles around it like a tiny scarecrow";
+            return GetText("details");
         }
 
         public override string GetNotes()
         {
-            return "Crops with Crow Magnet aren't protected.";
+            return GetText("notes");
         }
     }
 }

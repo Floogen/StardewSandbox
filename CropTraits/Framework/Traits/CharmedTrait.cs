@@ -26,12 +26,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Villagers never dislike or hate it as a gift. It also gives {ToPercent(FRIENDSHIP_BONUS)} more friendship";
+            return GetText("details", new { friendshipBonus = ToPercentValue(FRIENDSHIP_BONUS) });
         }
 
         public override string GetNotes()
         {
-            return "A gift they'd dislike or hate is treated as neutral instead. Artisan goods made from it don't keep it.";
+            return GetText("notes");
         }
     }
 }

@@ -34,12 +34,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Restores {ENERGY_PER_TIER * tier} energy each time it's harvested";
+            return GetText("details", new { energy = (ENERGY_PER_TIER * tier) });
         }
 
         public override string GetNotes()
         {
-            return $"Only restores up to {ToPercent(MAX_STAMINA_SHARE)} of your maximum energy. Junimo harvests don't restore anything.";
+            return GetText("notes", new { maxStaminaShare = ToPercentValue(MAX_STAMINA_SHARE) });
         }
     }
 }

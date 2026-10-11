@@ -48,12 +48,12 @@ namespace CropTraits.Framework.Traits
 
         public override string GetTierDetails(int tier)
         {
-            return $"Has a {ToPercent(NEAR_WATER_BOOST_CHANCE)} chance to grow an extra day each night near water, but a {ToPercent(AWAY_FROM_WATER_SKIP_CHANCE)} chance to skip growing each night away from it";
+            return GetText("details", new { nearWaterBoostChance = ToPercentValue(NEAR_WATER_BOOST_CHANCE), awayFromWaterSkipChance = ToPercentValue(AWAY_FROM_WATER_SKIP_CHANCE) });
         }
 
         public override string GetNotes()
         {
-            return $"Only applies outdoors. Near water means within {WaterHelper.WATER_RANGE} tiles of any water tile (fish ponds don't count). Doesn't appear on paddy crops like rice. The extra day only counts on nights the crop grows (when it's watered).";
+            return GetText("notes", new { waterRange = WaterHelper.WATER_RANGE });
         }
     }
 }
