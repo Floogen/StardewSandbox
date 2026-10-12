@@ -1,8 +1,8 @@
 using CropTraits.Framework.Utilities.Helpers;
 using HarmonyLib;
 using StardewModdingAPI;
+using StardewValley;
 using StardewValley.Objects;
-using System.Linq;
 using System.Reflection;
 
 namespace CropTraits.Framework.Patches.Objects
@@ -19,35 +19,28 @@ namespace CropTraits.Framework.Patches.Objects
         public override void Apply(Harmony harmony)
         {
             // Skipped with a warning if missing, so a changed game method only turns off traits like Aged instead of every patch after it
-            MethodInfo dropInMethod = AccessTools.GetDeclaredMethods(_cask).FirstOrDefault(method => method.Name == nameof(Cask.performObjectDropInAction));
-            if (dropInMethod is null)
+            MethodInfo outputCaskMethod = AccessTools.Method(_cask, nameof(Cask.OutputCask));
+            if (outputCaskMethod is null)
             {
-                _monitor.Log("Couldn't find Cask.performObjectDropInAction, so traits like Aged won't change how fast casks age.", LogLevel.Warn);
+                _monitor.Log("Couldn't find Cask.OutputCask, so traits like Aged won't change how fast casks age.", LogLevel.Warn);
                 return;
             }
 
-            harmony.Patch(dropInMethod, prefix: new HarmonyMethod(GetType(), nameof(PerformObjectDropInActionPrefix)), postfix: new HarmonyMethod(GetType(), nameof(PerformObjectDropInActionPostfix)));
+            harmony.Patch(outputCaskMethod, postfix: new HarmonyMethod(GetType(), nameof(OutputCaskPostfix)));
         }
 
-        // The held item is captured first, so the postfix can tell a real drop-in (a new held item) from the cask checking what it accepts
-        private static void PerformObjectDropInActionPrefix(Cask __instance, out StardewValley.Object __state)
+        private static void OutputCaskPostfix(StardewValley.Object machine, bool probe, Item __result)
         {
-            __state = __instance.heldObject.Value;
-        }
-
-        // Traits like Aged scale the rate the game just set, reading the artisan good now in the cask
-        private static void PerformObjectDropInActionPostfix(Cask __instance, bool __result, StardewValley.Object __state)
-        {
-            StardewValley.Object heldObject = __instance.heldObject.Value;
-            if (__result is false || heldObject is null || ReferenceEquals(heldObject, __state) || TraitModDataHelper.HasTraits(heldObject.modData) is false)
+            if (probe || machine is not Cask cask || __result is null || TraitModDataHelper.HasTraits(__result.modData) is false)
             {
                 return;
             }
 
-            double multiplier = CropTraits.traitManager.GetCaskAgingMultiplier(TraitModDataHelper.GetTraits(heldObject.modData));
+            // The output is a copy of the artisan good going into the cask, so it carries the same traits
+            double multiplier = CropTraits.traitManager.GetCaskAgingMultiplier(TraitModDataHelper.GetTraits(__result.modData));
             if (multiplier != 1)
             {
-                __instance.agingRate.Value = (float)(__instance.agingRate.Value * multiplier);
+                cask.agingRate.Value = (float)(cask.agingRate.Value * multiplier);
             }
         }
     }
