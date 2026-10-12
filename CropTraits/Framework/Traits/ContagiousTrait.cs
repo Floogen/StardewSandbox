@@ -26,7 +26,7 @@ namespace CropTraits.Framework.Traits
         }
 
         /// <summary>
-        /// Once ready to harvest, copies one of its traits at tier I onto an adjacent crop of the same type that has room for it. Traits like Pervasive copy onto every such crop instead.
+        /// Once ready to harvest, copies one of its traits at tier I onto an adjacent crop of the same type that has room for it. Traits like Pollinating copy onto every such crop instead.
         /// Neighbors are read from the live soil rather than the snapshot, so two Contagious crops never fill the same open slot. Both share the same flag, so a crop holding both spreads once per planting.
         /// </summary>
         public static void SpreadTraits(NightlyContext context, bool spreadsToEveryNeighbor)

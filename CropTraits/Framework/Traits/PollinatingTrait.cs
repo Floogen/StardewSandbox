@@ -3,10 +3,10 @@ using CropTraits.Framework.Models;
 namespace CropTraits.Framework.Traits
 {
     // Fused from Contagious and Dominant, passing a trait to every neighbor of its type instead of just one
-    public class PervasiveTrait : CombinationTrait
+    public class PollinatingTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
-        public const string ID = "Pervasive";
+        public const string ID = "Pollinating";
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Neutral;
