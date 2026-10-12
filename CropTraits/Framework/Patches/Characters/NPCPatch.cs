@@ -21,7 +21,7 @@ namespace CropTraits.Framework.Patches.Characters
             harmony.Patch(AccessTools.Method(_npc, nameof(NPC.getGiftTasteForThisItem), null), postfix: new HarmonyMethod(GetType(), nameof(GetGiftTasteForThisItemPostfix)));
         }
 
-        // Traits like Charmed change the taste itself, so the villager's reaction and dialogue follow along
+        // Traits like Beloved change the taste itself, so the villager's reaction and dialogue follow along
         private static void GetGiftTasteForThisItemPostfix(Item item, ref int __result)
         {
             if (item is null || TraitModDataHelper.HasTraits(item.modData) is false)

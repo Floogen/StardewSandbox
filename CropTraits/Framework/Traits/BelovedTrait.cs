@@ -3,10 +3,10 @@ using StardewValley;
 namespace CropTraits.Framework.Traits
 {
     // Fused from Charming and Lucky, a lucky charm no villager can turn down
-    public class CharmedTrait : CombinationTrait
+    public class BelovedTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
-        public const string ID = "Charmed";
+        public const string ID = "Beloved";
 
         public const double FRIENDSHIP_BONUS = 0.50;
 
