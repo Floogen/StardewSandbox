@@ -312,7 +312,7 @@ namespace CropTraits.Framework.Builders
             page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_maker_unlock", new { level = RecipeManager.SEED_MAKER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -80);
             page.AddBackground("Image").Item(CropTraits.SEED_SPLICER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -104);
             page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer_unlock", new { level = RecipeManager.SEED_SPLICER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
