@@ -22,7 +22,7 @@ namespace CropTraits.Framework.Traits
             return TryTurnIntoCoins(item, GILDED_CHANCE);
         }
 
-        // Shared with Fortunate. The sale price already includes quality, price traits like Sweet and professions like Tiller, so the doubling builds on all of them
+        // Shared with Windfall. The sale price already includes quality, price traits like Sweet and professions like Tiller, so the doubling builds on all of them
         public static bool TryTurnIntoCoins(Item item, double chance)
         {
             if (item is not StardewValley.Object produce || Game1.random.NextDouble() >= chance)

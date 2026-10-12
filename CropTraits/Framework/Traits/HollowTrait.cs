@@ -13,7 +13,7 @@ namespace CropTraits.Framework.Traits
         public const double CRUMBLE_CHANCE_PER_TIER = 0.10;
 
         // Both turn the main harvest into something else, so only one can
-        private static readonly string[] CONFLICTS = { GildedTrait.ID, FortunateTrait.ID };
+        private static readonly string[] CONFLICTS = { GildedTrait.ID, WindfallTrait.ID };
 
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Negative;

@@ -5,10 +5,10 @@ using System;
 namespace CropTraits.Framework.Traits
 {
     // Fused from Fickle and Gilded, letting the day's luck decide how often the harvest turns into coins
-    public class FortunateTrait : CombinationTrait
+    public class WindfallTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
-        public const string ID = "Fortunate";
+        public const string ID = "Windfall";
 
         public const double BASE_CHANCE = 0.60;
         public const double CHANCE_PER_LUCK = 2.5; // Daily luck usually sits between -0.1 and 0.1, so this spans the full range below
