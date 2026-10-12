@@ -49,11 +49,16 @@ namespace CropTraits.Framework.Patches.Objects
             TraitTooltipHelper.DrawTraits(__instance, spriteBatch, x, ref y, font, alpha);
         }
 
-        private static void DrawMenuIconsPrefix(Item __instance, ref float __2)
+        private static void DrawMenuIconsPrefix(Item __instance, ref float scale_size, ref Color color)
         {
             if (ProduceScaleHelper.TryGetSlotScale(__instance, out float slotScaleSize))
             {
-                __2 = slotScaleSize;
+                scale_size = slotScaleSize;
+            }
+
+            if (CropAppearanceHelper.TryGetMenuColor(__instance, out Color menuColor))
+            {
+                color = menuColor;
             }
         }
 

@@ -142,7 +142,7 @@ namespace CropTraits.Framework.Patches.Objects
                 return;
             }
 
-            // Traits like Variegated tint the produce icon
+            // Traits like Variegated tint the produce icon, while the original color is kept for the stack count and quality icons
             Color tint = CropAppearanceHelper.GetItemTint(__instance);
             if (tint != Color.White)
             {

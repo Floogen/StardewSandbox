@@ -25,11 +25,10 @@ namespace CropTraits.Framework.Patches
             LightningHelper.IsLightningUpdateActive = true;
         }
 
-        // The time of day is read by position (__0), so a renamed game parameter can't break the patch
-        private static void PerformLightningUpdatePostfix(int __0)
+        private static void PerformLightningUpdatePostfix(int time_of_day)
         {
             LightningHelper.IsLightningUpdateActive = false;
-            LightningHelper.TryStrikeConductiveCrop(__0);
+            LightningHelper.TryStrikeConductiveCrop(time_of_day);
         }
 
         // Finalizer ensures the flag clears even if the update throws

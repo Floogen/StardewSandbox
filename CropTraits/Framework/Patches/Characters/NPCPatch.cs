@@ -22,15 +22,14 @@ namespace CropTraits.Framework.Patches.Characters
         }
 
         // Traits like Charmed change the taste itself, so the villager's reaction and dialogue follow along
-        // The item is read by position (__0), so a renamed game parameter can't break the patch
-        private static void GetGiftTasteForThisItemPostfix(Item __0, ref int __result)
+        private static void GetGiftTasteForThisItemPostfix(Item item, ref int __result)
         {
-            if (__0 is null || TraitModDataHelper.HasTraits(__0.modData) is false)
+            if (item is null || TraitModDataHelper.HasTraits(item.modData) is false)
             {
                 return;
             }
 
-            __result = CropTraits.traitManager.GetGiftTaste(TraitModDataHelper.GetTraits(__0.modData), __result);
+            __result = CropTraits.traitManager.GetGiftTaste(TraitModDataHelper.GetTraits(item.modData), __result);
         }
 
         // Traits like Charming scale the friendship from a gift the villager doesn't dislike or hate, so they never make a bad gift worse

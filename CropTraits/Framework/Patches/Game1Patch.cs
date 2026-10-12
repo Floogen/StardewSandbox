@@ -29,10 +29,9 @@ namespace CropTraits.Framework.Patches
         }
 
         // A scythe harvest drops its main harvest here instead of adding it to the inventory, so traits like Gilded can take it before it lands
-        // The item is read by position (__0), so a renamed game parameter can't break the patch
-        private static bool CreateItemDebrisPrefix(Item __0, ref Debris __result)
+        private static bool CreateItemDebrisPrefix(Item item, ref Debris __result)
         {
-            if (CropTraits.harvestManager.IsHarvestActive is false || CropTraits.harvestManager.TryReplaceMainHarvest(__0) is false)
+            if (CropTraits.harvestManager.IsHarvestActive is false || CropTraits.harvestManager.TryReplaceMainHarvest(item) is false)
             {
                 return true;
             }

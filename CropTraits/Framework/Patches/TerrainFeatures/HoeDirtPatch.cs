@@ -35,12 +35,11 @@ namespace CropTraits.Framework.Patches.TerrainFeatures
         }
 
         // Traits like Trailing let players walk through trellis crops, while traits like Climbing make other crops block the way
-        // The character is read by position (__0), so a renamed game parameter can't break the patch
-        private static void IsPassablePostfix(TerrainFeature __instance, Character __0, ref bool __result)
+        private static void IsPassablePostfix(TerrainFeature __instance, Character c, ref bool __result)
         {
             if (__instance is HoeDirt dirt && dirt.crop is not null)
             {
-                __result = PassabilityHelper.IsPassable(dirt, __0, __result);
+                __result = PassabilityHelper.IsPassable(dirt, c, __result);
             }
         }
 
