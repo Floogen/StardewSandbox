@@ -143,7 +143,12 @@ namespace CropTraits.Framework.Patches.Objects
             }
 
             // Traits like Variegated tint the produce icon
-            color = CropAppearanceHelper.Multiply(color, CropAppearanceHelper.GetItemTint(__instance));
+            Color tint = CropAppearanceHelper.GetItemTint(__instance);
+            if (tint != Color.White)
+            {
+                CropAppearanceHelper.BeginMenuDraw(__instance, color);
+                color = CropAppearanceHelper.Multiply(color, tint);
+            }
 
             float produceScale = ProduceScaleHelper.GetScale(__instance);
             if (produceScale == 1f)
@@ -162,6 +167,7 @@ namespace CropTraits.Framework.Patches.Objects
                 return;
             }
 
+            CropAppearanceHelper.EndMenuDraw(__instance);
             ProduceScaleHelper.EndMenuDraw(__instance);
             MutationBadgeHelper.DrawBadge(__instance, spriteBatch, location, __state, transparency, layerDepth, drawStackNumber);
         }

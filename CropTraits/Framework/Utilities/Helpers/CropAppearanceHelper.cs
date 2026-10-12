@@ -7,6 +7,9 @@ namespace CropTraits.Framework.Utilities.Helpers
 {
     public static class CropAppearanceHelper
     {
+        private static Item _menuDrawItem;
+        private static Color _menuDrawColor;
+
         // Called for every crop drawn each frame, so untraited crops leave before any trait is resolved
         public static Color GetCropTint(Crop crop)
         {
@@ -28,6 +31,27 @@ namespace CropTraits.Framework.Utilities.Helpers
             }
 
             return CropTraits.traitManager.GetTint(TraitModDataHelper.GetCachedTraits(TraitModDataHelper.GetTraitKey(item.modData)), seedId);
+        }
+
+        // Remembers the color the menu passed in, so the stack count and quality icons drawn after the sprite aren't tinted
+        public static void BeginMenuDraw(Item item, Color color)
+        {
+            _menuDrawItem = item;
+            _menuDrawColor = color;
+        }
+
+        public static void EndMenuDraw(Item item)
+        {
+            if (_menuDrawItem == item)
+            {
+                _menuDrawItem = null;
+            }
+        }
+
+        public static bool TryGetMenuColor(Item item, out Color color)
+        {
+            color = _menuDrawColor;
+            return item is not null && _menuDrawItem == item;
         }
 
         public static Color Multiply(Color baseColor, Color tint)
