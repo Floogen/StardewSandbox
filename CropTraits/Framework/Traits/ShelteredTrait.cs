@@ -2,10 +2,10 @@ using CropTraits.Framework.Models;
 
 namespace CropTraits.Framework.Traits
 {
-    public class HothouseTrait : Trait
+    public class ShelteredTrait : Trait
     {
         // Stored in every trait key, so this must never change once released
-        public const string ID = "Hothouse";
+        public const string ID = "Sheltered";
 
         public const double INDOOR_BOOST_CHANCE = 0.25;
         public const double OUTDOOR_SKIP_CHANCE = 0.25;

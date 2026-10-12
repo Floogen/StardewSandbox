@@ -2,7 +2,7 @@ using CropTraits.Framework.Models;
 
 namespace CropTraits.Framework.Traits
 {
-    // Fused from Hothouse and Sun Loving, thriving anywhere warm and on dry days elsewhere without either parent's penalty
+    // Fused from Sheltered and Sun Loving, thriving anywhere warm and on dry days elsewhere without either parent's penalty
     public class TropicalTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
@@ -11,7 +11,7 @@ namespace CropTraits.Framework.Traits
         public const double BOOST_CHANCE = 0.25;
 
         public override string Id => ID;
-        public override string FirstTraitId => HothouseTrait.ID;
+        public override string FirstTraitId => ShelteredTrait.ID;
         public override string SecondTraitId => SunLovingTrait.ID;
 
         public override void OnDayEnding(NightlyContext context, int tier)
