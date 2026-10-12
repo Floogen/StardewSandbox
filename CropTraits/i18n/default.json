@@ -11,6 +11,10 @@
   "item.name.hybrid": "{{name}} (Hybrid)",
   "item.name.seedless": "Seedless {{name}}",
 
+  // Mail
+  "mail.field_notes.text": "Hello @,^^I've been hearing about some unusual crops popping up around the valley lately.^^I want to enlist your help to better understand these mutations, so I put together a notebook to help you spot and record any you come across.^^   -Demetrius",
+  "mail.field_notes.title": "Field Notes",
+
   // Tooltips
   "tooltip.traits_label": "Traits:",
   "tooltip.growth_days": "Due to its traits, these seeds now take {{days}} day(s) to mature.",

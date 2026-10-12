@@ -17,6 +17,7 @@ namespace CropTraits.Framework.Managers
         public const string OBJECTS_DATA_PATH = "Data/Objects";
         public const string SHOPS_DATA_PATH = "Data/Shops";
         public const string CRAFTING_RECIPES_DATA_PATH = "Data/CraftingRecipes";
+        public const string MAIL_DATA_PATH = "Data/Mail";
 
         public const string PIERRE_SHOP_ID = "SeedShop";
         public const int MUTAGENIC_FERTILIZER_FARMING_LEVEL = 5;
@@ -34,6 +35,7 @@ namespace CropTraits.Framework.Managers
         public const int SEED_SPLICER_PRICE = 500;
         public const int MUTAGENIC_FERTILIZER_PRICE = 50;
         public const int MUTAGENIC_FERTILIZER_SHOP_PRICE = 150;
+        public const int FIELD_NOTES_SHOP_PRICE = 0;
         public const int FERTILIZER_CATEGORY = -19;
 
         public const string PARCHMENT_BOOK_ID_FIELD = "PeacefulEnd.Parchment/CustomFields/BookId";
@@ -113,16 +115,21 @@ namespace CropTraits.Framework.Managers
                     IDictionary<string, ShopData> data = asset.AsDictionary<string, ShopData>().Data;
                     if (data.TryGetValue(PIERRE_SHOP_ID, out ShopData pierreShop) is false)
                     {
-                        monitor.Log($"Couldn't find the {PIERRE_SHOP_ID} shop, so Mutagenic Fertilizer won't be sold by Pierre.", LogLevel.Warn);
+                        monitor.Log($"Couldn't find the {PIERRE_SHOP_ID} shop, so Mutagenic Fertilizer and the Field Notes won't be sold by Pierre.", LogLevel.Warn);
                         return;
                     }
 
                     AddMutagenicFertilizerToShop(pierreShop);
+                    AddFieldNotesToShop(pierreShop);
                 });
             }
             else if (e.NameWithoutLocale.IsEquivalentTo(CRAFTING_RECIPES_DATA_PATH))
             {
                 e.Edit(asset => CropTraits.recipeManager.EditCraftingRecipes(asset.AsDictionary<string, string>().Data));
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo(MAIL_DATA_PATH))
+            {
+                e.Edit(asset => CropTraits.mailManager.EditMail(asset.AsDictionary<string, string>().Data));
             }
         }
 
@@ -149,6 +156,34 @@ namespace CropTraits.Framework.Managers
             if (lastFertilizerIndex >= 0)
             {
                 shop.Items.Insert(lastFertilizerIndex + 1, shopItem);
+            }
+            else
+            {
+                shop.Items.Add(shopItem);
+            }
+        }
+
+        private void AddFieldNotesToShop(ShopData shop)
+        {
+            shop.Items ??= new List<ShopItemData>();
+
+            if (shop.Items.Exists(item => item.Id == CropTraits.JOURNAL_ID))
+            {
+                return;
+            }
+
+            ShopItemData shopItem = new ShopItemData
+            {
+                Id = CropTraits.JOURNAL_ID,
+                ItemId = CropTraits.JOURNAL_QUALIFIED_ID,
+                Price = FIELD_NOTES_SHOP_PRICE,
+                Condition = MailManager.FIELD_NOTES_SHOP_CONDITION
+            };
+
+            int fertilizerIndex = shop.Items.FindIndex(item => item.Id == CropTraits.MUTAGENIC_FERTILIZER_ID);
+            if (fertilizerIndex >= 0)
+            {
+                shop.Items.Insert(fertilizerIndex + 1, shopItem);
             }
             else
             {

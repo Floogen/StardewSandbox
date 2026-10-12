@@ -27,6 +27,7 @@ namespace CropTraits
         public const string MUTAGENIC_FERTILIZER_ID = "PeacefulEnd.CropTraits_MutagenicFertilizer";
         public const string MUTAGENIC_FERTILIZER_QUALIFIED_ID = "(O)" + MUTAGENIC_FERTILIZER_ID;
         public const string JOURNAL_ID = "PeacefulEnd.CropTraits_Journal";
+        public const string JOURNAL_QUALIFIED_ID = "(O)" + JOURNAL_ID;
 
         // Mod IDs
         public const string PARCHMENT_ID = "PeacefulEnd.Parchment.Core";
@@ -58,6 +59,7 @@ namespace CropTraits
         public static CropLightManager cropLightManager;
         public static DiscoveryManager discoveryManager;
         public static HarvestManager harvestManager;
+        public static MailManager mailManager;
         public static MorningManager morningManager;
         public static MutationManager mutationManager;
         public static MutationSparkleManager mutationSparkleManager;
@@ -82,6 +84,7 @@ namespace CropTraits
             cropLightManager = new CropLightManager(monitor, helper);
             discoveryManager = new DiscoveryManager(monitor, helper);
             harvestManager = new HarvestManager(monitor, helper);
+            mailManager = new MailManager(monitor, helper);
             morningManager = new MorningManager(monitor, helper);
             mutationManager = new MutationManager(monitor, helper);
             mutationSparkleManager = new MutationSparkleManager(monitor, helper);
@@ -123,6 +126,7 @@ namespace CropTraits
             helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
             helper.Events.GameLoop.DayEnding += (sender, args) => mutationManager.ResolveAllMutationRolls();
             helper.Events.GameLoop.DayEnding += (sender, args) => nightlyGrowthManager.PlanAllNightlyEffects();
+            helper.Events.GameLoop.DayEnding += (sender, args) => mailManager.TryQueueFieldNotesMail();
             helper.Events.GameLoop.DayStarted += (sender, args) => SpliceHelper.UpdateAllReadyStates();
             helper.Events.GameLoop.DayStarted += (sender, args) => nightlyGrowthManager.Reset();
             helper.Events.GameLoop.DayStarted += (sender, args) => WeedHelper.ClearAllNearbyWeeds();
