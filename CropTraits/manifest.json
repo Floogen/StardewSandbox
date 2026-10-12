@@ -6,7 +6,7 @@
   "UniqueID": "PeacefulEnd.CropTraits",
   "EntryDll": "CropTraits.dll",
   "MinimumApiVersion": "4.5.2",
-  "UpdateKeys": [ "Nexus:????" ],
+  "UpdateKeys": [ "Nexus:53759" ],
   "Dependencies": [
     {
       "UniqueID": "PeacefulEnd.Parchment.Core",
