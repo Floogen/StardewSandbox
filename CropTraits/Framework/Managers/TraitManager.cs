@@ -237,11 +237,6 @@ namespace CropTraits.Framework.Managers
             return existingIds.Any(existingId => HasConflict(incomingTrait, existingId));
         }
 
-        public bool IsCombinationTrait(string traitId)
-        {
-            return TryGetTrait(traitId, out Trait trait) && trait is CombinationTrait;
-        }
-
         public bool HasExclusiveTrait(TraitSet traits)
         {
             return Resolve(traits).Any(entry => entry.Trait.IsExclusive);
