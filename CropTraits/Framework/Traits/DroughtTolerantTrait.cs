@@ -1,5 +1,6 @@
 using CropTraits.Framework.Models;
 using StardewValley.GameData.Crops;
+using StardewValley.TerrainFeatures;
 
 namespace CropTraits.Framework.Traits
 {
@@ -17,11 +18,17 @@ namespace CropTraits.Framework.Traits
             return cropData?.NeedsWatering ?? false;
         }
 
-        public override void OnDayEnding(NightlyContext context, int tier)
+        // Rolled in the morning so the player can see the wet soil, letting the game's own watering check grow the crop that night
+        public override void OnDayStarted(MorningContext context, int tier)
         {
+            if (context.Dirt.state.Value == HoeDirt.watered)
+            {
+                return;
+            }
+
             if (context.Random.NextDouble() < WATERED_CHANCE_PER_TIER * tier)
             {
-                context.Plan.CountsAsWatered = true;
+                context.Dirt.state.Value = HoeDirt.watered;
             }
         }
 

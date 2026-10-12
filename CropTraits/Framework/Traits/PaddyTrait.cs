@@ -2,6 +2,7 @@ using CropTraits.Framework.Models;
 using CropTraits.Framework.Utilities.Helpers;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 
 namespace CropTraits.Framework.Traits
 {
@@ -23,6 +24,16 @@ namespace CropTraits.Framework.Traits
             return location.IsOutdoors && WaterHelper.IsNearWater(location, tile);
         }
 
+        // Waters its soil while near water so the player can see it doesn't need watering
+        public override void OnDayStarted(MorningContext context, int tier)
+        {
+            if (context.Dirt.state.Value != HoeDirt.watered && CountsAsWatered(context.Location, context.Tile, tier))
+            {
+                context.Dirt.state.Value = HoeDirt.watered;
+            }
+        }
+
+        // Still marks the night as watered so a crop planted during the day, after the morning watering, grows that night
         public override void OnDayEnding(NightlyContext context, int tier)
         {
             if (CountsAsWatered(context.Location, context.Tile, tier) is false)

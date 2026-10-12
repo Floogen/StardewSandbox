@@ -1,6 +1,7 @@
 using CropTraits.Framework.Models;
 using Microsoft.Xna.Framework;
 using StardewValley;
+using StardewValley.TerrainFeatures;
 
 namespace CropTraits.Framework.Traits
 {
@@ -19,6 +20,16 @@ namespace CropTraits.Framework.Traits
             return true;
         }
 
+        // Waters its soil so the player can see it never needs watering
+        public override void OnDayStarted(MorningContext context, int tier)
+        {
+            if (context.Dirt.state.Value != HoeDirt.watered)
+            {
+                context.Dirt.state.Value = HoeDirt.watered;
+            }
+        }
+
+        // Kept so a crop planted during the day, after the morning watering, still grows that night
         public override void OnDayEnding(NightlyContext context, int tier)
         {
             context.Plan.CountsAsWatered = CountsAsWatered(context.Location, context.Tile, tier);
