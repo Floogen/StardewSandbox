@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CropTraits.Framework.Traits
 {
-    // Fused from Geode Roots and Variegated, since an Omni Geode holds a mix of everything
+    // Fused from Geode Roots and Tinted, since an Omni Geode holds a mix of everything
     public class OmniRootsTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
@@ -17,7 +17,7 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override string FirstTraitId => GeodeRootsTrait.ID;
-        public override string SecondTraitId => VariegatedTrait.ID;
+        public override string SecondTraitId => TintedTrait.ID;
         public override IReadOnlyList<string> ConflictsWith => CONFLICTS;
 
         // Geodes are a reward for replanting, so crops that grow back are left out

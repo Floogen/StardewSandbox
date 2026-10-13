@@ -43,7 +43,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             return tile * Game1.tileSize;
         }
 
-        // Traits like Variegated give the crop's tint, otherwise colored crops like flowers give their own color (white means no color)
+        // Traits like Tinted give the crop's tint, otherwise colored crops like flowers give their own color (white means no color)
         public static Color GetCropColor(Crop crop)
         {
             if (crop is null)

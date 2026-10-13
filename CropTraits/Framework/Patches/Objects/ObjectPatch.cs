@@ -66,7 +66,7 @@ namespace CropTraits.Framework.Patches.Objects
             int whiteIndex = lastDrawIndex < 0 ? -1 : codes.FindLastIndex(lastDrawIndex, code => code.Calls(_colorWhiteGetter));
             if (whiteIndex < 0)
             {
-                _monitor.Log("Couldn't find the item color in Object.draw, so traits like Variegated won't tint produce placed in the world.", LogLevel.Warn);
+                _monitor.Log("Couldn't find the item color in Object.draw, so traits like Tinted won't tint produce placed in the world.", LogLevel.Warn);
                 return codes;
             }
 
@@ -142,7 +142,7 @@ namespace CropTraits.Framework.Patches.Objects
                 return;
             }
 
-            // Traits like Variegated tint the produce icon, while the original color is kept for the stack count and quality icons
+            // Traits like Tinted tint the produce icon, while the original color is kept for the stack count and quality icons
             Color tint = CropAppearanceHelper.GetItemTint(__instance);
             if (tint != Color.White)
             {

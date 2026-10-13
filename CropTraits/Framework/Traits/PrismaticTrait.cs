@@ -3,7 +3,7 @@ using StardewValley;
 
 namespace CropTraits.Framework.Traits
 {
-    // Fused from Luminous and Variegated
+    // Fused from Luminous and Tinted
     public class PrismaticTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
@@ -13,7 +13,7 @@ namespace CropTraits.Framework.Traits
 
         public override string Id => ID;
         public override string FirstTraitId => LuminousTrait.ID;
-        public override string SecondTraitId => VariegatedTrait.ID;
+        public override string SecondTraitId => TintedTrait.ID;
         public override bool GlowsAtNight => true;
         public override bool IsPriceTrait => true;
 

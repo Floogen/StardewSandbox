@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace CropTraits.Framework.Traits
 {
-    // Fused from Mimic and Variegated, named after the plant chimeras that variegation comes from
+    // Fused from Mimic and Tinted
     public class ChimeraTrait : CombinationTrait
     {
         // Stored in every trait key, so this must never change once released
@@ -12,7 +12,7 @@ namespace CropTraits.Framework.Traits
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override string FirstTraitId => MimicTrait.ID;
-        public override string SecondTraitId => VariegatedTrait.ID;
+        public override string SecondTraitId => TintedTrait.ID;
 
         public override void OnDayEnding(NightlyContext context, int tier)
         {
@@ -21,7 +21,7 @@ namespace CropTraits.Framework.Traits
 
         public override Color ModifyTint(Color tint, string seedId, int tier)
         {
-            return VariegatedTrait.GetTint(seedId);
+            return TintedTrait.GetTint(seedId);
         }
 
         public override string GetTierDetails(int tier)

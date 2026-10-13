@@ -3,10 +3,10 @@ using StardewValley;
 
 namespace CropTraits.Framework.Traits
 {
-    public class VariegatedTrait : Trait
+    public class TintedTrait : Trait
     {
         // Stored in every trait key, so this must never change once released
-        public const string ID = "Variegated";
+        public const string ID = "Tinted";
 
         // Soft colors, since the tint multiplies the sprite's own colors
         public static readonly Color[] TINTS = { new Color(255, 200, 220), new Color(200, 225, 255), new Color(215, 255, 200), new Color(255, 240, 180), new Color(230, 210, 255), new Color(255, 215, 180) };
@@ -16,7 +16,7 @@ namespace CropTraits.Framework.Traits
         public override int MaxTier => 1;
         public override TraitRarity Rarity => TraitRarity.Rare;
 
-        // Picked by crop type rather than at random, so Variegated produce of the same crop still stacks
+        // Picked by crop type rather than at random, so Tinted produce of the same crop still stacks
         public override Color ModifyTint(Color tint, string seedId, int tier)
         {
             return GetTint(seedId);

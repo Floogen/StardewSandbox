@@ -62,7 +62,7 @@ namespace CropTraits.Framework.Patches
             GiantCropHelper.HandleGrowthAttempt(__instance, checkPreconditions, __state, ref __result);
         }
 
-        // Traits like Variegated tint the crop sprite (the colored overlay on flowers keeps its own color)
+        // Traits like Tinted tint the crop sprite (the colored overlay on flowers keeps its own color)
         private static void DrawPrefix(Crop __instance, ref Color toTint)
         {
             toTint = CropAppearanceHelper.Multiply(toTint, CropAppearanceHelper.GetCropTint(__instance));
