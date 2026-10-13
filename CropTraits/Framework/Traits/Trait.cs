@@ -44,7 +44,7 @@ namespace CropTraits.Framework.Traits
         /// <summary>
         /// How likely the trait is to be rolled within its polarity during a mutation. Defaults to the rarity's weight, so the rarity shown in the Field Notes stays accurate.
         /// </summary>
-        public virtual int Weight => GetRarityWeight(Rarity);
+        public int Weight => GetRarityWeight(Rarity);
 
         /// <summary>
         /// The traits this trait cannot coexist with. Conflicts are declared one way and checked in both directions.

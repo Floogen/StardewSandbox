@@ -112,7 +112,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                 }
 
                 float segmentsWidth = GetLineWidth(segments, font);
-                if (currentWidth + segmentsWidth > lineWidth && currentLine.Count > 0)
+                if (currentWidth + segmentsWidth > lineWidth)
                 {
                     lines.Add(currentLine);
                     currentLine = new();

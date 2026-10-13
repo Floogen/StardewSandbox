@@ -1,3 +1,4 @@
+using CropTraits.Framework.Utilities.Helpers;
 using StardewValley;
 using StardewValley.Buffs;
 
@@ -31,8 +32,7 @@ namespace CropTraits.Framework.Traits
             effects.FarmingLevel.Value = FARMING_BONUS;
             effects.Speed.Value = SPEED_BONUS;
 
-            string traitName = CropTraits.traitManager.GetTraitName(ID);
-            return new Buff(BUFF_ID, source: ID, displaySource: traitName, duration: BUFF_MINUTES * Game1.realMilliSecondsPerGameMinute, iconTexture: Game1.buffsIcons, iconSheetIndex: FARMING_BUFF_ICON_INDEX, effects: effects, displayName: traitName);
+            return FoodHelper.CreateTraitBuff(ID, BUFF_ID, effects, BUFF_MINUTES, FARMING_BUFF_ICON_INDEX);
         }
 
         public override string GetTierDetails(int tier)

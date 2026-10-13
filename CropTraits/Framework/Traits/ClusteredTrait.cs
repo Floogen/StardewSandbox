@@ -38,7 +38,7 @@ namespace CropTraits.Framework.Traits
         {
             for (int extraItem = 0; extraItem < EXTRA_ITEMS; extraItem++)
             {
-                Item extraProduce = context.HarvestedItem is not null ? context.HarvestedItem.getOne() : ItemRegistry.Create(context.QualifiedHarvestItemId);
+                Item extraProduce = context.HarvestedItem?.getOne() ?? ItemRegistry.Create(context.QualifiedHarvestItemId);
                 HarvestDropHelper.Drop(context, extraProduce, xTile, yTile, location);
             }
         }

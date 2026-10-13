@@ -26,11 +26,12 @@ namespace CropTraits.Framework.Utilities.Helpers
             }
 
             Farm farm = Game1.getFarm();
-            Random random = Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed, timeOfDay, LIGHTNING_RANDOM_SEED);
             if (farm is null)
             {
                 return;
             }
+
+            Random random = Utility.CreateRandom(Game1.uniqueIDForThisGame, Game1.stats.DaysPlayed, timeOfDay, LIGHTNING_RANDOM_SEED);
 
             // Ordered by tile so each crop's roll only depends on the day and time
             List<(Vector2 Tile, HoeDirt Dirt)> targets = farm.terrainFeatures.Pairs

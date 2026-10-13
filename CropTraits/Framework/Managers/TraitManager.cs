@@ -131,21 +131,14 @@ namespace CropTraits.Framework.Managers
                     continue;
                 }
 
-                int bonus = weightBonuses is null ? 0 : weightBonuses.GetValueOrDefault(trait.Id);
-                int weight = trait.Weight + bonus;
-                if (weight <= 0)
-                {
-                    continue;
-                }
-
                 if (weightedTraitsByPolarity.TryGetValue(trait.Polarity, out List<(Trait Trait, int Weight)> weightedTraits) is false)
                 {
                     weightedTraits = new();
                     weightedTraitsByPolarity[trait.Polarity] = weightedTraits;
                 }
 
-                weightedTraits.Add((trait, weight));
-                baseWeightsByPolarity[trait.Polarity] = baseWeightsByPolarity.GetValueOrDefault(trait.Polarity) + Math.Max(trait.Weight, 0);
+                weightedTraits.Add((trait, trait.Weight + weightBonuses.GetValueOrDefault(trait.Id)));
+                baseWeightsByPolarity[trait.Polarity] = baseWeightsByPolarity.GetValueOrDefault(trait.Polarity) + trait.Weight;
             }
 
             List<(TraitPolarity Polarity, double Share)> polarityShares = new();
@@ -156,11 +149,7 @@ namespace CropTraits.Framework.Managers
                     continue;
                 }
 
-                // A polarity whose traits only have weight from bonuses still gets its base share
-                int totalWeight = weightedTraits.Sum(entry => entry.Weight);
-                int baseWeight = baseWeightsByPolarity.GetValueOrDefault(polarity);
-                double bonusScale = baseWeight > 0 ? (double)totalWeight / baseWeight : 1;
-
+                double bonusScale = (double)weightedTraits.Sum(entry => entry.Weight) / baseWeightsByPolarity[polarity];
                 polarityShares.Add((polarity, GetPolarityShare(polarity) * bonusScale));
             }
 
@@ -475,7 +464,7 @@ namespace CropTraits.Framework.Managers
         public Trait RollAwakenedTrait(TraitSet existingTraits, CropData cropData, Random random)
         {
             List<(Trait Trait, int Weight)> candidates = _rollableTraits
-                .Where(trait => trait.Polarity == TraitPolarity.Positive && trait.Weight > 0 && existingTraits.Has(trait.Id) is false && trait.CanApplyTo(cropData))
+                .Where(trait => trait.Polarity == TraitPolarity.Positive && existingTraits.Has(trait.Id) is false && trait.CanApplyTo(cropData))
                 .Where(trait => HasConflictWithAny(trait.Id, existingTraits.Ids) is false)
                 .Select(trait => (trait, trait.Weight))
                 .ToList();

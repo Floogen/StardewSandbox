@@ -37,8 +37,6 @@ namespace CropTraits.Framework.Managers
         public void Load()
         {
             Data = Context.IsMainPlayer ? helper.Data.ReadSaveData<DiscoveryData>(SAVE_DATA_KEY) ?? new DiscoveryData() : new DiscoveryData();
-            MigrateBlendResults();
-            BackfillCropRecords();
             RecordPlayerInventory(Game1.player);
 
             // Farmhands start empty, so they ask the host for everything discovered so far (sent after any reports above, so the reply includes them)
@@ -70,42 +68,6 @@ namespace CropTraits.Framework.Managers
             }
 
             RecordTraits(traits, GetDiscoverySeedId(item));
-        }
-
-        private void BackfillCropRecords()
-        {
-            foreach (BlendJournalEntryData entry in Data.BlendJournal.Values)
-            {
-                if (BlendParent.TryParseSortKey(entry.FirstParentKey, out TraitSet firstTraits, out _))
-                {
-                    RecordCropTraits(entry.SeedId, firstTraits);
-                }
-
-                if (BlendParent.TryParseSortKey(entry.SecondParentKey, out TraitSet secondTraits, out _))
-                {
-                    RecordCropTraits(entry.SeedId, secondTraits);
-                }
-
-                foreach (string resultTraitKey in entry.ResultTraitKeys)
-                {
-                    RecordCropTraits(entry.SeedId, TraitSet.FromKey(resultTraitKey));
-                }
-            }
-        }
-
-        // Older saves stored one result per pair, so it becomes the first entry in the result list
-        private void MigrateBlendResults()
-        {
-            foreach (BlendJournalEntryData entry in Data.BlendJournal.Values)
-            {
-                entry.ResultTraitKeys ??= new List<string>();
-                if (string.IsNullOrEmpty(entry.ResultTraitKey) is false && entry.ResultTraitKeys.Contains(entry.ResultTraitKey) is false)
-                {
-                    entry.ResultTraitKeys.Insert(0, entry.ResultTraitKey);
-                }
-
-                entry.ResultTraitKey = null;
-            }
         }
 
         public void Save()
@@ -342,22 +304,11 @@ namespace CropTraits.Framework.Managers
             entry.ResultTraitKeys ??= new List<string>();
             if (Data.BlendJournal.TryGetValue(pairKey, out BlendJournalEntryData existingEntry))
             {
-                entry.FirstSplicedDay = GetEarliestDay(existingEntry.FirstSplicedDay, entry.FirstSplicedDay);
+                entry.FirstSplicedDay = Math.Min(existingEntry.FirstSplicedDay, entry.FirstSplicedDay);
                 entry.ResultTraitKeys = existingEntry.ResultTraitKeys.Union(entry.ResultTraitKeys).ToList();
             }
 
             Data.BlendJournal[pairKey] = entry;
-        }
-
-        // Entries from before the day was recorded have 0, which never counts as earliest
-        private static int GetEarliestDay(int firstDay, int secondDay)
-        {
-            if (firstDay <= 0)
-            {
-                return secondDay;
-            }
-
-            return secondDay <= 0 ? firstDay : Math.Min(firstDay, secondDay);
         }
 
         // Farmhands tell the host, while the host tells every farmhand

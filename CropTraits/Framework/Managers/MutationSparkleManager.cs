@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
 using StardewValley;
+using StardewValley.GameData.Crops;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
 using System;
@@ -57,7 +58,7 @@ namespace CropTraits.Framework.Managers
         private HashSet<string> GetCropTexturePaths()
         {
             HashSet<string> texturePaths = new() { DEFAULT_CROP_TEXTURE_PATH };
-            foreach (StardewValley.GameData.Crops.CropData cropData in Game1.cropData.Values)
+            foreach (CropData cropData in Game1.cropData.Values)
             {
                 if (string.IsNullOrEmpty(cropData?.Texture) is false)
                 {

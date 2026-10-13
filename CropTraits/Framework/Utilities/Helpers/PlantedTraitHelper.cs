@@ -58,7 +58,7 @@ namespace CropTraits.Framework.Utilities.Helpers
 
         public static bool IsUnharvestedMutation(HoeDirt dirt)
         {
-            if (dirt?.crop is null || dirt.crop.dead.Value || dirt.crop.fullyGrown.Value is false || IsMature(dirt.crop) is false)
+            if (dirt?.crop is null || dirt.crop.dead.Value || dirt.crop.fullyGrown.Value is false)
             {
                 return false;
             }

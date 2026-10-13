@@ -31,7 +31,7 @@ namespace CropTraits.Framework.Patches.Characters
         // A hand-picked harvest reaches the player here, so traits like Gilded can take it. Reporting it as added lets the harvest finish even with a full inventory
         private static bool AddItemToInventoryBoolPrefix(Item item, ref bool __result)
         {
-            if (CropTraits.harvestManager.IsHarvestActive is false || CropTraits.harvestManager.TryReplaceMainHarvest(item) is false)
+            if (CropTraits.harvestManager.TryReplaceMainHarvest(item) is false)
             {
                 return true;
             }

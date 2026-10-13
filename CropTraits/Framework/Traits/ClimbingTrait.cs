@@ -1,4 +1,3 @@
-using CropTraits.Framework.Utilities.Helpers;
 using StardewValley.GameData.Crops;
 
 namespace CropTraits.Framework.Traits

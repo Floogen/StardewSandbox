@@ -8,8 +8,6 @@ namespace CropTraits.Framework.Patches
 {
     public class ItemRegistryPatch : PatchTemplate
     {
-        private readonly System.Type _itemRegistry = typeof(ItemRegistry);
-
         public ItemRegistryPatch(IMonitor modMonitor, IModHelper modHelper) : base(modMonitor, modHelper)
         {
 

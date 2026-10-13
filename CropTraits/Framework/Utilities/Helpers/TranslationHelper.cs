@@ -4,11 +4,6 @@ namespace CropTraits.Framework.Utilities.Helpers
     {
         public static string Get(string key, object tokens = null)
         {
-            if (tokens is null)
-            {
-                return CropTraits.modHelper.Translation.Get(key).ToString();
-            }
-
             return CropTraits.modHelper.Translation.Get(key, tokens).ToString();
         }
 

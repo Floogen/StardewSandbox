@@ -120,7 +120,7 @@ namespace CropTraits.Framework.Utilities.Helpers
                     resultTier = random.NextDouble() < GetHigherTierChance(higherTierQuality, lowerTierQuality) ? Math.Max(firstTier, secondTier) : Math.Min(firstTier, secondTier);
                 }
 
-                resultTraits.Set(traitId, Math.Max(resultTier, resultTraits.GetTier(traitId)));
+                resultTraits.Set(traitId, resultTier);
             }
         }
 
@@ -189,7 +189,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             // First placed wins, so a later conflicting trait is skipped
             foreach (KeyValuePair<string, int> candidate in candidates)
             {
-                if (resultTraits.Has(candidate.Key) || CanPlaceTrait(candidate.Key, resultTraits) is false)
+                if (CanPlaceTrait(candidate.Key, resultTraits) is false)
                 {
                     continue;
                 }

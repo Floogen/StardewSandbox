@@ -8,8 +8,6 @@ using Parchment.Framework.API;
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using StardewValley;
-using StardewValley.BellsAndWhistles;
-using StardewValley.Characters;
 using StardewValley.Extensions;
 using System;
 using System.Collections.Generic;
@@ -56,8 +54,8 @@ namespace CropTraits.Framework.Builders
         public const int GUIDE_TEXT_SPACING = 24;
         public const string SEED_MAKER_QUALIFIED_ID = "(BC)25";
 
-        public static readonly Rectangle BUTTON_SOURCE = new Rectangle(0, 0, 18, 18);
-        public static readonly Rectangle BUTTON_HOVER_SOURCE = new Rectangle(0, 18, 18, 18);
+        public const int REFRESH_DELAY_TICKS = 10;
+        public const int MAX_SWAP_ATTEMPTS = 60;
 
         private readonly IParchmentApi _parchmentApi;
         private int _ticksUntilRefresh;
@@ -234,7 +232,7 @@ namespace CropTraits.Framework.Builders
         {
             bool isRightPage = pageIndex % 2 == 0;
             IElementBuilder pageNumber = page.AddBackground("Paragraph").Font("Small").Text($"{pageIndex}").VerticalAlignment("Bottom");
-            if (isRightPage is true)
+            if (isRightPage)
             {
                 pageNumber.Alignment("Right");
             }
@@ -561,13 +559,12 @@ namespace CropTraits.Framework.Builders
         // Traits without a page (undiscovered while revealing is off) are scrambled, so conflicts and combination recipes don't spoil them
         public string GetTraitReferenceText(string traitId, HashSet<string> linkedTraitIds)
         {
-            string name = CropTraits.traitManager.GetTraitName(traitId);
             if (linkedTraitIds.Contains(traitId) is false)
             {
                 return $"????";
             }
 
-            return GetTraitLinkText(traitId, name, linkedTraitIds);
+            return GetTraitLinkText(traitId, CropTraits.traitManager.GetTraitName(traitId), linkedTraitIds);
         }
 
         public string GetRarityText(TraitRarity rarity)
@@ -689,27 +686,19 @@ namespace CropTraits.Framework.Builders
         // Returns how many elements were added, so the whole entry (and its divider) moves to the next page when it doesn't fit
         public int AddCrossbreedEntry(IPageBuilder page, BlendJournalEntryData crossbreed, bool isLastEntry, HashSet<string> linkedTraitIds)
         {
-            int addedCount = 0;
-
-            // Entries from before the day was recorded have 0, so they skip the date
-            if (crossbreed.FirstSplicedDay > 0)
-            {
-                string date = SDate.FromDaysSinceStart(crossbreed.FirstSplicedDay + 1).ToLocaleString();
-                page.AddParagraph(date).Font("Small").TextColor("DimGray").Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(2);
-                addedCount += 1;
-            }
+            string date = SDate.FromDaysSinceStart(crossbreed.FirstSplicedDay + 1).ToLocaleString();
+            page.AddParagraph(date).Font("Small").TextColor("DimGray").Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(2);
 
             IElementBuilder entryParagraph = page.AddParagraph(FormatCrossbreed(crossbreed, linkedTraitIds)).Font("Small").Alignment("Left").Margin(CONTENT_MARGIN, 0).Spacing(CROSSBREED_SPACING);
             AddTraitLinks(entryParagraph, GetCrossbreedTraitIds(crossbreed), linkedTraitIds);
-            addedCount += 1;
 
             if (isLastEntry)
             {
-                return addedCount;
+                return 2;
             }
 
             page.AddDivider().Tint("234 200 178").Width(384).Sizing("Fixed").Set("Thickness", 4).Alignment("Center").Spacing(CROSSBREED_SPACING);
-            return addedCount + 1;
+            return 3;
         }
 
         public string GetCropTraitsText(string seedId, HashSet<string> linkedTraitIds)
@@ -815,15 +804,6 @@ namespace CropTraits.Framework.Builders
             settingPanel
                 .Action($"PeacefulEnd.Parchment_ToggleVariable {CropTraits.JOURNAL_ID} {variableId}")
                 .Action("PeacefulEnd.Parchment_RefreshBook");
-
-        }
-
-        public IElementBuilder AddButton(IPageBuilder page, string text, string action)
-        {
-            return page.AddButton(text, action)
-                .Texture("Assets/PeacefulEnd.Parchment/button1").TextureSource(BUTTON_SOURCE.X, BUTTON_SOURCE.Y, BUTTON_SOURCE.Width, BUTTON_SOURCE.Height)
-                .HoverTextureSource(BUTTON_HOVER_SOURCE.X, BUTTON_HOVER_SOURCE.Y, BUTTON_HOVER_SOURCE.Width, BUTTON_HOVER_SOURCE.Height)
-                .Font("Small").Scale(1).Padding(2).Alignment("Center").Spacing(6);
         }
 
         public IPageBuilder AddWithOverflow(IBookBuilder book, IPageBuilder page, string chapterId, ref int pageIndex, Func<IPageBuilder, int> addEntry)
@@ -882,7 +862,7 @@ namespace CropTraits.Framework.Builders
 
             if (IsBookOpen())
             {
-                _ticksUntilRefresh = 10;
+                _ticksUntilRefresh = REFRESH_DELAY_TICKS;
             }
         }
 
@@ -939,7 +919,7 @@ namespace CropTraits.Framework.Builders
             if (IsBookOpen())
             {
                 _pendingSwap = book;
-                _swapAttemptsRemaining = 60;
+                _swapAttemptsRemaining = MAX_SWAP_ATTEMPTS;
                 return;
             }
 

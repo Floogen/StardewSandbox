@@ -13,10 +13,7 @@ namespace CropTraits.Framework.Models.Data
         // Every distinct result seen for the pair, in the order they were first seen
         public List<string> ResultTraitKeys { get; set; } = new();
 
-        // Single result from before results varied per splice, moved into ResultTraitKeys on load
-        public string ResultTraitKey { get; set; }
-
-        // The day the pair was first crossbred, kept when the pair is crossbred again. Entries from before this was added have 0
+        // The day the pair was first crossbred, kept when the pair is crossbred again
         public int FirstSplicedDay { get; set; }
     }
 }

@@ -11,10 +11,6 @@ namespace CropTraits.Framework.Utilities.Helpers
     // Gathers what Field Notes shows from the crop data and the discovery data
     public static class JournalDataHelper
     {
-        public const int SILVER_QUALITY = 1;
-        public const int GOLD_QUALITY = 2;
-        public const int IRIDIUM_QUALITY = 4;
-
         public static List<JournalCropEntry> GetCrops()
         {
             List<JournalCropEntry> crops = new();
@@ -50,7 +46,7 @@ namespace CropTraits.Framework.Utilities.Helpers
             return CropTraits.discoveryManager.Data.Crops.TryGetValue(seedId, out CropDiscoveryData crop) ? crop : new CropDiscoveryData();
         }
 
-        // Newest first, with entries from before days were recorded at the end
+        // Newest first
         public static List<BlendJournalEntryData> GetCrossbreeds(string seedId)
         {
             return CropTraits.discoveryManager.Data.BlendJournal.Values
@@ -79,9 +75,9 @@ namespace CropTraits.Framework.Utilities.Helpers
         {
             string qualityKey = quality switch
             {
-                SILVER_QUALITY => "silver",
-                GOLD_QUALITY => "gold",
-                IRIDIUM_QUALITY => "iridium",
+                StardewValley.Object.medQuality => "silver",
+                StardewValley.Object.highQuality => "gold",
+                StardewValley.Object.bestQuality => "iridium",
                 _ => "normal"
             };
 

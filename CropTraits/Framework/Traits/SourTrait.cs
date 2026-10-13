@@ -28,8 +28,7 @@ namespace CropTraits.Framework.Traits
             BuffEffects effects = new BuffEffects();
             effects.Speed.Value = SPEED_PENALTY;
 
-            string traitName = CropTraits.traitManager.GetTraitName(ID);
-            return new Buff(BUFF_ID, source: ID, displaySource: traitName, duration: BUFF_MINUTES_PER_TIER * tier * Game1.realMilliSecondsPerGameMinute, iconTexture: Game1.buffsIcons, iconSheetIndex: SPEED_BUFF_ICON_INDEX, effects: effects, displayName: traitName);
+            return FoodHelper.CreateTraitBuff(ID, BUFF_ID, effects, BUFF_MINUTES_PER_TIER * tier, SPEED_BUFF_ICON_INDEX);
         }
 
         public override string GetTierDetails(int tier)

@@ -9,9 +9,6 @@ namespace CropTraits.Framework.Traits
         // Stored in every trait key, so this must never change once released
         public const string ID = "Chimera";
 
-        // Shared so the tint matches Variegated
-        private static readonly VariegatedTrait _variegatedTrait = new VariegatedTrait();
-
         public override string Id => ID;
         public override TraitPolarity Polarity => TraitPolarity.Neutral;
         public override string FirstTraitId => MimicTrait.ID;
@@ -24,7 +21,7 @@ namespace CropTraits.Framework.Traits
 
         public override Color ModifyTint(Color tint, string seedId, int tier)
         {
-            return _variegatedTrait.ModifyTint(tint, seedId, tier);
+            return VariegatedTrait.GetTint(seedId);
         }
 
         public override string GetTierDetails(int tier)

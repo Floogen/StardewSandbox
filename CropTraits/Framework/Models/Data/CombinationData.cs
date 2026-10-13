@@ -5,7 +5,7 @@ namespace CropTraits.Framework.Models.Data
         public string FirstTraitId { get; set; }
         public string SecondTraitId { get; set; }
         public string ResultTraitId { get; set; }
-        public double Chance { get; set; } = 0.25;
+        public double Chance { get; set; }
 
         public string Key => $"{FirstTraitId}+{SecondTraitId}>{ResultTraitId}";
     }

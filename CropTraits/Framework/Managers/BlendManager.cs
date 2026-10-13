@@ -129,19 +129,8 @@ namespace CropTraits.Framework.Managers
 
         public bool CanBlend(Item firstParent, Item secondParent)
         {
-            if (HasEnoughForSlot(firstParent) is false || HasEnoughForSlot(secondParent) is false)
-            {
-                return false;
-            }
-
             // CanPlace only checks the candidate, so the other parent is checked for propagation blocking too
-            if (CanPlace(firstParent, secondParent) is false || IsPropagationBlocked(secondParent))
-            {
-                return false;
-            }
-
-            // Two untraited parents have nothing to blend
-            if (HasTraits(firstParent) is false && HasTraits(secondParent) is false)
+            if (HasEnoughForSlot(secondParent) is false || IsPropagationBlocked(secondParent) || CanPlace(firstParent, secondParent) is false)
             {
                 return false;
             }

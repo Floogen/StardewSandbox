@@ -15,7 +15,7 @@ namespace CropTraits.Framework.Utilities.Helpers
         // Mine levels picking each tier's variant (green slime and bat, then frost, then lava and red)
         public static readonly int[] MINE_LEVELS_BY_TIER = { 20, 60, 100 };
 
-        public static bool AreMonsterTraitsEnabled => CropTraits.modConfig?.EnableMonsterTraits ?? true;
+        public static bool AreMonsterTraitsEnabled => CropTraits.modConfig.EnableMonsterTraits;
 
         // The chance is rolled first so every crop draws the same number of times whether or not the location is full
         public static bool ShouldSpawn(MorningContext context)

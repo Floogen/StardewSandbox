@@ -31,7 +31,7 @@ namespace CropTraits.Framework.Patches
         // A scythe harvest drops its main harvest here instead of adding it to the inventory, so traits like Gilded can take it before it lands
         private static bool CreateItemDebrisPrefix(Item item, ref Debris __result)
         {
-            if (CropTraits.harvestManager.IsHarvestActive is false || CropTraits.harvestManager.TryReplaceMainHarvest(item) is false)
+            if (CropTraits.harvestManager.TryReplaceMainHarvest(item) is false)
             {
                 return true;
             }

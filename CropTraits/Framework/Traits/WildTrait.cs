@@ -1,7 +1,6 @@
 using CropTraits.Framework.Models;
 using CropTraits.Framework.Utilities.Helpers;
 using StardewValley;
-using System;
 
 namespace CropTraits.Framework.Traits
 {

@@ -19,6 +19,11 @@ namespace CropTraits.Framework.Traits
         // Picked by crop type rather than at random, so Variegated produce of the same crop still stacks
         public override Color ModifyTint(Color tint, string seedId, int tier)
         {
+            return GetTint(seedId);
+        }
+
+        public static Color GetTint(string seedId)
+        {
             int hash = Game1.hash.GetDeterministicHashCode(seedId ?? ID) & int.MaxValue;
             return TINTS[hash % TINTS.Length];
         }

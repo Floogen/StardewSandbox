@@ -1,5 +1,5 @@
 using CropTraits.Framework.Models;
-using Microsoft.Xna.Framework;
+using CropTraits.Framework.Utilities.Helpers;
 using StardewValley;
 
 namespace CropTraits.Framework.Traits
@@ -22,14 +22,8 @@ namespace CropTraits.Framework.Traits
             }
 
             // A copy of the main harvest keeps its quality, color (flowers) and traits, so the extra stacks with it
-            Item extraProduce = context.HarvestedItem is not null ? context.HarvestedItem.getOne() : ItemRegistry.Create(context.QualifiedHarvestItemId);
-            if (context.JunimoHarvester is not null)
-            {
-                context.JunimoHarvester.tryToAddItemToHut(extraProduce);
-                return;
-            }
-
-            Game1.createItemDebris(extraProduce, new Vector2((xTile * Game1.tileSize) + (Game1.tileSize / 2), (yTile * Game1.tileSize) + (Game1.tileSize / 2)), -1, location);
+            Item extraProduce = context.HarvestedItem?.getOne() ?? ItemRegistry.Create(context.QualifiedHarvestItemId);
+            HarvestDropHelper.Drop(context, extraProduce, xTile, yTile, location);
         }
 
         public override string GetTierDetails(int tier)

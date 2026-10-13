@@ -5,6 +5,7 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using StardewValley.TerrainFeatures;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -27,21 +28,21 @@ namespace CropTraits.Framework.Utilities.Helpers
                 return NO_FERTILIZER_RANK;
             }
 
-            int index = System.Array.IndexOf(QUALITY_FERTILIZER_IDS, ItemRegistry.QualifyItemId(fertilizerId));
+            int index = Array.IndexOf(QUALITY_FERTILIZER_IDS, ItemRegistry.QualifyItemId(fertilizerId));
             return index < 0 ? OTHER_FERTILIZER_RANK : index + 1;
         }
 
         // Uses the game's own name for the fertilizer, so it matches the player's language
         public static string GetQualityFertilizerName(int rank)
         {
-            return ItemRegistry.GetDataOrErrorItem(QUALITY_FERTILIZER_IDS[System.Math.Clamp(rank, 1, QUALITY_FERTILIZER_IDS.Length) - 1]).DisplayName;
+            return ItemRegistry.GetDataOrErrorItem(QUALITY_FERTILIZER_IDS[Math.Clamp(rank, 1, QUALITY_FERTILIZER_IDS.Length) - 1]).DisplayName;
         }
 
         // Only soil with no fertilizer or a weaker quality fertilizer is upgraded, so other fertilizers are never replaced
         public static bool TryUpgradeQualityFertilizer(HoeDirt dirt, int rank)
         {
             int currentRank = GetQualityFertilizerRank(dirt?.fertilizer.Value);
-            int targetRank = System.Math.Clamp(rank, 1, QUALITY_FERTILIZER_IDS.Length);
+            int targetRank = Math.Clamp(rank, 1, QUALITY_FERTILIZER_IDS.Length);
             if (dirt is null || currentRank == OTHER_FERTILIZER_RANK || currentRank >= targetRank)
             {
                 return false;

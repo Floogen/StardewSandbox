@@ -71,19 +71,17 @@ namespace CropTraits.Framework.Utilities.Helpers
         public static void ReapplyGrowthTraits(HoeDirt dirt, TraitSet traits, Farmer planter)
         {
             Crop crop = dirt.crop;
-            CropData cropData = crop?.GetData();
-            if (cropData?.DaysInPhase is null || cropData.DaysInPhase.Count == 0)
+            List<int> phaseDays = BuildPhaseDays(crop?.GetData());
+            if (phaseDays.Count == 0)
             {
                 return;
             }
 
             crop.phaseDays.Clear();
-            foreach (int days in cropData.DaysInPhase)
+            foreach (int days in phaseDays)
             {
                 crop.phaseDays.Add(days);
             }
-
-            crop.phaseDays.Add(FINAL_PHASE_LENGTH);
 
             // Vanilla fertilizer and profession boosts are reapplied first so they stack predictably with traits
             dirt.applySpeedIncreases(planter ?? Game1.MasterPlayer);

@@ -538,19 +538,22 @@ namespace CropTraits.Framework.UI.Menus
             return null;
         }
 
-        protected override void cleanupBeforeExit()
+        public void ReleaseSplicer()
         {
             StopRumble();
             ReturnAllItems();
             SpliceHelper.ReleaseMachine(_machine);
+        }
+
+        protected override void cleanupBeforeExit()
+        {
+            ReleaseSplicer();
             base.cleanupBeforeExit();
         }
 
         public override void emergencyShutDown()
         {
-            StopRumble();
-            ReturnAllItems();
-            SpliceHelper.ReleaseMachine(_machine);
+            ReleaseSplicer();
             base.emergencyShutDown();
         }
 

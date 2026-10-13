@@ -85,8 +85,6 @@ namespace CropTraits.Framework.Managers
             context.HarvestedItem ??= item;
         }
 
-        public bool IsHarvestActive => _activeHarvest is not null;
-
         /// <summary>
         /// Called as an item reaches the player during a harvest (added to the inventory or dropped by a scythe), so traits like Gilded can take the main harvest instead.
         /// Only the first item matching the harvest is offered. Junimo harvests are left alone since there's no player to pay.
