@@ -8,7 +8,7 @@ namespace CropTraits.Framework.Managers
     public class MailManager : BaseManager
     {
         public const string FIELD_NOTES_MAIL_ID = "PeacefulEnd.CropTraits_FieldNotes";
-        public const int FIELD_NOTES_FARMING_LEVEL = 5;
+        public const int FIELD_NOTES_FARMING_LEVEL = 3;
 
         public static readonly string FIELD_NOTES_SHOP_CONDITION = $"PLAYER_HAS_MAIL Current {FIELD_NOTES_MAIL_ID} Any";
 
