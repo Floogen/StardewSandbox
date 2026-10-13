@@ -2,7 +2,7 @@
   "Name": "Crop Traits",
   "Author": "PeacefulEnd",
   "Version": "%ProjectVersion%",
-  "Description": "Adds mutations and traits to crops.",
+  "Description": "Adds over 120 gameplay changing traits to crops. Traits appear through random mutations and can be kept through seeds or spliced together into rare combinations.",
   "UniqueID": "PeacefulEnd.CropTraits",
   "EntryDll": "CropTraits.dll",
   "MinimumApiVersion": "4.5.2",
