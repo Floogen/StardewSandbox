@@ -133,6 +133,11 @@ namespace CropTraits.Framework.Managers
             }
         }
 
+        public void OnLocaleChanged(object sender, LocaleChangedEventArgs e)
+        {
+            helper.GameContent.InvalidateCache(asset => asset.NameWithoutLocale.IsEquivalentTo(OBJECTS_DATA_PATH) || asset.NameWithoutLocale.IsEquivalentTo(BIG_CRAFTABLES_DATA_PATH) || asset.NameWithoutLocale.IsEquivalentTo(MAIL_DATA_PATH));
+        }
+
         private void AddMutagenicFertilizerToShop(ShopData shop)
         {
             shop.Items ??= new List<ShopItemData>();

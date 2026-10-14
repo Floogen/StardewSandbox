@@ -124,6 +124,7 @@ namespace CropTraits
             // Hook into the required events
             helper.Events.Content.AssetRequested += assetManager.OnAssetRequested;
             helper.Events.Content.AssetsInvalidated += OnAssetsInvalidated;
+            helper.Events.Content.LocaleChanged += assetManager.OnLocaleChanged;
             helper.Events.GameLoop.DayEnding += (sender, args) => mutationManager.ResolveAllMutationRolls();
             helper.Events.GameLoop.DayEnding += (sender, args) => nightlyGrowthManager.PlanAllNightlyEffects();
             helper.Events.GameLoop.DayEnding += (sender, args) => mailManager.TryQueueFieldNotesMail();
