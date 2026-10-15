@@ -84,7 +84,7 @@
   "journal.getting_started.seed_splicer_traits": "The Seed Splicer lets you splice two crops [highlight]of the same type[/highlight] but of different strains, either mixing their traits together or removing unwanted ones.",
   "journal.trait_view_key_unbound": "the trait view key (set it in the config)",
   "journal.spotting_mutations.title": "Spotting Mutations",
-  "journal.spotting_mutations.sparkles": "Fully grown crops that have mutated will sparkle until they're harvested, so keep an eye out for any glimmers in your fields.",
+  "journal.spotting_mutations.sparkles": "Fully grown crops that have mutated will sparkle until they're harvested, so keep an eye out for [highlight]any glimmers in your fields[/highlight].",
   "journal.spotting_mutations.badges": "Seeds and produce that have traits are marked with a small green badge in the top-right corner. Hover over them to see their traits (negative ones are highlighted in [color=Red]red[/color]).",
   "journal.spotting_mutations.trait_view": "You can press [bold]{{key}}[/bold] to show an icon over every crop with traits. Hover over a crop to see its details, then press it again to hide the icons.",
   "journal.spotting_mutations.hidden_traits": "Before a crop is fully grown, you will only see the traits it was planted with. Once it has finished growing, any new traits will be marked with \"[bounce][color=ForestGreen]{{newLabel}}[/color][/bounce]\".",
