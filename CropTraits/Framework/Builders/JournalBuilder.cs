@@ -52,6 +52,8 @@ namespace CropTraits.Framework.Builders
 
         public const int GUIDE_MARGIN = 12;
         public const int GUIDE_TEXT_SPACING = 24;
+
+        public const int SMALL_FONT_LINE_HEIGHT = 26;
         public const string SEED_MAKER_QUALIFIED_ID = "(BC)25";
 
         public const int REFRESH_DELAY_TICKS = 10;
@@ -243,34 +245,34 @@ namespace CropTraits.Framework.Builders
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
             page.AddTitle(TranslationHelper.Get("journal.getting_started.title")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.intro")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.intro")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 17).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.mutagenic_fertilizer")).Spacing(176);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.mutagenic_fertilizer")).Height(SMALL_FONT_LINE_HEIGHT * 7).Spacing(176);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(CropTraits.MUTAGENIC_FERTILIZER_QUALIFIED_ID).Set("Description", TranslationHelper.Get("item.mutagenic_fertilizer.description") + "\n\n" + TranslationHelper.Get("journal.getting_started.mutagenic_fertilizer_shop", new { level = AssetManager.MUTAGENIC_FERTILIZER_FARMING_LEVEL })).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.neighbors")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.neighbors")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 7).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
             page.AddHeading(TranslationHelper.Get("journal.getting_started.tiers_heading")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.tiers")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.tiers")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 15).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 4);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.trait_limit")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.trait_limit")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 21).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 5);
             page.AddHeading(TranslationHelper.Get("journal.getting_started.propagating_heading")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_maker", new { level = RecipeManager.SEED_MAKER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_maker", new { level = RecipeManager.SEED_MAKER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 6).Spacing(160);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(SEED_MAKER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -24);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_maker_traits")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_maker_traits")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 6).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 6, hideNumber: true);
             page.AddHeading(TranslationHelper.Get("journal.getting_started.splicing_heading")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_splicer", new { level = RecipeManager.SEED_SPLICER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_splicer", new { level = RecipeManager.SEED_SPLICER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 6).Spacing(144);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Item(CropTraits.SEED_SPLICER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -24);
-            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_splicer_traits")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.getting_started.seed_splicer_traits")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 7).Spacing(GUIDE_TEXT_SPACING);
         }
 
         public string GetTraitViewKey()
@@ -286,17 +288,17 @@ namespace CropTraits.Framework.Builders
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
             page.AddTitle(TranslationHelper.Get("journal.spotting_mutations.title")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.sparkles")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.sparkles")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 6).Spacing(GUIDE_TEXT_SPACING);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 80, 48, 48).Scale(6).Alignment("Center").VerticalAlignment("Center").Position(0, 128);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.badges")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(132);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.badges")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 8).Spacing(132);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center");
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 128, 48, 32).Set("DisplayName", cornSeeds.DisplayName).Set("Description", TraitTooltipHelper.GetDescriptionWithTraits(cornSeeds)).Scale(2).Alignment("Center").VerticalAlignment("Center").Position(0, -4);
-            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.trait_view", new { key = GetTraitViewKey() })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.trait_view", new { key = GetTraitViewKey() })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 7).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
-            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.hidden_traits", new { newLabel = TranslationHelper.Get("tooltip.new_trait") })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0);
+            page.AddParagraph(TranslationHelper.Get("journal.spotting_mutations.hidden_traits", new { newLabel = TranslationHelper.Get("tooltip.new_trait") })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 7);
         }
 
         public void AddSelectiveBreedingPages(IBookBuilder book, string chapterId)
@@ -304,25 +306,25 @@ namespace CropTraits.Framework.Builders
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
             page.AddTitle(TranslationHelper.Get("journal.selective_breeding.title")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_maker")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(138);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_maker")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 4).Spacing(138);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -32);
             page.AddBackground("Image").Item(SEED_MAKER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -56);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_maker_unlock", new { level = RecipeManager.SEED_MAKER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_maker_unlock", new { level = RecipeManager.SEED_MAKER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 8).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 2);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(160);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 4).Spacing(160);
             page.AddBackground("Image").Texture(AssetManager.SPRITE_SHEET_TEXTURE_PATH).TextureSource(0, 48, 48, 32).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -80);
             page.AddBackground("Image").Item(CropTraits.SEED_SPLICER_QUALIFIED_ID).Spacing(10).Scale(4).Alignment("Center").VerticalAlignment("Center").Position(0, -104);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer_unlock", new { level = RecipeManager.SEED_SPLICER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.seed_splicer_unlock", new { level = RecipeManager.SEED_SPLICER_FARMING_LEVEL })).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 10).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 3);
             page.AddHeading(TranslationHelper.Get("journal.selective_breeding.mixing_heading")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.mixing")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.mixing")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 16).Spacing(GUIDE_TEXT_SPACING);
 
             page = CreateNumberedPage(book, chapterId, 4, hideNumber: true);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.quality_hint")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.quality_hint")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 4).Spacing(GUIDE_TEXT_SPACING);
             page.AddHeading(TranslationHelper.Get("journal.selective_breeding.diluting_heading")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.diluting")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(GUIDE_TEXT_SPACING);
+            page.AddParagraph(TranslationHelper.Get("journal.selective_breeding.diluting")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 14).Spacing(GUIDE_TEXT_SPACING);
         }
 
         public void AddCombinationTraitsPages(IBookBuilder book, string chapterId)
@@ -330,10 +332,10 @@ namespace CropTraits.Framework.Builders
             IPageBuilder page = CreateNumberedPage(book, chapterId, 1);
 
             page.AddTitle(TranslationHelper.Get("journal.combination_traits.title")).Alignment("Center").Spacing(16);
-            page.AddParagraph(TranslationHelper.Get("journal.combination_traits.intro")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph(TranslationHelper.Get("journal.combination_traits.intro")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 16).Spacing(112);
 
             page = CreateNumberedPage(book, chapterId, 2, hideNumber: true);
-            page.AddParagraph(TranslationHelper.Get("journal.combination_traits.details")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Spacing(112);
+            page.AddParagraph(TranslationHelper.Get("journal.combination_traits.details")).Font("Small").Alignment("Left").Margin(GUIDE_MARGIN, 0).Height(SMALL_FONT_LINE_HEIGHT * 17).Spacing(112);
         }
 
         // The index lists only names, two columns per page, and each discovered (or revealed) trait opens its own page with the details
